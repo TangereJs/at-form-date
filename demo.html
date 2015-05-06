@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>at-form-date</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script src="../webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="../polymer/polymer.html" />
+  <link rel="import" href="at-form-date.html" />
+</head>
+
+<body>
+  <h2>This is demo for at-form-date</h2>
+  <div class="row">
+    <at-form-date id="atFormDate1"></at-form-date>
+    <div>
+      <span>Echo value:</span><span id="echoValue1"></span>
+    </div>
+  </div>
+  <div  class="row">
+    <at-form-date id="atFormDate2"></at-form-date>
+    <div>
+      <span>Echo value:</span><span id="echoValue2"></span>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('WebComponentsReady', function () {
+      var echoValue = document.getElementById('echoValue1');
+      var atFormDate = document.getElementById('atFormDate1');
+      atFormDate.addEventListener('value-changed', function (event) {
+        echoValue.innerHTML = event.detail.value;
+      });
+
+
+      var echoValue2 = document.getElementById('echoValue2');
+      var atFormDate2 = document.getElementById('atFormDate2');
+      atFormDate2.addEventListener('value-changed', function (event) {
+        echoValue2.innerHTML = event.detail.value;
+      });
+
+    });
+  </script>
+</body>
+
+</html>

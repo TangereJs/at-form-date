@@ -1,0 +1,71 @@
+<script src="../moment/moment.js"></script>
+<script src="scripts/jquery-2.1.3.js"></script>
+<script src="scripts/at-form-date-utils.js"></script>
+<script src="scripts/collapse.js"></script>
+<script src="scripts/transition.js"></script>
+<script src="scripts/bootstrap-datetimepicker.js"></script>
+
+<dom-module id="at-form-date">
+  <link rel="stylesheet" href="styles/bootstrap.css" />
+  <link rel="stylesheet" href="styles/bootstrap-theme.css" />
+  <link rel="stylesheet" href="styles/bootstrap-datetimepicker.css" />
+  <template>
+    <div class='col-sm-6'>
+      <div class="form-group">
+        <div class='input-group date' id='datetimepicker'>
+          <input type='text' class="form-control" />
+          <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'at-form-date',
+    properties: {
+      value: {
+        type: String,
+        value: '',
+        notify: true
+      },
+      valid: {
+        type: Boolean,
+        value: true,
+        readOnly: true
+      },
+      disabled: {
+        type: Boolean,
+        value: false,
+        observer: 'disabledChanged'
+      },
+      required: {
+        type: Boolean,
+        value: false,
+        observer: 'requiredChanged'
+      }
+    },
+    _isReady: false,
+    _scopeStyleViaAttr: true,
+    _dtInstance: undefined,
+    ready: function () {
+      this._dtInstance = $(this.$.datetimepicker).datetimepicker();
+
+      var _self = this;
+      this._dtInstance.on('dp.change', function (event) {
+        _self.value = event.date._d;
+      });
+
+      this._isReady = true;
+    },
+    disabledChanged: function(newValue, oldValue) {
+      
+    },
+    requiredChanged: function(newValue, oldValue) {
+      
+    }
+  });
+</script>
