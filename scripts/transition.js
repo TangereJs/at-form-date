@@ -39,26 +39,26 @@
   }
 
   // http://blog.alexmaccaw.com/css-transitions
-  $.fn.emulateTransitionEnd = function (duration) {
-    var called = false,
-      $el = this,
-      callback;
-
-    // http://api.jquery.com/one/
-    $(this).one('bsTransitionEnd', function () {
-      called = true;
-    });
-
-    callback = function () {
-      if (!called) {
-        // http://api.jquery.com/trigger/
-        $($el).trigger($.support.transition.end);
-      }
-    };
-
-    setTimeout(callback, duration);
-    return this;
-  };
+//  $.fn.emulateTransitionEnd = function (duration) {
+//    var called = false,
+//      $el = this,
+//      callback;
+//
+//    // http://api.jquery.com/one/
+//    $(this).one('bsTransitionEnd', function () {
+//      called = true;
+//    });
+//
+//    callback = function () {
+//      if (!called) {
+//        // http://api.jquery.com/trigger/
+//        $($el).trigger($.support.transition.end);
+//      }
+//    };
+//
+//    setTimeout(callback, duration);
+//    return this;
+//  };
 
   utils.emulateTransitionEnd = function (element, duration) {
 
@@ -82,24 +82,24 @@
   }
 
   // http://api.jquery.com/jQuery/#jQuery3
-  $(function () {
-    $.support.transition = transitionEnd();
-
-    if (!$.support.transition) {
-      return;
-    }
-
-    $.event.special.bsTransitionEnd = {
-      bindType: $.support.transition.end,
-      delegateType: $.support.transition.end,
-      handle: function (e) {
-        //http://api.jquery.com/is/
-        if ($(e.target).is(this)) {
-          return e.handleObj.handler.apply(this, arguments);
-        }
-      }
-    };
-  });
+//  $(function () {
+//    $.support.transition = transitionEnd();
+//
+//    if (!$.support.transition) {
+//      return;
+//    }
+//
+//    $.event.special.bsTransitionEnd = {
+//      bindType: $.support.transition.end,
+//      delegateType: $.support.transition.end,
+//      handle: function (e) {
+//        //http://api.jquery.com/is/
+//        if ($(e.target).is(this)) {
+//          return e.handleObj.handler.apply(this, arguments);
+//        }
+//      }
+//    };
+//  });
 
   utils.support = {};
   utils.support.transition = transitionEnd();

@@ -163,27 +163,36 @@
   // sets or gets the width of the element;
   // when returned value is as number
   // when set value needs to be a string with units assigned
-  utils.width = function(element, value){
-    if (notNullAndUndefined(element)){
-      if (notNullAndUndefined(value)){
+  utils.width = function (element, value) {
+    if (notNullAndUndefined(element)) {
+      if (notNullAndUndefined(value)) {
         element.style.width = value;
       } else {
         return element.getBoundingClientRect().width;
       }
     }
   }
-  
+
   // sets or gets the width of the element;
   // when returned value is as number
   // when set value needs to be a string with units assigned
-  utils.height = function(element, value){
-    if (notNullAndUndefined(element)){
-      if (notNullAndUndefined(value)){
+  utils.height = function (element, value) {
+    if (notNullAndUndefined(element)) {
+      if (notNullAndUndefined(value)) {
         element.style.height = value;
       } else {
         return element.getBoundingClientRect().height;
       }
     }
   }
-  
+
+  // sets the classes to the element
+  // element is an html element, classes is space separated list of classes
+  utils.addClasses = function (element, classes) {
+    var classesArray = classes.split(' '), i;
+    for (i = 0; i < classesArray.length; i += 1) {
+      element.classList.add(classesArray[i]);
+    }
+  }
+
 }(window.atFormDateUtils = window.atFormDateUtils || {}));

@@ -158,122 +158,298 @@
         return (isEnabled('y') || isEnabled('M') || isEnabled('d'));
       },
 
-      getDatePickerTemplate = function () {
-        var headTemplate = $('<thead>')
-          .append($('<tr>')
-            .append($('<th>').addClass('prev').attr('data-action', 'previous')
-              .append($('<span>').addClass(options.icons.previous))
-            )
-            .append($('<th>').addClass('picker-switch').attr('data-action', 'pickerSwitch').attr('colspan', (options.calendarWeeks ? '6' : '5')))
-            .append($('<th>').addClass('next').attr('data-action', 'next')
-              .append($('<span>').addClass(options.icons.next))
-            )
-          ),
-          contTemplate = $('<tbody>')
-          .append($('<tr>')
-            .append($('<td>').attr('colspan', (options.calendarWeeks ? '8' : '7')))
-          );
+      getHeadTemplate = function () {
+        var
+          headTemplate = document.createElement('thead');
 
-        return [
-          $('<div>').addClass('datepicker-days')
-              .append($('<table>').addClass('table-condensed')
-              .append(headTemplate)
-              .append($('<tbody>'))),
-          $('<div>').addClass('datepicker-months')
-              .append($('<table>').addClass('table-condensed')
-              .append(headTemplate.clone())
-              .append(contTemplate.clone())),
-          $('<div>').addClass('datepicker-years')
-              .append($('<table>').addClass('table-condensed')
-              .append(headTemplate.clone())
-              .append(contTemplate.clone()))
-                ];
+        var trElem = document.createElement('tr');
+        headTemplate.appendChild(trElem);
+
+        var thElem = document.createElement('th');
+        thElem.classList.add('prev');
+        thElem.setAttribute('data-action', 'previous');
+
+        trElem.appendChild(thElem);
+
+        var spanElem = document.createElement('span');
+        utils.addClasses(spanElem, options.icons.previous);
+        thElem.appendChild(spanElem);
+
+        thElem = document.createElement('th');
+        thElem.classList.add('picker-switch');
+        thElem.setAttribute('data-action', 'pickerSwitch');
+        thElem.setAttribute('colspan', (options.calendarWeeks ? '6' : '5'));
+
+        trElem.appendChild(thElem);
+
+        thElem = document.createElement('th');
+        thElem.classList.add('next');
+        thElem.setAttribute('data-action', 'next');
+
+        trElem.appendChild(thElem);
+
+        spanElem = document.createElement('span');
+        utils.addClasses(spanElem, options.icons.next);
+
+        thElem.appendChild(spanElem);
+
+        return headTemplate;
+      },
+
+      getContTemplate = function () {
+        var contTemplate = document.createElement('tbody');
+        var trElem, tdElem;
+        trElem = document.createElement('tr');
+        contTemplate.appendChild(trElem);
+
+        tdElem = document.createElement('td');
+        tdElem.setAttribute('colspan', options.calendarWeeks ? '8' : '7');
+
+        trElem.appendChild(tdElem);
+
+        return contTemplate;
+      },
+
+      getDatePickerTemplate = function () {
+
+        var result1, result2, result3, tableElem, tableBodyElem;
+
+        result1 = document.createElement('div');
+        result1.classList.add('datepicker-days');
+        tableElem = document.createElement('table');
+        tableElem.classList.add('table-condensed');
+        tableBodyElem = document.createElement('tbody');
+        result1.appendChild(tableElem);
+        tableElem.appendChild(getHeadTemplate());
+        tableElem.appendChild(tableBodyElem);
+
+        result2 = document.createElement('div');
+        result2.classList.add('datepicker-months');
+        tableElem = document.createElement('table');
+        tableElem.classList.add('table-condensed');
+        result2.appendChild(tableElem);
+        tableElem.appendChild(getHeadTemplate());
+        tableElem.appendChild(getContTemplate());
+
+        result3 = document.createElement('div');
+        result3.classList.add('datepicker-years');
+        tableElem = document.createElement('table');
+        tableElem.classList.add('table-condensed');
+        result3.appendChild(tableElem);
+        tableElem.appendChild(getHeadTemplate());
+        tableElem.appendChild(getContTemplate());
+
+        return [result1, result2, result3];
       },
 
       getTimePickerMainTemplate = function () {
-        var topRow = $('<tr>'),
-          middleRow = $('<tr>'),
-          bottomRow = $('<tr>');
+        var topRow = document.createElement('tr'),
+          middleRow = document.createElement('tr'),
+          bottomRow = document.createElement('tr');
+
+        var tdElem, aElem, spanElem;
 
         if (isEnabled('h')) {
-          topRow.append($('<td>')
-            .append($('<a>').attr({
-                href: '#',
-                tabindex: '-1'
-              }).addClass('btn').attr('data-action', 'incrementHours')
-              .append($('<span>').addClass(options.icons.up))));
-          middleRow.append($('<td>')
-            .append($('<span>').addClass('timepicker-hour').attr('data-time-component', 'hours').attr('data-action', 'showHours')));
-          bottomRow.append($('<td>')
-            .append($('<a>').attr({
-                href: '#',
-                tabindex: '-1'
-              }).addClass('btn').attr('data-action', 'decrementHours')
-              .append($('<span>').addClass(options.icons.down))));
+          tdElem = document.createElement('td');
+          topRow.appendChild(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+
+          aElem.setAttribute('href', '#');
+          aElem.setAttribute('tabindex', '-1');
+          aElem.classList.add('btn');
+          aElem.setAttribute('data-action', 'incrementHours');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.up);
+
+          tdElem = document.createElement('td');
+          middleRow.appendChild(tdElem);
+
+          spanElem = document.createElement('span');
+          tdElem.appendChild(spanElem);
+          spanElem.classList.add('timepicker-hour')
+          spanElem.setAttribute('data-time-component', 'hours');
+          spanElem.setAttribute('data-action', 'showHours');
+
+          tdElem = document.createElement('td');
+          bottomRow.appendChild(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('href', '#');
+          aElem.setAttribute('tabindex', '-1');
+          aElem.setAttribute('data-action', 'decrementHours');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.down);
         }
+
         if (isEnabled('m')) {
           if (isEnabled('h')) {
-            topRow.append($('<td>').addClass('separator'));
-            middleRow.append($('<td>').addClass('separator').html(':'));
-            bottomRow.append($('<td>').addClass('separator'));
+            tdElem = document.createElement('td');
+            topRow.appendChild(tdElem);
+            tdElem.classList.add('separator');
+            tdElem = document.createElement('td');
+            middleRow.appendChild(tdElem);
+            tdElem.classList.add('separator');
+            tdElem.innerHTML = ':';
+            tdElem = document.createElement('td');
+            bottomRow.appendChild(tdElem);
+            tdElem.classList.add('separator');
           }
-          topRow.append($('<td>')
-            .append($('<a>').attr({
-                href: '#',
-                tabindex: '-1'
-              }).addClass('btn').attr('data-action', 'incrementMinutes')
-              .append($('<span>').addClass(options.icons.up))));
-          middleRow.append($('<td>')
-            .append($('<span>').addClass('timepicker-minute').attr('data-time-component', 'minutes').attr('data-action', 'showMinutes')));
-          bottomRow.append($('<td>')
-            .append($('<a>').attr({
-                href: '#',
-                tabindex: '-1'
-              }).addClass('btn').attr('data-action', 'decrementMinutes')
-              .append($('<span>').addClass(options.icons.down))));
+
+          // ----- for top row ----- //
+          tdElem = document.createElement('td');
+          topRow.appendChild(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('href', '#');
+          aElem.setAttribute('tabindex', '-1');
+          aElem.classList.add('btn');
+          aElem.setAttribute('data-action', 'incrementMinutes');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.up);
+
+          // ----- for middle row ----- //
+          tdElem = document.createElement('td');
+          middleRow.appendChild(tdElem);
+
+          spanElem = document.createElement('span');
+          tdElem.appendChild(spanElem);
+          spanElem.classList.add('timepicker-minute');
+          spanElem.setAttribute('data-time-component', 'minutes');
+          spanElem.setAttribute('data-action', 'showMinutes');
+
+          // ----- for bottom row ----- //          
+          tdElem = document.createElement('td');
+          bottomRow.appendChild(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('href', '#');
+          aElem.setAttribute('tabindex', '-1');
+          aElem.classList.add('btn');
+          aElem.setAttribute('data-action', 'decrementMinutes');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.down);
         }
+
         if (isEnabled('s')) {
           if (isEnabled('m')) {
-            topRow.append($('<td>').addClass('separator'));
-            middleRow.append($('<td>').addClass('separator').html(':'));
-            bottomRow.append($('<td>').addClass('separator'));
+            tdElem = document.createElement('td');
+            topRow.appendChild(tdElem);
+            tdElem.classList.add('separator');
+            tdElem = document.createElement('td');
+            middleRow.appendChild(tdElem);
+            tdElem.classList.add('separator');
+            tdElem.innerHTML = ':';
+            tdElem = document.createElement('td');
+            bottomRow.appendChild(tdElem);
+            tdElem.classList.add('separator');
           }
-          topRow.append($('<td>')
-            .append($('<a>').attr({
-                href: '#',
-                tabindex: '-1'
-              }).addClass('btn').attr('data-action', 'incrementSeconds')
-              .append($('<span>').addClass(options.icons.up))));
-          middleRow.append($('<td>')
-            .append($('<span>').addClass('timepicker-second').attr('data-time-component', 'seconds').attr('data-action', 'showSeconds')));
-          bottomRow.append($('<td>')
-            .append($('<a>').attr({
-                href: '#',
-                tabindex: '-1'
-              }).addClass('btn').attr('data-action', 'decrementSeconds')
-              .append($('<span>').addClass(options.icons.down))));
+
+          // ----- for top row ----- //
+          tdElem = document.createElement('td');
+          topRow.appendChild(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('href', '#');
+          aElem.setAttribute('tabindex', '-1');
+          aElem.classList.add('btn');
+          aElem.setAttribute('data-action', 'incrementSeconds');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.up);
+
+          // ----- for middle row ----- //
+          tdElem = document.createElement('td');
+          middleRow.appendChild(tdElem);
+
+          spanElem = document.createElement('span');
+          tdElem.appendChild(spanElem);
+          spanElem.classList.add('timepicker-minute');
+          spanElem.setAttribute('data-time-component', 'seconds');
+          spanElem.setAttribute('data-action', 'showSeconds');
+
+          // ----- for bottom row ----- //          
+          tdElem = document.createElement('td');
+          bottomRow.appendChild(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('href', '#');
+          aElem.setAttribute('tabindex', '-1');
+          aElem.classList.add('btn');
+          aElem.setAttribute('data-action', 'decrementSeconds');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.down);
         }
 
         if (!use24Hours) {
-          topRow.append($('<td>').addClass('separator'));
-          middleRow.append($('<td>')
-            .append($('<button>').addClass('btn btn-primary').attr('data-action', 'togglePeriod')));
-          bottomRow.append($('<td>').addClass('separator'));
+          tdElem = document.createElement('td');
+          topRow.appendChild(tdElem);
+          tdElem.classList.add('separator');
+
+          tdElem = document.createElement('td');
+          middleRow.appendChild(tdElem);
+
+          var buttonElem = document.createElement('button');
+          tdElem.appendChild(buttonElem);
+          utils.addClasses(buttonElem, 'btn btn-primary');
+          buttonElem.setAttribute('data-action', 'togglePeriod');
+
+          tdElem = document.createElement('td');
+          bottomRow.appendChild(tdElem);
+          tdElem.classList.add('separator');
         }
 
-        return $('<div>').addClass('timepicker-picker')
-          .append($('<table>').addClass('table-condensed')
-            .append([topRow, middleRow, bottomRow]));
+        var divElem = document.createElement('div');
+        divElem.classList.add('timepicker-picker');
+        var tableElem = document.createElement('table');
+        divElem.appendChild(tableElem);
+        tableElem.classList.add('table-condensed');
+        tableElem.appendChild(topRow);
+        tableElem.appendChild(middleRow);
+        tableElem.appendChild(bottomRow);
+
+        return divElem;
       },
 
       getTimePickerTemplate = function () {
-        var hoursView = $('<div>').addClass('timepicker-hours')
-          .append($('<table>').addClass('table-condensed')),
-          minutesView = $('<div>').addClass('timepicker-minutes')
-          .append($('<table>').addClass('table-condensed')),
-          secondsView = $('<div>').addClass('timepicker-seconds')
-          .append($('<table>').addClass('table-condensed')),
-          ret = [getTimePickerMainTemplate()];
+        var hoursView, minutesView, secondsView, tableElem, ret;
+
+        hoursView = document.createElement('div');
+        hoursView.classList.add('timepicker-hours');
+        tableElem = document.createElement('table');
+        hoursView.appendChild(tableElem);
+        tableElem.classList.add('table-condensed');
+
+        minutesView = document.createElement('div');
+        minutesView.classList.add('timepicker-minutes');
+        tableElem = document.createElement('table');
+        minutesView.appendChild(tableElem);
+        tableElem.classList.add('table-condensed');
+
+        secondsView = document.createElement('div');
+        secondsView.classList.add('timepicker-seconds');
+        tableElem = document.createElement('table');
+        secondsView.appendChild(tableElem);
+        tableElem.classList.add('table-condensed');
+
+        ret = [getTimePickerMainTemplate()];
 
         if (isEnabled('h')) {
           ret.push(hoursView);
@@ -289,22 +465,72 @@
       },
 
       getToolbar = function () {
-        var row = [];
+        var row = [],
+          tdElem, aElem, spanElem;
         if (options.showTodayButton) {
-          row.push($('<td>').append($('<a>').attr('data-action', 'today').append($('<span>').addClass(options.icons.today))));
+          tdElem = document.createElement('td');
+          row.push(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('data-action', 'today');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.today);
         }
         if (!options.sideBySide && hasDate() && hasTime()) {
-          row.push($('<td>').append($('<a>').attr('data-action', 'togglePicker').append($('<span>').addClass(options.icons.time))));
+          tdElem = document.createElement('td');
+          row.push(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('data-action', 'togglePicker');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.time);
         }
         if (options.showClear) {
-          row.push($('<td>').append($('<a>').attr('data-action', 'clear').append($('<span>').addClass(options.icons.clear))));
+          tdElem = document.createElement('td');
+          row.push(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('data-action', 'clear');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.clear);
         }
         if (options.showClose) {
-          row.push($('<td>').append($('<a>').attr('data-action', 'close').append($('<span>').addClass(options.icons.close))));
+          tdElem = document.createElement('td');
+          row.push(tdElem);
+
+          aElem = document.createElement('a');
+          tdElem.appendChild(aElem);
+          aElem.setAttribute('data-action', 'close');
+
+          spanElem = document.createElement('span');
+          aElem.appendChild(spanElem);
+          utils.addClasses(spanElem, options.icons.close);
         }
-        return $('<table>').addClass('table-condensed').append($('<tbody>').append($('<tr>').append(row)));
+
+        var tableElem = document.createElement('table'),
+          tbodyElem = document.createElement('tbody'),
+          trElem = document.createElement('tr');
+        tableElem.classList.add('table-condensed');
+        tableElem.appendChild(tbodyElem);
+        tbodyElem.appendChild(trElem);
+
+        for (var i = 0; i < row.length; i += 1) {
+          trElem.appendChild(row[i]);
+        }
+        return tableElem;
       },
 
+      // CONTINUE FROM HERE  
+        
       getTemplate = function () {
         var template = $('<div>').addClass('bootstrap-datetimepicker-widget dropdown-menu'),
           dateView = $('<div>').addClass('datepicker').append(getDatePickerTemplate()),
@@ -901,8 +1127,8 @@
             if (utils.collapse) { // if collapse plugin is available through bootstrap.js then use it
               utils.collapse(expanded, 'hide');
               utils.collapse(closed, 'show');
-//              expanded.collapse('hide');
-//              closed.collapse('show');
+              //              expanded.collapse('hide');
+              //              closed.collapse('show');
             } else { // otherwise just toggle in class on the two views
               expanded.removeClass('in');
               closed.addClass('in');

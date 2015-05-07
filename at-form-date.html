@@ -52,20 +52,29 @@
     _scopeStyleViaAttr: true,
     _dtInstance: undefined,
     ready: function () {
-      this._dtInstance = $(this.$.datetimepicker).datetimepicker();
+      this._dtInstance = $(this.$.datetimepicker).datetimepicker({
+//        format: 'YY-MM-dd hh:mm:ss',
+//        showClear: true,
+//        showClose: true,
+//        showTodayButton: true
+      });
 
       var _self = this;
       this._dtInstance.on('dp.change', function (event) {
-        _self.value = event.date._d;
+        if (event.date) {
+          _self.value = event.date._d;
+        } else {
+          _self.value = '';
+        }
       });
 
       this._isReady = true;
     },
-    disabledChanged: function(newValue, oldValue) {
-      
+    disabledChanged: function (newValue, oldValue) {
+
     },
-    requiredChanged: function(newValue, oldValue) {
-      
+    requiredChanged: function (newValue, oldValue) {
+
     }
   });
 </script>
