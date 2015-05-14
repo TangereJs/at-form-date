@@ -529,51 +529,99 @@
         return tableElem;
       },
 
-      // CONTINUE FROM HERE  
-        
       getTemplate = function () {
-        var template = $('<div>').addClass('bootstrap-datetimepicker-widget dropdown-menu'),
-          dateView = $('<div>').addClass('datepicker').append(getDatePickerTemplate()),
-          timeView = $('<div>').addClass('timepicker').append(getTimePickerTemplate()),
-          content = $('<ul>').addClass('list-unstyled'),
-          toolbar = $('<li>').addClass('picker-switch' + (options.collapse ? ' accordion-toggle' : '')).append(getToolbar());
+        var template = document.createElement('div'),
+          dateView = document.createElement('div'),
+          timeView = document.createElement('div'),
+          content = document.createElement('ul'),
+          toolbar = document.createElement('li'),
+          i;
+
+        template.classList.add('bootstrap-datetimepicker-widget');
+        template.classList.add('dropdown-menu');
+
+        dateView.classList.add('datepicker');
+        var datePickerTemplate = getDatePickerTemplate();
+        for (i = 0; i < datePickerTemplate.length; i++) {
+          dateView.appendChild(datePickerTemplate[i]);
+        }
+
+        timeView.classList.add('timepicker');
+        var timePickerTemplate = getTimePickerTemplate();
+        for (i = 0; i < datePickerTemplate.length; i++) {
+          timeView.appendChild(timePickerTemplate[i]);
+        }
+
+        content.classList.add('list-unstyled');
+
+        var toolbarClass = (options.collapse ? 'accordion-toggle' : '');
+        var toolbarTemplate = getToolbar();
+        toolbar.classList.add('picker-switch');
+        toolbar.classList.add(toolbarClass);
+        toolbar.appendChild(toolbarTemplate);
 
         if (options.inline) {
-          template.removeClass('dropdown-menu');
+          template.classList.remove('dropdown-menu');
         }
 
         if (use24Hours) {
-          template.addClass('usetwentyfour');
+          template.classList.add('usetwentyfour');
         }
         if (options.sideBySide && hasDate() && hasTime()) {
-          template.addClass('timepicker-sbs');
-          template.append(
-            $('<div>').addClass('row')
-            .append(dateView.addClass('col-sm-6'))
-            .append(timeView.addClass('col-sm-6'))
-          );
-          template.append(toolbar);
+          template.classList.add('timepicker-sbs');
+          var rowDiv = document.createElement('div');
+          rowDiv.classList.add('row');
+
+          dateView.classList.add('col-sm-6');
+          rowDiv.appendChild(dateView);
+
+          timeView.classList.add('col-sm-6');
+          rowDiv.appendChild(timeView);
+
+          template.appendChild(rowDiv);
+
+          template.appendChild(toolbar);
+          // REMOVE JQUERY WHEN SUPPORT FUNCTIONS ARE CONVERTED
+          template = $(template);
           return template;
         }
 
+        var liElem, liClass;
+
         if (options.toolbarPlacement === 'top') {
-          content.append(toolbar);
+          content.appendChild(toolbar);
         }
         if (hasDate()) {
-          content.append($('<li>').addClass((options.collapse && hasTime() ? 'collapse in' : '')).append(dateView));
+          liElem = document.createElement('li');
+          liClass = (options.collapse && hasTime() ? 'collapse in' : '');
+          atFormDateUtils.addClasses(liElem, liClass);
+          liElem.appendChild(dateView);
+          content.appendChild(liElem);
         }
         if (options.toolbarPlacement === 'default') {
-          content.append(toolbar);
+          content.appendChild(toolbar);
         }
         if (hasTime()) {
-          content.append($('<li>').addClass((options.collapse && hasDate() ? 'collapse' : '')).append(timeView));
+          liElem = document.createElement('li');
+          liClass = (options.collapse && hasDate() ? 'collapse' : '');
+          liElem.classList.add(liClass);
+          liElem.appendChild(timeView);
+          content.appendChild(liElem);
         }
         if (options.toolbarPlacement === 'bottom') {
-          content.append(toolbar);
+          content.appendChild(toolbar);
         }
-        return template.append(content);
+
+        template.appendChild(content);
+
+        // REMOVE JQUERY WHEN SUPPORT FUNCTIONS ARE CONVERTED
+        template = $(template);
+
+        return template;
       },
 
+      // we are not using data-* attributes 
+      // so this method is not needed
       dataToOptions = function () {
         var eData,
           dataOptions = {};
@@ -598,24 +646,49 @@
       },
 
       place = function () {
-        var position = (component || element).position(),
-          offset = (component || element).offset(),
-          vertical = options.widgetPositioning.vertical,
+        // extract html element from jQuery
+        var compent = (component || element)[0]; // compent = COMP[onent] + [elem]ENT
+        var htmlElement = element[0];
+        var position = {
+          left: compent.offsetLeft,
+          top: compent.offsetTop
+        };
+
+        var compentBoundingRect = compent.getBoundingClientRect();
+        var offset = {
+          left: compentBoundingRect.left,
+          top: compentBoundingRect.top
+        };
+
+        //        var position = (component || element).position(),
+        //          offset = (component || element).offset();
+        var vertical = options.widgetPositioning.vertical,
           horizontal = options.widgetPositioning.horizontal,
           parent;
 
+        // REMOVE THIS REFERENCE TO JQUERY WHEN JQUERY IF FINALLY REMOVED
+        var htmlWidgetParent = options.widgetParent ? options.widgetParent[0] : null,
+          htmlWidget = widget[0];
         if (options.widgetParent) {
-          parent = options.widgetParent.append(widget);
-        } else if (element.is('input')) {
-          parent = element.parent().append(widget);
+          parent = htmlWidgetParent;
+          parent.appendChild(htmlWidget);
+        } else if (utils.isTag(htmlElement, 'input')) {
+          parent = htmlElement.parentElement;
+          parent.appendChild(htmlWidget);
         } else if (options.inline) {
-          parent = element.append(widget);
+          parent = htmlElement.parentElement;
+          parent.appendChild(htmlWidget);
           return;
-        } else {
-          parent = element;
-          element.children().first().after(widget);
+        } else {          
+          var referenceElem =htmlElement.children[1];
+          htmlElement.insertBefore(htmlWidget, referenceElem);
+          var firstChild = htmlElement.children[0];
+          parent = firstChild;
+//          parent = element.children().first().after(widget);
         }
 
+        parent = $(parent);
+        debugger;
         // Top and bottom logic
         if (vertical === 'auto') {
           if (offset.top + widget.height() * 1.5 >= $(window).height() + $(window).scrollTop() &&
@@ -2103,7 +2176,9 @@
       throw new Error('Could not initialize DateTimePicker without an input element');
     }
 
-    $.extend(true, options, dataToOptions());
+    // we are ignoring data-* attributes because we are not using them
+    //var dataToOptionsResult = dataToOptions();
+    //$.extend(true, options, dataToOptionsResult);
 
     picker.options(options);
 

@@ -26,6 +26,10 @@
     return obj != null && obj === obj.window;
   };
 
+  utils.isTag = function (element, tagname) {
+    return element.nodeName.toUpperCase() === tagname.toUpperCase();
+  }
+
   utils.type = function (obj) {
     if (obj == null) {
       return obj + "";
@@ -189,7 +193,8 @@
   // sets the classes to the element
   // element is an html element, classes is space separated list of classes
   utils.addClasses = function (element, classes) {
-    var classesArray = classes.split(' '), i;
+    var classesArray = classes.split(' '),
+      i;
     for (i = 0; i < classesArray.length; i += 1) {
       element.classList.add(classesArray[i]);
     }
