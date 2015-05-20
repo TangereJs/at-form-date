@@ -679,20 +679,17 @@
           parent = htmlElement.parentElement;
           parent.appendChild(htmlWidget);
           return;
-        } else {          
-          var referenceElem =htmlElement.children[1];
+        } else {
+          var referenceElem = htmlElement.children[1];
           htmlElement.insertBefore(htmlWidget, referenceElem);
           var firstChild = htmlElement.children[0];
           parent = firstChild;
-//          parent = element.children().first().after(widget);
         }
 
-        parent = $(parent);
-        debugger;
         // Top and bottom logic
         if (vertical === 'auto') {
-          if (offset.top + widget.height() * 1.5 >= $(window).height() + $(window).scrollTop() &&
-            widget.height() + element.outerHeight() < offset.top) {
+          if (offset.top + utils.elementHeight(htmlWidget) * 1.5 >= utils.windowHeight(window) + utils.windowScrollTop(window) &&
+            utils.elementHeight(htmlWidget) + utils.elementOuterHeight(htmlElement) < offset.top) {
             vertical = 'top';
           } else {
             vertical = 'bottom';
@@ -701,8 +698,8 @@
 
         // Left and right logic
         if (horizontal === 'auto') {
-          if (parent.width() < offset.left + widget.outerWidth() / 2 &&
-            offset.left + widget.outerWidth() > $(window).width()) {
+          if (utils.elementWidth(parent) < offset.left + utils.elementOuterWidth(htmlWidget) / 2 &&
+            offset.left + utils.elementOuterWidth(htmlWidget) > utils.windowWidth(window)) {
             horizontal = 'right';
           } else {
             horizontal = 'left';
@@ -710,40 +707,83 @@
         }
 
         if (vertical === 'top') {
-          widget.addClass('top').removeClass('bottom');
+          htmlWidget.classList.add('top');
+          htmlWidget.classList.remove('bottom');
         } else {
-          widget.addClass('bottom').removeClass('top');
+          htmlWidget.classList.add('bottom');
+          htmlWidget.classList.remove('top');
         }
 
         if (horizontal === 'right') {
-          widget.addClass('pull-right');
+          htmlWidget.classList.add('pull-right');
         } else {
-          widget.removeClass('pull-right');
+          htmlWidget.classList.remove('pull-right');
         }
+
+        var parentStyle = window.getComputedStyle(parent);
+        var parentPosition = parentStyle.getPropertyValue('position');
+        var relativeParentFound = false;
 
         // find the first parent element that has a relative css positioning
-        if (parent.css('position') !== 'relative') {
-          parent = parent.parents().filter(function () {
-            return $(this).css('position') === 'relative';
-          }).first();
+        // it appears that when parentPosition is not relative its not possible to show the datepicker;
+        // button that should trigger the datetimepicker widget is not displayed
+        // code remains here because maybe in the future this case will be somehow possible
+        if (parentPosition !== 'relative') {
+          var parentsParent = parent;
+          while (!relativeParentFound) {
+            parentsParent = parentsParent.parentElement;
+            if (parentsParent.nodeType !== 9) {
+              var parentsPrarentStyle = window.getComputedStyle(parentsParent);
+              var parentsParentPosition = parentsPrarentStyle.getPropertyValue('position');
+
+              if (parentsParentPosition === 'relative') {
+                relativeParentFound = true;
+                parent = parentsParent;
+              }
+            }
+          }
+        } else {
+          relativeParentFound = true;
         }
 
-        if (parent.length === 0) {
+        if (!relativeParentFound) {
           throw new Error('datetimepicker component should be placed within a relative positioned container');
         }
 
-        widget.css({
-          top: vertical === 'top' ? 'auto' : position.top + element.outerHeight(),
-          bottom: vertical === 'top' ? position.top + element.outerHeight() : 'auto',
-          left: horizontal === 'left' ? parent.css('padding-left') : 'auto',
-          right: horizontal === 'left' ? 'auto' : parent.width() - element.outerWidth()
-        });
-      },
+        if (vertical === 'top') {
+          htmlWidget.style.top = 'auto';
+          htmlWidget.style.bottom = (position.top + utils.elementOuterHeight(htmlElement)) + 'px';
+        } else {
+          htmlWidget.style.top = (position.top + utils.elementOuterHeight(htmlElement)) + 'px';
+          htmlWidget.style.bottom = 'auto';
+        }
 
+        if (horizontal === 'left') {
+          htmlWidget.style.left = window.getComputedStyle(parent).getPropertyValue('padding-left');
+          htmlWidget.style.right = 'auto';
+        } else {
+          htmlWidget.style.left = 'auto';
+          htmlWidget.style.right = (utils.elementWidth(parent) - utils.elementOuterWidth(htmlElement)) + 'px';
+        }
+      },
+        
+      // TODO continue from here
       notifyEvent = function (e) {
         if (e.type === 'dp.change' && ((e.date && e.date.isSame(e.oldDate)) || (!e.date && !e.oldDate))) {
           return;
         }
+        // this is very hard problem; jquery doesn't use element.dispatchEvent but its proprietary event system
+        // so several solutions possible here;
+        // 1) simulate the jquery event system
+        // 2) figure out how to make this work with dispatch event
+        // 3) figure out how to use polymer context and polymer.fire for this
+        // currently I vote from 1) simulate the jQuery event system; microEvents or something like that
+//        var nojqElem = element[0];
+//        var event = document.createEvent('CustomEvent');
+//        event.initCustomEvent(e.type, true, true);
+//        event.date = e.date;
+//        event.oldDate = e.oldDate;
+//        nojqElem.dispatchEvent(event);
         element.trigger(e);
       },
 

@@ -200,4 +200,106 @@
     }
   }
 
+  utils.extractNumericValue = function (cssStringValue) {
+    var stringValue, indexOfUnit;
+    if (cssStringValue.indexOf('px') != -1) {
+      indexOfUnit = cssStringValue.indexOf('px');
+      stringValue = cssStringValue.slice(0, indexOfUnit);
+    }
+
+    return parseFloat(stringValue);
+  }
+
+  // http://www.texelate.co.uk/blog/post/91-jquery-whats-the-difference-between-height-innerheight-and-outerheight/
+
+  // element height returns the element height minus padding and border (margin is not part of height)
+  // height = boundingClientRect.height - padding - border
+  utils.elementHeight = function (element) {
+    var computedStyle = window.getComputedStyle(element);
+    var paddingTop = computedStyle.getPropertyValue('padding-top');
+    var paddingBottom = computedStyle.getPropertyValue('padding-bottom');
+    var borderTop = computedStyle.getPropertyValue('border-top');
+    var borderBottom = computedStyle.getPropertyValue('border-bottom');
+
+    // since values from computed style are strings with unit text (px, etc) ...
+    // convert those to number of pixels
+    var paddingTopNumeric = utils.extractNumericValue(paddingTop);
+    var paddingBottomNumeric = utils.extractNumericValue(paddingBottom);
+    var borderTopNumeric = utils.extractNumericValue(borderTop);
+    var borderBottomNumeric = utils.extractNumericValue(borderBottom);
+
+    var elementHeight = element.getBoundingClientRect().height;
+
+    return elementHeight - paddingTopNumeric - paddingBottomNumeric - borderTopNumeric - borderBottomNumeric;
+  }
+
+  // element width returns the element width minus padding and border (margin is not part of width)
+  // width = boundingClientRect.width - padding - border
+  utils.elementWidth = function (element) {
+    var computedStyle = window.getComputedStyle(element);
+    var paddingLeft = computedStyle.getPropertyValue('padding-left');
+    var paddingRight = computedStyle.getPropertyValue('padding-right');
+    var borderLeft = computedStyle.getPropertyValue('border-left');
+    var borderRight = computedStyle.getPropertyValue('border-right');
+
+    // since values from computed style are strings with unit text (px, etc) ...
+    // convert those to number of pixels
+    var paddingLeftNumeric = utils.extractNumericValue(paddingLeft);
+    var paddingRightNumeric = utils.extractNumericValue(paddingRight);
+    var borderLeftNumeric = utils.extractNumericValue(borderLeft);
+    var borderRightNumeric = utils.extractNumericValue(borderRight);
+
+    var elementWidth = element.getBoundingClientRect().width;
+
+    return elementWidth - paddingLeftNumeric - paddingRightNumeric - borderLeftNumeric - borderRightNumeric;
+  }
+
+  // element outer height returns the element height including padding and border (margin is not part of outer height)
+  // outerHeight = boundingClientRect.height
+  utils.elementOuterHeight = function (element) {
+    return element.getBoundingClientRect().height;
+  }
+
+  // element outer widith returns the element width including padding and border (margin is not part of outer width)
+  // outerWidth = boundingClientRect.width
+  utils.elementOuterWidth = function (element) {
+    return element.getBoundingClientRect().width;
+  }
+
+  utils.windowWidth = function (windowInst) {
+    return windowInst.document.documentElement.clientWidth;
+  }
+
+  utils.windowHeight = function (windowInst) {
+    return windowInst.document.documentElement.clientHeight;
+  }
+
+  utils.documentWidth = function (documentInst) {
+    var name = "Width";
+    doc = documentInst.documentElement;
+    // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height],
+    // whichever is greatest
+    return Math.max(
+      documentInst.body["scroll" + name], doc["scroll" + name],
+      documentInst.body["offset" + name], doc["offset" + name],
+      doc["client" + name]
+    );
+  }
+
+  utils.documentHeight = function (documentInst) {
+    var name = "Height";
+    doc = documentInst.documentElement;
+    // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height],
+    // whichever is greatest
+    return Math.max(
+      documentInst.body["scroll" + name], doc["scroll" + name],
+      documentInst.body["offset" + name], doc["offset" + name],
+      doc["client" + name]
+    );
+  }
+  
+  utils.windowScrollTop = function (windowInst) {
+    return windowInst.pageYOffset;
+  }
+
 }(window.atFormDateUtils = window.atFormDateUtils || {}));
