@@ -548,7 +548,7 @@
 
         timeView.classList.add('timepicker');
         var timePickerTemplate = getTimePickerTemplate();
-        for (i = 0; i < datePickerTemplate.length; i++) {
+        for (i = 0; i < timePickerTemplate.length; i++) {
           timeView.appendChild(timePickerTemplate[i]);
         }
 
@@ -668,7 +668,7 @@
 
         // REMOVE THIS REFERENCE TO JQUERY WHEN JQUERY IF FINALLY REMOVED
         var htmlWidgetParent = options.widgetParent ? options.widgetParent[0] : null,
-          htmlWidget = widget[0];
+          htmlWidget = widget[0]; // <- update this line when jQuery is finally removed
         if (options.widgetParent) {
           parent = htmlWidgetParent;
           parent.appendChild(htmlWidget);
@@ -766,25 +766,20 @@
           htmlWidget.style.right = (utils.elementWidth(parent) - utils.elementOuterWidth(htmlElement)) + 'px';
         }
       },
-        
-      // TODO continue from here
+
       notifyEvent = function (e) {
         if (e.type === 'dp.change' && ((e.date && e.date.isSame(e.oldDate)) || (!e.date && !e.oldDate))) {
           return;
         }
-        // this is very hard problem; jquery doesn't use element.dispatchEvent but its proprietary event system
-        // so several solutions possible here;
-        // 1) simulate the jquery event system
-        // 2) figure out how to make this work with dispatch event
-        // 3) figure out how to use polymer context and polymer.fire for this
-        // currently I vote from 1) simulate the jQuery event system; microEvents or something like that
-//        var nojqElem = element[0];
-//        var event = document.createEvent('CustomEvent');
-//        event.initCustomEvent(e.type, true, true);
-//        event.date = e.date;
-//        event.oldDate = e.oldDate;
-//        nojqElem.dispatchEvent(event);
-        element.trigger(e);
+        // jquery custom events can be done with dispatchEvent
+        // listening to the dispatched event can be done by attaching the event listener to the 
+        // parent element of the element on which event is dispatched on
+        var nojqElem = element[0]; // <- update this line when jQuery reference is finally removed
+        var event = document.createEvent('CustomEvent');
+        event.initCustomEvent(e.type, true, true);
+        event.date = e.date;
+        event.oldDate = e.oldDate;
+        nojqElem.dispatchEvent(event);
       },
 
       showMode = function (dir) {
@@ -794,22 +789,38 @@
         if (dir) {
           currentViewMode = Math.max(minViewModeNumber, Math.min(2, currentViewMode + dir));
         }
-        widget.find('.datepicker > div').hide().filter('.datepicker-' + datePickerModes[currentViewMode].clsName).show();
+        var nojqWidget = widget.get(0);
+        var findResults = nojqWidget.querySelectorAll('.datepicker > div');
+        for (var findResultsIndex = 0; findResultsIndex < findResults.length; findResultsIndex += 1) {
+          findResults[findResultsIndex].style.display = "none";
+        }
+
+        var filterSelector = '.datepicker-' + datePickerModes[currentViewMode].clsName;
+        var filterResult = nojqWidget.querySelector(filterSelector);
+        filterResult.style.display = "block";
       },
 
       fillDow = function () {
-        var row = $('<tr>'),
-          currentDate = viewDate.clone().startOf('w');
+        var row = document.createElement('tr');
+        var currentDate = viewDate.clone().startOf('w');
 
         if (options.calendarWeeks === true) {
-          row.append($('<th>').addClass('cw').text('#'));
+          var th = document.createElement('th');
+          th.classList.add('cw');
+          th.textContent = '#';
+          row.appendChild(th);
         }
 
         while (currentDate.isBefore(viewDate.clone().endOf('w'))) {
-          row.append($('<th>').addClass('dow').text(currentDate.format('dd')));
+          var th1 = document.createElement('th');
+          th1.classList.add('dow');
+          th1.textContent = currentDate.format('dd');
           currentDate.add(1, 'd');
         }
-        widget.find('.datepicker-days thead').append(row);
+
+        var nojqWidget = widget.get(0); // <- remove this line when jquery is finally removed
+        var thead = nojqWidget.querySelector('.datepicker-days thead');
+        thead.appendChild(row);
       },
 
       isInDisabledDates = function (testDate) {
@@ -846,58 +857,81 @@
         var spans = [],
           monthsShort = viewDate.clone().startOf('y').hour(12); // hour is changed to avoid DST issues in some browsers
         while (monthsShort.isSame(viewDate, 'y')) {
-          spans.push($('<span>').attr('data-action', 'selectMonth').addClass('month').text(monthsShort.format('MMM')));
+          var span = document.createElement('span');
+          span.setAttribute('data-action', 'selectMonth');
+          span.classList.add('month');
+          span.textContent = monthsShort.format('MMM');
+          spans.push(span);
           monthsShort.add(1, 'M');
         }
-        widget.find('.datepicker-months td').empty().append(spans);
+        var nojqWidget = widget.get(0);
+        var widgetFind = nojqWidget.querySelector('.datepicker-months td');
+        widgetFind.innerHTML = '';
+        for (var spansIndex = 0; spansIndex < spans.length; spansIndex += 1) {
+          widgetFind.appendChild(spans[spansIndex]);
+        }
       },
 
       updateMonths = function () {
-        var monthsView = widget.find('.datepicker-months'),
-          monthsViewHeader = monthsView.find('th'),
-          months = monthsView.find('tbody').find('span');
+        var nojqWidget = widget.get(0); // <- remove this line when jQuery is finally removed
+        var monthsView = nojqWidget.querySelector('.datepicker-months');
+        var monthsViewHeader = monthsView.querySelectorAll('th');
+        var months = monthsView.querySelector('tbody').querySelectorAll('span');
 
-        monthsView.find('.disabled').removeClass('disabled');
+        var monthsViewDisabledItems = monthsView.querySelectorAll('.disabled');
+        for (var monthsViewDisabledItemsIndex = 0; monthsViewDisabledItemsIndex < monthsViewDisabledItems.length; monthsViewDisabledItemsIndex += 1) {
+          var monthsViewDisabledItem = monthsViewDisabledItems[monthsViewDisabledItemsIndex];
+          monthsViewDisabledItem.classList.remove('disabled');
+        }
 
         if (!isValid(viewDate.clone().subtract(1, 'y'), 'y')) {
-          monthsViewHeader.eq(0).addClass('disabled');
+          monthsViewHeader[0].classList.add('disabled');
         }
 
-        monthsViewHeader.eq(1).text(viewDate.year());
+        monthsViewHeader[1].textContent = viewDate.year();
 
         if (!isValid(viewDate.clone().add(1, 'y'), 'y')) {
-          monthsViewHeader.eq(2).addClass('disabled');
+          monthsViewHeader[2].classList.add('disabled');
         }
 
-        months.removeClass('active');
+        for (var monthsIndex = 0; monthsIndex < months.length; monthsIndex += 1) {
+          var month = months[monthsIndex];
+          month.classList.remove('active');
+        }
+
         if (date.isSame(viewDate, 'y')) {
-          months.eq(date.month()).addClass('active');
+          months[date.month()].classList.add('active');
         }
 
-        months.each(function (index) {
-          if (!isValid(viewDate.clone().month(index), 'M')) {
-            $(this).addClass('disabled');
+        for (var monthsIndex = 0; monthsIndex < months.length; monthsIndex += 1) {
+          if (!isValid(viewDate.clone().month(monthsIndex), 'M')) {
+            months[monthsIndex].classList.add('disabled');
           }
-        });
+        }
       },
 
       updateYears = function () {
-        var yearsView = widget.find('.datepicker-years'),
-          yearsViewHeader = yearsView.find('th'),
-          startYear = viewDate.clone().subtract(5, 'y'),
-          endYear = viewDate.clone().add(6, 'y'),
-          html = '';
+        var nojqWidget = widget.get(0); // <- remove this line when jQuery is finally removed
+        var yearsView = nojqWidget.querySelector('.datepicker-years');
+        var yearsViewHeader = yearsView.querySelectorAll('th');
+        var startYear = viewDate.clone().subtract(5, 'y');
+        var endYear = viewDate.clone().add(6, 'y');
+        var html = '';
 
-        yearsView.find('.disabled').removeClass('disabled');
-
-        if (options.minDate && options.minDate.isAfter(startYear, 'y')) {
-          yearsViewHeader.eq(0).addClass('disabled');
+        var yearsViewDisabledItems = yearsView.querySelectorAll('.disabled');
+        for (var yearsViewDisabledItemsIndex = 0; yearsViewDisabledItemsIndex < yearsViewDisabledItems.length; yearsViewDisabledItems += 1) {
+          var yearsViewDisabledItem = yearsViewDisabledItems[yearsViewDisabledItemsIndex];
+          yearsViewDisabledItem.classList.remove('disabled');
         }
 
-        yearsViewHeader.eq(1).text(startYear.year() + '-' + endYear.year());
+        if (options.minDate && options.minDate.isAfter(startYear, 'y')) {
+          yearsViewHeader[0].classList.add('disabled');
+        }
+
+        yearsViewHeader[1].textContent = startYear.year() + '-' + endYear.year();
 
         if (options.maxDate && options.maxDate.isBefore(endYear, 'y')) {
-          yearsViewHeader.eq(2).addClass('disabled');
+          yearsViewHeader[2].classList.add('disabled');
         }
 
         while (!startYear.isAfter(endYear, 'y')) {
@@ -905,13 +939,14 @@
           startYear.add(1, 'y');
         }
 
-        yearsView.find('td').html(html);
+        yearsView.querySelector('td').innerHTML = html;
       },
 
       fillDate = function () {
-        var daysView = widget.find('.datepicker-days'),
-          daysViewHeader = daysView.find('th'),
-          currentDate,
+        var nojqWidget = widget.get(0); // <- remove this line when jQuery is finally removed
+        var daysView = nojqWidget.querySelector('.datepicker-days');
+        var daysViewHeader = daysView.querySelectorAll('th');
+        var currentDate,
           html = [],
           row,
           clsName;
@@ -920,23 +955,31 @@
           return;
         }
 
-        daysView.find('.disabled').removeClass('disabled');
-        daysViewHeader.eq(1).text(viewDate.format(options.dayViewHeaderFormat));
+        var daysViewDisabledItems = daysView.querySelectorAll('.disabled');
+        for (var daysViewDisabledItemsIndex = 0; daysViewDisabledItemsIndex < daysViewDisabledItems.length; daysViewDisabledItems += 1) {
+          var daysViewDisabledItem = daysViewDisabledItems[daysViewDisabledItemsIndex];
+          daysViewDisabledItem.classList.remove('disabled');
+        }
+
+        daysViewHeader[1].textContent = viewDate.format(options.dayViewHeaderFormat);
 
         if (!isValid(viewDate.clone().subtract(1, 'M'), 'M')) {
-          daysViewHeader.eq(0).addClass('disabled');
+          daysViewHeader[0].classList.add('disabled');
         }
         if (!isValid(viewDate.clone().add(1, 'M'), 'M')) {
-          daysViewHeader.eq(2).addClass('disabled');
+          daysViewHeader[2].classList.add('disabled');
         }
 
         currentDate = viewDate.clone().startOf('M').startOf('week');
 
         while (!viewDate.clone().endOf('M').endOf('w').isBefore(currentDate, 'd')) {
           if (currentDate.weekday() === 0) {
-            row = $('<tr>');
+            row = document.createElement('tr');
             if (options.calendarWeeks) {
-              row.append('<td class="cw">' + currentDate.week() + '</td>');
+              var td = document.createElement('td');
+              td.classList.add('cw');
+              td.textContent = currentDate.week();
+              row.appendChild(td);
             }
             html.push(row);
           }
@@ -959,11 +1002,23 @@
           if (currentDate.day() === 0 || currentDate.day() === 6) {
             clsName += ' weekend';
           }
-          row.append('<td data-action="selectDay" class="day' + clsName + '">' + currentDate.date() + '</td>');
+          var tdDay = document.createElement('td');
+          tdDay.setAttribute('data-action', 'selectDay');
+          tdDay.classList.add('day');
+          clsName = clsName.trim();
+          if (clsName != '') {
+            utils.addClasses(tdDay, clsName);
+          }
+          tdDay.textContent = currentDate.date();
+          row.appendChild(tdDay);
           currentDate.add(1, 'd');
         }
 
-        daysView.find('tbody').empty().append(html);
+        var daysViewTBody = daysView.querySelector('tbody');
+        daysViewTBody.innerHTML = '';
+        for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
+          daysViewTBody.appendChild(html[htmlIndex]);
+        }
 
         updateMonths();
 
@@ -971,69 +1026,125 @@
       },
 
       fillHours = function () {
-        var table = widget.find('.timepicker-hours table'),
+        var
+          nojqWidget = widget.get(0), // <- remove this line when jQuery is finally removed
+          table = nojqWidget.querySelector('.timepicker-hours table'),
           currentHour = viewDate.clone().startOf('d'),
           html = [],
-          row = $('<tr>');
+          row = document.createElement('tr');
 
         if (viewDate.hour() > 11 && !use24Hours) {
           currentHour.hour(12);
         }
         while (currentHour.isSame(viewDate, 'd') && (use24Hours || (viewDate.hour() < 12 && currentHour.hour() < 12) || viewDate.hour() > 11)) {
           if (currentHour.hour() % 4 === 0) {
-            row = $('<tr>');
+            row = document.createElement('tr');
             html.push(row);
           }
-          row.append('<td data-action="selectHour" class="hour' + (!isValid(currentHour, 'h') ? ' disabled' : '') + '">' + currentHour.format(use24Hours ? 'HH' : 'hh') + '</td>');
+          var tdSelectHour = document.createElement('td');
+          tdSelectHour.setAttribute('data-action', 'selectHour');
+          tdSelectHour.classList.add('hour');
+          if (!isValid(currentHour, 'h')) {
+            tdSelectHour.classList.add('disabled');
+          }
+          tdSelectHour.textContent = currentHour.format(use24Hours ? 'HH' : 'hh');
+
+          row.appendChild(tdSelectHour);
+
           currentHour.add(1, 'h');
         }
-        table.empty().append(html);
+
+        table.innerHTML = '';
+        for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
+          table.appendChild(html[htmlIndex]);
+        }
       },
 
       fillMinutes = function () {
-        var table = widget.find('.timepicker-minutes table'),
+        var nojqWidget = widget.get(0), // <- remove this line when jQuery is finally removed
+          table = nojqWidget.querySelector('.timepicker-minutes table'),
           currentMinute = viewDate.clone().startOf('h'),
           html = [],
-          row = $('<tr>'),
+          row = document.createElement('tr'),
           step = options.stepping === 1 ? 5 : options.stepping;
 
         while (viewDate.isSame(currentMinute, 'h')) {
           if (currentMinute.minute() % (step * 4) === 0) {
-            row = $('<tr>');
+            row = document.createElement('tr');
             html.push(row);
           }
-          row.append('<td data-action="selectMinute" class="minute' + (!isValid(currentMinute, 'm') ? ' disabled' : '') + '">' + currentMinute.format('mm') + '</td>');
+
+          var td = document.createElement('td');
+          td.setAttribute('data-action', 'selectMinute');
+          td.classList.add('minute');
+          if (!isValid(currentMinute, 'm')) {
+            td.classList.add('disabled');
+          }
+          td.textContent = currentMinute.format('mm');
+          row.appendChild(td);
           currentMinute.add(step, 'm');
         }
-        table.empty().append(html);
+        table.innerHTML = '';
+        for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
+          table.appendChild(html[htmlIndex]);
+        }
       },
 
       fillSeconds = function () {
-        var table = widget.find('.timepicker-seconds table'),
+        var nojqWidget = widget.get(0), // <- remove this line when jQuery is finally removed
+          table = nojqWidget.querySelector('.timepicker-seconds table'),
           currentSecond = viewDate.clone().startOf('m'),
           html = [],
-          row = $('<tr>');
+          row = document.createElement('tr');
+
+        if (table === null) {
+          return;
+        }
 
         while (viewDate.isSame(currentSecond, 'm')) {
           if (currentSecond.second() % 20 === 0) {
-            row = $('<tr>');
+            row = document.createElement('tr');
             html.push(row);
           }
-          row.append('<td data-action="selectSecond" class="second' + (!isValid(currentSecond, 's') ? ' disabled' : '') + '">' + currentSecond.format('ss') + '</td>');
+          var td = document.createElement('td');
+          td.setAttribute('data-action', 'selectSecond');
+          td.classList.add('second');
+          if (!isValid(currentSecond, 's')) {
+            td.classList.add('disabled');
+          }
+          td.textContent = currentSecond.format('ss');
+          row.appendChild(td);
           currentSecond.add(5, 's');
         }
 
-        table.empty().append(html);
+        table.innerHTML = '';
+        for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
+          table.appendChild(html[htmlIndex]);
+        }
       },
 
       fillTime = function () {
-        var timeComponents = widget.find('.timepicker span[data-time-component]');
+        var tcIndex;
+        var nojqWidget = widget.get(0); // <- remove this line when jQuery is finally removed
+        var timeComponents = nojqWidget.querySelectorAll('.timepicker span[data-time-component]');
+
         if (!use24Hours) {
-          widget.find('.timepicker [data-action=togglePeriod]').text(date.format('A'));
+          var togglePeriodElem = nojqWidget.querySelector('.timepicker [data-action=togglePeriod]');
+          togglePeriodElem.textContent = date.format('A');
         }
-        timeComponents.filter('[data-time-component=hours]').text(date.format(use24Hours ? 'HH' : 'hh'));
-        timeComponents.filter('[data-time-component=minutes]').text(date.format('mm'));
-        timeComponents.filter('[data-time-component=seconds]').text(date.format('ss'));
+      
+        for (tcIndex = 0; tcIndex < timeComponents.length; tcIndex += 1) {
+          var timeComponent = timeComponents[tcIndex];
+          var dtcAttrValue = timeComponent.getAttribute('data-time-component');
+
+          if (dtcAttrValue === 'hours') {
+            timeComponent.textContent = date.format(use24Hours ? 'HH' : 'hh');
+          } else if (dtcAttrValue === 'minutes') {
+            timeComponent.textContent = date.format('mm');
+          } else if (dtcAttrValue === 'seconds') {
+            timeComponent.textContent = date.format('ss');
+          }
+        }
 
         fillHours();
         fillMinutes();
@@ -1048,7 +1159,9 @@
         fillTime();
       },
 
+      // TODO continue from here
       setValue = function (targetMoment) {
+        debugger;
         var oldDate = unset ? null : date;
 
         // case of calling setValue(null or false)

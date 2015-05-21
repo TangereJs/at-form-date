@@ -53,9 +53,10 @@
     _dtInstance: undefined,
     ready: function () {
       this._dtInstance = $(this.$.datetimepicker).datetimepicker({
-//          sideBySide: true
+        calendarWeeks: true,
+//        sideBySide: true
 //        toolbarPlacement: 'top'
-//        format: 'YY-MM-dd hh:mm:ss',
+        format: 'YY-MM-DD HH:mm:ss',
 //        showClear: true,
 //        showClose: true,
 //        showTodayButton: true
@@ -70,6 +71,18 @@
         }
       });
 
+      // @see bootstrap-datetimepicker.js, line 770 function notifyEvent
+      // jquery custom events can be done with dispatchEvent
+      // listening to the dispatched event can be done by attaching the event listener to the 
+      // parent element of the element on which event is dispatched on
+      this.$.datetimepicker.addEventListener('dp.change', function(event){
+         if (event.date) {
+          _self.value = event.date._d;
+        } else {
+          _self.value = '';
+        }   
+      });
+      
       this._isReady = true;
     },
     disabledChanged: function (newValue, oldValue) {
