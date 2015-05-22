@@ -301,5 +301,11 @@
   utils.windowScrollTop = function (windowInst) {
     return windowInst.pageYOffset;
   }
+  
+  // this function is here to simulate jquery's special meaning of value false for .on() and .off() functions
+  utils.returnFalse = function(event){
+    return false;
+  }
+
 
 }(window.atFormDateUtils = window.atFormDateUtils || {}));

@@ -1159,16 +1159,14 @@
         fillTime();
       },
 
-      // TODO continue from here
       setValue = function (targetMoment) {
-        debugger;
         var oldDate = unset ? null : date;
-
+        var nojqInput = input.get(0); // <- remove this after jquery is finally removed
         // case of calling setValue(null or false)
         if (!targetMoment) {
           unset = true;
-          input.val('');
-          element.data('date', '');
+          nojqInput.value = '';
+//          element.data('date', ''); // <- this data is never read, as far as I can see
           notifyEvent({
             type: 'dp.change',
             date: null,
@@ -1187,8 +1185,8 @@
         if (isValid(targetMoment)) {
           date = targetMoment;
           viewDate = date.clone();
-          input.val(date.format(actualFormat));
-          element.data('date', date.format(actualFormat));
+          nojqInput.value = date.format(actualFormat);
+//          element.data('date', date.format(actualFormat)); // <- this data is never read, as far as I can see
           update();
           unset = false;
           notifyEvent({
@@ -1198,7 +1196,7 @@
           });
         } else {
           if (!options.keepInvalid) {
-            input.val(unset ? '' : date.format(actualFormat));
+            nojqInput.value = unset ? '' : date.format(actualFormat);
           }
           notifyEvent({
             type: 'dp.error',
@@ -1212,28 +1210,55 @@
         if (!widget) {
           return picker;
         }
+        var nojqWidget = widget.get(0);
+        var nojqComponent = component.get(0);
         // Ignore event if in the middle of a picker transition
-        widget.find('.collapse').each(function () {
-          var collapseData = $(this).data('collapse');
-          if (collapseData && collapseData.transitioning) {
+        var elemWithCollapseClass = nojqWidget.querySelector('.collapse');
+        if (elemWithCollapseClass){
+          var collapseData = utils.getData(elemWithCollapseClass, 'collapse');
+          if (collapseData && collapseData.transitioning){
             transitioning = true;
-            return false;
           }
-          return true;
-        });
+        }
+        // Ignore event if in the middle of a picker transition
+//        widget.find('.collapse').each(function () {
+//          var collapseData = $(this).data('collapse');
+//          if (collapseData && collapseData.transitioning) {
+//            transitioning = true;
+//            return false;
+//          }
+//          return true;
+//        });
         if (transitioning) {
           return picker;
         }
-        if (component && component.hasClass('btn')) {
-          component.toggleClass('active');
+//        if (component && component.hasClass('btn')) {
+//          component.toggleClass('active');
+//        }
+        if (nojqComponent && nojqComponent.classList.contains('btn')){
+          if (nojqComponent.classList.contains('active')){
+            nojqComponent.classList.remove('active');
+          } else {
+            nojqComponent.classList.add('active');
+          }
         }
-        widget.hide();
+        nojqWidget.style.display="none";
+//        widget.hide();
 
-        $(window).off('resize', place);
-        widget.off('click', '[data-action]');
-        widget.off('mousedown', false);
+        // TODO continue from here
+        window.removeEventListener('resize', place);
+//        $(window).off('resize', place);
+//        widget.off('click', '[data-action]');
+        var nojqWidgetChildren = nojqWidget.querySelectorAll('[data-action]');
+        for (var nojqwcIndex = 0; nojqwcIndex < nojqWidgetChildren.length; nojqwcIndex +=1){
+          var nojqwChild = nojqWidgetChildren[nojqwcIndex];
+          nojqwChild.removeEventListener('click', doAction);
+        }
+        nojqWidget.removeEventListener('mousedown', utils.returnFalse);
+//        widget.off('mousedown', false);
 
-        widget.remove();
+        nojqWidget.parentElement.removeChild(nojqWidget);
+//        widget.remove();
         widget = false;
 
         notifyEvent({
@@ -1482,7 +1507,7 @@
 
         $(window).on('resize', place);
         widget.on('click', '[data-action]', doAction); // this handles clicks on the widget
-        widget.on('mousedown', false);
+        widget.on('mousedown', utils.returnFalse);
 
         if (component && component.hasClass('btn')) {
           component.toggleClass('active');
