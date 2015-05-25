@@ -614,9 +614,6 @@
 
         template.appendChild(content);
 
-        // REMOVE JQUERY WHEN SUPPORT FUNCTIONS ARE CONVERTED
-        template = $(template);
-
         return template;
       },
 
@@ -667,29 +664,29 @@
           parent;
 
         // REMOVE THIS REFERENCE TO JQUERY WHEN JQUERY IF FINALLY REMOVED
-        var htmlWidgetParent = options.widgetParent ? options.widgetParent[0] : null,
-          htmlWidget = widget[0]; // <- update this line when jQuery is finally removed
+        var htmlWidgetParent = options.widgetParent ? options.widgetParent[0] : null;
+
         if (options.widgetParent) {
           parent = htmlWidgetParent;
-          parent.appendChild(htmlWidget);
+          parent.appendChild(widget);
         } else if (utils.isTag(htmlElement, 'input')) {
           parent = htmlElement.parentElement;
-          parent.appendChild(htmlWidget);
+          parent.appendChild(widget);
         } else if (options.inline) {
           parent = htmlElement.parentElement;
-          parent.appendChild(htmlWidget);
+          parent.appendChild(widget);
           return;
         } else {
           var referenceElem = htmlElement.children[1];
-          htmlElement.insertBefore(htmlWidget, referenceElem);
+          htmlElement.insertBefore(widget, referenceElem);
           var firstChild = htmlElement.children[0];
           parent = firstChild;
         }
 
         // Top and bottom logic
         if (vertical === 'auto') {
-          if (offset.top + utils.elementHeight(htmlWidget) * 1.5 >= utils.windowHeight(window) + utils.windowScrollTop(window) &&
-            utils.elementHeight(htmlWidget) + utils.elementOuterHeight(htmlElement) < offset.top) {
+          if (offset.top + utils.elementHeight(widget) * 1.5 >= utils.windowHeight(window) + utils.windowScrollTop(window) &&
+            utils.elementHeight(widget) + utils.elementOuterHeight(htmlElement) < offset.top) {
             vertical = 'top';
           } else {
             vertical = 'bottom';
@@ -698,8 +695,8 @@
 
         // Left and right logic
         if (horizontal === 'auto') {
-          if (utils.elementWidth(parent) < offset.left + utils.elementOuterWidth(htmlWidget) / 2 &&
-            offset.left + utils.elementOuterWidth(htmlWidget) > utils.windowWidth(window)) {
+          if (utils.elementWidth(parent) < offset.left + utils.elementOuterWidth(widget) / 2 &&
+            offset.left + utils.elementOuterWidth(widget) > utils.windowWidth(window)) {
             horizontal = 'right';
           } else {
             horizontal = 'left';
@@ -707,17 +704,17 @@
         }
 
         if (vertical === 'top') {
-          htmlWidget.classList.add('top');
-          htmlWidget.classList.remove('bottom');
+          widget.classList.add('top');
+          widget.classList.remove('bottom');
         } else {
-          htmlWidget.classList.add('bottom');
-          htmlWidget.classList.remove('top');
+          widget.classList.add('bottom');
+          widget.classList.remove('top');
         }
 
         if (horizontal === 'right') {
-          htmlWidget.classList.add('pull-right');
+          widget.classList.add('pull-right');
         } else {
-          htmlWidget.classList.remove('pull-right');
+          widget.classList.remove('pull-right');
         }
 
         var parentStyle = window.getComputedStyle(parent);
@@ -751,19 +748,19 @@
         }
 
         if (vertical === 'top') {
-          htmlWidget.style.top = 'auto';
-          htmlWidget.style.bottom = (position.top + utils.elementOuterHeight(htmlElement)) + 'px';
+          widget.style.top = 'auto';
+          widget.style.bottom = (position.top + utils.elementOuterHeight(htmlElement)) + 'px';
         } else {
-          htmlWidget.style.top = (position.top + utils.elementOuterHeight(htmlElement)) + 'px';
-          htmlWidget.style.bottom = 'auto';
+          widget.style.top = (position.top + utils.elementOuterHeight(htmlElement)) + 'px';
+          widget.style.bottom = 'auto';
         }
 
         if (horizontal === 'left') {
-          htmlWidget.style.left = window.getComputedStyle(parent).getPropertyValue('padding-left');
-          htmlWidget.style.right = 'auto';
+          widget.style.left = window.getComputedStyle(parent).getPropertyValue('padding-left');
+          widget.style.right = 'auto';
         } else {
-          htmlWidget.style.left = 'auto';
-          htmlWidget.style.right = (utils.elementWidth(parent) - utils.elementOuterWidth(htmlElement)) + 'px';
+          widget.style.left = 'auto';
+          widget.style.right = (utils.elementWidth(parent) - utils.elementOuterWidth(htmlElement)) + 'px';
         }
       },
 
@@ -789,14 +786,14 @@
         if (dir) {
           currentViewMode = Math.max(minViewModeNumber, Math.min(2, currentViewMode + dir));
         }
-        var nojqWidget = widget.get(0);
-        var findResults = nojqWidget.querySelectorAll('.datepicker > div');
+
+        var findResults = widget.querySelectorAll('.datepicker > div');
         for (var findResultsIndex = 0; findResultsIndex < findResults.length; findResultsIndex += 1) {
           findResults[findResultsIndex].style.display = "none";
         }
 
         var filterSelector = '.datepicker-' + datePickerModes[currentViewMode].clsName;
-        var filterResult = nojqWidget.querySelector(filterSelector);
+        var filterResult = widget.querySelector(filterSelector);
         filterResult.style.display = "block";
       },
 
@@ -818,8 +815,7 @@
           currentDate.add(1, 'd');
         }
 
-        var nojqWidget = widget.get(0); // <- remove this line when jquery is finally removed
-        var thead = nojqWidget.querySelector('.datepicker-days thead');
+        var thead = widget.querySelector('.datepicker-days thead');
         thead.appendChild(row);
       },
 
@@ -864,8 +860,8 @@
           spans.push(span);
           monthsShort.add(1, 'M');
         }
-        var nojqWidget = widget.get(0);
-        var widgetFind = nojqWidget.querySelector('.datepicker-months td');
+
+        var widgetFind = widget.querySelector('.datepicker-months td');
         widgetFind.innerHTML = '';
         for (var spansIndex = 0; spansIndex < spans.length; spansIndex += 1) {
           widgetFind.appendChild(spans[spansIndex]);
@@ -873,8 +869,7 @@
       },
 
       updateMonths = function () {
-        var nojqWidget = widget.get(0); // <- remove this line when jQuery is finally removed
-        var monthsView = nojqWidget.querySelector('.datepicker-months');
+        var monthsView = widget.querySelector('.datepicker-months');
         var monthsViewHeader = monthsView.querySelectorAll('th');
         var months = monthsView.querySelector('tbody').querySelectorAll('span');
 
@@ -911,8 +906,7 @@
       },
 
       updateYears = function () {
-        var nojqWidget = widget.get(0); // <- remove this line when jQuery is finally removed
-        var yearsView = nojqWidget.querySelector('.datepicker-years');
+        var yearsView = widget.querySelector('.datepicker-years');
         var yearsViewHeader = yearsView.querySelectorAll('th');
         var startYear = viewDate.clone().subtract(5, 'y');
         var endYear = viewDate.clone().add(6, 'y');
@@ -943,8 +937,7 @@
       },
 
       fillDate = function () {
-        var nojqWidget = widget.get(0); // <- remove this line when jQuery is finally removed
-        var daysView = nojqWidget.querySelector('.datepicker-days');
+        var daysView = widget.querySelector('.datepicker-days');
         var daysViewHeader = daysView.querySelectorAll('th');
         var currentDate,
           html = [],
@@ -1027,8 +1020,7 @@
 
       fillHours = function () {
         var
-          nojqWidget = widget.get(0), // <- remove this line when jQuery is finally removed
-          table = nojqWidget.querySelector('.timepicker-hours table'),
+          table = widget.querySelector('.timepicker-hours table'),
           currentHour = viewDate.clone().startOf('d'),
           html = [],
           row = document.createElement('tr');
@@ -1061,8 +1053,8 @@
       },
 
       fillMinutes = function () {
-        var nojqWidget = widget.get(0), // <- remove this line when jQuery is finally removed
-          table = nojqWidget.querySelector('.timepicker-minutes table'),
+        var
+          table = widget.querySelector('.timepicker-minutes table'),
           currentMinute = viewDate.clone().startOf('h'),
           html = [],
           row = document.createElement('tr'),
@@ -1091,8 +1083,8 @@
       },
 
       fillSeconds = function () {
-        var nojqWidget = widget.get(0), // <- remove this line when jQuery is finally removed
-          table = nojqWidget.querySelector('.timepicker-seconds table'),
+        var
+          table = widget.querySelector('.timepicker-seconds table'),
           currentSecond = viewDate.clone().startOf('m'),
           html = [],
           row = document.createElement('tr');
@@ -1125,14 +1117,13 @@
 
       fillTime = function () {
         var tcIndex;
-        var nojqWidget = widget.get(0); // <- remove this line when jQuery is finally removed
-        var timeComponents = nojqWidget.querySelectorAll('.timepicker span[data-time-component]');
+        var timeComponents = widget.querySelectorAll('.timepicker span[data-time-component]');
 
         if (!use24Hours) {
           var togglePeriodElem = nojqWidget.querySelector('.timepicker [data-action=togglePeriod]');
           togglePeriodElem.textContent = date.format('A');
         }
-      
+
         for (tcIndex = 0; tcIndex < timeComponents.length; tcIndex += 1) {
           var timeComponent = timeComponents[tcIndex];
           var dtcAttrValue = timeComponent.getAttribute('data-time-component');
@@ -1166,7 +1157,7 @@
         if (!targetMoment) {
           unset = true;
           nojqInput.value = '';
-//          element.data('date', ''); // <- this data is never read, as far as I can see
+          //          element.data('date', ''); // <- this data is never read, as far as I can see
           notifyEvent({
             type: 'dp.change',
             date: null,
@@ -1186,7 +1177,7 @@
           date = targetMoment;
           viewDate = date.clone();
           nojqInput.value = date.format(actualFormat);
-//          element.data('date', date.format(actualFormat)); // <- this data is never read, as far as I can see
+          //          element.data('date', date.format(actualFormat)); // <- this data is never read, as far as I can see
           update();
           unset = false;
           notifyEvent({
@@ -1210,55 +1201,55 @@
         if (!widget) {
           return picker;
         }
-        var nojqWidget = widget.get(0);
+        //        var nojqWidget = widget.get(0);
         var nojqComponent = component.get(0);
         // Ignore event if in the middle of a picker transition
-        var elemWithCollapseClass = nojqWidget.querySelector('.collapse');
-        if (elemWithCollapseClass){
+        var elemWithCollapseClass = widget.querySelector('.collapse');
+        if (elemWithCollapseClass) {
           var collapseData = utils.getData(elemWithCollapseClass, 'collapse');
-          if (collapseData && collapseData.transitioning){
+          if (collapseData && collapseData.transitioning) {
             transitioning = true;
           }
         }
         // Ignore event if in the middle of a picker transition
-//        widget.find('.collapse').each(function () {
-//          var collapseData = $(this).data('collapse');
-//          if (collapseData && collapseData.transitioning) {
-//            transitioning = true;
-//            return false;
-//          }
-//          return true;
-//        });
+        //        widget.find('.collapse').each(function () {
+        //          var collapseData = $(this).data('collapse');
+        //          if (collapseData && collapseData.transitioning) {
+        //            transitioning = true;
+        //            return false;
+        //          }
+        //          return true;
+        //        });
         if (transitioning) {
           return picker;
         }
-//        if (component && component.hasClass('btn')) {
-//          component.toggleClass('active');
-//        }
-        if (nojqComponent && nojqComponent.classList.contains('btn')){
-          if (nojqComponent.classList.contains('active')){
+        //        if (component && component.hasClass('btn')) {
+        //          component.toggleClass('active');
+        //        }
+        if (nojqComponent && nojqComponent.classList.contains('btn')) {
+          if (nojqComponent.classList.contains('active')) {
             nojqComponent.classList.remove('active');
           } else {
             nojqComponent.classList.add('active');
           }
         }
-        nojqWidget.style.display="none";
-//        widget.hide();
+        widget.style.display = "none";
+        //        widget.hide();
 
         // TODO continue from here
         window.removeEventListener('resize', place);
-//        $(window).off('resize', place);
-//        widget.off('click', '[data-action]');
-        var nojqWidgetChildren = nojqWidget.querySelectorAll('[data-action]');
-        for (var nojqwcIndex = 0; nojqwcIndex < nojqWidgetChildren.length; nojqwcIndex +=1){
+        //        $(window).off('resize', place);
+        //        widget.off('click', '[data-action]');
+        var nojqWidgetChildren = widget.querySelectorAll('[data-action]');
+        for (var nojqwcIndex = 0; nojqwcIndex < nojqWidgetChildren.length; nojqwcIndex += 1) {
           var nojqwChild = nojqWidgetChildren[nojqwcIndex];
           nojqwChild.removeEventListener('click', doAction);
         }
-        nojqWidget.removeEventListener('mousedown', utils.returnFalse);
-//        widget.off('mousedown', false);
+        widget.removeEventListener('mousedown', utils.returnFalse);
+        //        widget.off('mousedown', false);
 
-        nojqWidget.parentElement.removeChild(nojqWidget);
-//        widget.remove();
+        widget.parentElement.removeChild(widget);
+        //        widget.remove();
         widget = false;
 
         notifyEvent({
@@ -1293,7 +1284,8 @@
         },
 
         selectMonth: function (e) {
-          var month = $(e.target).closest('tbody').find('span').index($(e.target));
+          var spans = utils.closestByTagName(e.target, 'tbody').querySelectorAll('span');
+          var month = utils.indexOf(spans, e.target);
           viewDate.month(month);
           if (currentViewMode === minViewModeNumber) {
             setValue(date.clone().year(viewDate.year()).month(viewDate.month()));
@@ -1307,7 +1299,8 @@
         },
 
         selectYear: function (e) {
-          var year = parseInt($(e.target).text(), 10) || 0;
+          var targetTextIntValue = parseInt(e.target.textContent, 10);
+          var year = targetTextIntValue || 0;
           viewDate.year(year);
           if (currentViewMode === minViewModeNumber) {
             setValue(date.clone().year(viewDate.year()));
@@ -1322,13 +1315,14 @@
 
         selectDay: function (e) {
           var day = viewDate.clone();
-          if ($(e.target).is('.old')) {
+          if (e.target.classList.contains('old')) {
             day.subtract(1, 'M');
           }
-          if ($(e.target).is('.new')) {
+          if (e.target.classList.contains('new')) {
             day.add(1, 'M');
           }
-          setValue(day.date(parseInt($(e.target).text(), 10)));
+          var targetTextIntValue = parseInt(e.target.textContent, 10);
+          setValue(day.date(targetTextIntValue));
           if (!hasTime() && !options.keepOpen && !options.inline) {
             hide();
           }
@@ -1363,14 +1357,13 @@
         },
 
         togglePicker: function (e) {
-          var $this = $(e.target),
-            $parent = $this.closest('ul'),
-            expanded = $parent.find('.in'),
-            closed = $parent.find('.collapse:not(.in)'),
+          var parent = utils.closestByTagName(e.target, 'ul'),
+            expanded = parent.querySelector('.in'),
+            closed = parent.querySelector('.collapse:not(.in)'),
             collapseData;
 
-          if (expanded && expanded.length) {
-            collapseData = expanded.data('collapse');
+          if (expanded) {
+            collapseData = utils.getData(expanded, 'collapse');
             if (collapseData && collapseData.transitioning) {
               return;
             }
@@ -1378,16 +1371,21 @@
             if (utils.collapse) { // if collapse plugin is available through bootstrap.js then use it
               utils.collapse(expanded, 'hide');
               utils.collapse(closed, 'show');
-              //              expanded.collapse('hide');
-              //              closed.collapse('show');
             } else { // otherwise just toggle in class on the two views
-              expanded.removeClass('in');
-              closed.addClass('in');
+              expanded.classList.remove('in');
+              closed.classList.add('in');
             }
-            if ($this.is('span')) {
-              $this.toggleClass(options.icons.time + ' ' + options.icons.date);
+
+            if (utils.isTag(e.target, 'span')) {
+              utils.toggleClass(e.target, options.icons.time);
+              utils.toggleClass(e.target, options.icons.date);
             } else {
-              $this.find('span').toggleClass(options.icons.time + ' ' + options.icons.date);
+              var spans = e.target.querySelectorAll('span');
+              for (var spansIndex = 0; spansIndex < spans.length; spansIndex += 1) {
+                var spanElem = spans[spansIndex];
+                utils.toggleClass(spanElem, options.icons.time);
+                utils.toggleClass(spanElem, options.icons.date);
+              }
             }
 
             // NOTE: uncomment if toggled state will be restored in show()
@@ -1398,27 +1396,39 @@
         },
 
         showPicker: function () {
-          widget.find('.timepicker > div:not(.timepicker-picker)').hide();
-          widget.find('.timepicker .timepicker-picker').show();
+          var elems1 = widget.querySelectorAll('.timepicker > div:not(.timepicker-picker)');
+          var elems2 = widget.querySelectorAll('.timepicker .timepicker-picker');
+
+          utils.hide(elems1);
+          utils.show(elems2);
         },
 
         showHours: function () {
-          widget.find('.timepicker .timepicker-picker').hide();
-          widget.find('.timepicker .timepicker-hours').show();
+          var elems1 = widget.querySelectorAll('.timepicker .timepicker-picker');
+          var elems2 = widget.querySelectorAll('.timepicker .timepicker-hours');
+
+          utils.hide(elems1);
+          utils.show(elems2);
         },
 
         showMinutes: function () {
-          widget.find('.timepicker .timepicker-picker').hide();
-          widget.find('.timepicker .timepicker-minutes').show();
+          var elems1 = widget.querySelectorAll('.timepicker .timepicker-picker');
+          var elems2 = widget.querySelectorAll('.timepicker .timepicker-minutes');
+
+          utils.hide(elems1);
+          utils.show(elems2);
         },
 
         showSeconds: function () {
-          widget.find('.timepicker .timepicker-picker').hide();
-          widget.find('.timepicker .timepicker-seconds').show();
+          var elems1 = widget.querySelectorAll('.timepicker .timepicker-picker');
+          var elems2 = widget.querySelectorAll('.timepicker .timepicker-seconds');
+
+          utils.hide(elems1);
+          utils.show(elems2);
         },
 
         selectHour: function (e) {
-          var hour = parseInt($(e.target).text(), 10);
+          var hour = parseInt(e.target.textContent, 10);
 
           if (!use24Hours) {
             if (date.hours() >= 12) {
@@ -1436,12 +1446,12 @@
         },
 
         selectMinute: function (e) {
-          setValue(date.clone().minutes(parseInt($(e.target).text(), 10)));
+          setValue(date.clone().minutes(parseInt(e.target.textContent, 10)));
           actions.showPicker.call(picker);
         },
 
         selectSecond: function (e) {
-          setValue(date.clone().seconds(parseInt($(e.target).text(), 10)));
+          setValue(date.clone().seconds(parseInt(e.target.textContent, 10)));
           actions.showPicker.call(picker);
         },
 
@@ -1455,10 +1465,11 @@
       },
 
       doAction = function (e) {
-        if ($(e.currentTarget).is('.disabled')) {
+        if (e.currentTarget.classList.contains('disabled')) {
           return false;
         }
-        actions[$(e.currentTarget).data('action')].apply(picker, arguments);
+        var actionName = e.currentTarget.getAttribute('data-action');
+        actions[actionName].apply(picker, arguments);
         return false;
       },
 
@@ -1482,10 +1493,11 @@
             }
           };
 
-        if (input.prop('disabled') || (!options.ignoreReadonly && input.prop('readonly')) || widget) {
+        var nojqInput = input.get(0);
+        if (nojqInput.getAttribute('disabled') || (!options.ignoreReadonly && nojqInput.getAttribute('readonly')) || widget) {
           return picker;
         }
-        if (options.useCurrent && unset && ((input.is('input') && input.val().trim().length === 0) || options.inline)) {
+        if (options.useCurrent && unset && ((utils.isTag(nojqInput, 'input') && nojqInput.value.trim().length === 0) || options.inline)) {
           currentMoment = moment();
           if (typeof options.useCurrent === 'string') {
             currentMoment = useCurrentGranularity[options.useCurrent](currentMoment);
@@ -1498,23 +1510,39 @@
         fillDow();
         fillMonths();
 
-        widget.find('.timepicker-hours').hide();
-        widget.find('.timepicker-minutes').hide();
-        widget.find('.timepicker-seconds').hide();
+        var timepickerHours = widget.querySelectorAll('.timepicker-hours');
+        utils.hide(timepickerHours);
+        var timepickerMinuts = widget.querySelectorAll('.timepicker-minutes');
+        utils.hide(timepickerMinuts);
+        var timepickerSeconds = widget.querySelectorAll('.timepicker-seconds');
+        utils.hide(timepickerSeconds);
 
         update();
         showMode();
 
-        $(window).on('resize', place);
+        //        $(window).on('resize', place);
+        window.addEventListener('resize', place);
+
+        // DOM event attachment is currently buggy; will return to this later
+        //        var wcElems = widget.querySelectorAll('[data-action]'),
+        //          wcElemIndex, wcElem;
+        //        for (wcElemIndex = 0; wcElemIndex < wcElems.length; wcElemIndex += 1) {
+        //          wcElem = wcElems[wcElemIndex];
+        //          wcElem.addEventListener('click', doAction);
+        //        }
+        //        widget.addEventListener('mousedown', utils.returnFalse);
+
+        widget = $(widget);
         widget.on('click', '[data-action]', doAction); // this handles clicks on the widget
         widget.on('mousedown', utils.returnFalse);
+        widget = widget.get(0);
 
         if (component && component.hasClass('btn')) {
           component.toggleClass('active');
         }
-        widget.show();
+        widget.style.display = 'block'; //.show();
         place();
-
+        
         if (!input.is(':focus')) {
           input.focus();
         }
@@ -1612,21 +1640,38 @@
       },
 
       attachDatePickerElementEvents = function () {
-        input.on({
-          'change': change,
-          'blur': options.debug ? '' : hide,
-          'keydown': keydown,
-          'keyup': keyup
-        });
+        //        input.on({
+        //          'change': change,
+        //          'blur': options.debug ? '' : hide,
+        //          'keydown': keydown,
+        //          'keyup': keyup
+        //        });
 
-        if (element.is('input')) {
-          input.on({
-            'focus': show
-          });
-        } else if (component) {
-          component.on('click', toggle);
-          component.on('mousedown', false);
+        var nojqInput = input.get(0);
+        nojqInput.addEventListener('change', change);
+        if (!options.debug) {
+          nojqInput.addEventListener('blur', hide);
         }
+        nojqInput.addEventListener('keydown', keydown);
+        nojqInput.addEventListener('keyup', keyup);
+
+        //        if (element.is('input')) {
+        //          input.on({
+        //            'focus': show
+        //          });
+        //        } else if (component) {
+        //          component.on('click', toggle);
+        //          component.on('mousedown', false);
+        //        }
+
+        var nojqComponent = component.get(0);
+        if (utils.isTag(nojqComponent, 'input')) {
+          nojqInput.addEventListener('focus', show);
+        } else if (nojqComponent) {
+          nojqComponent.addEventListener('click', toggle);
+          nojqComponent.addEventListener('mousedown', utils.returnFalse);
+        }
+
       },
 
       detachDatePickerElementEvents = function () {

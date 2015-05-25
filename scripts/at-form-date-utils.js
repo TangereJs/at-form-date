@@ -297,15 +297,80 @@
       doc["client" + name]
     );
   }
-  
+
   utils.windowScrollTop = function (windowInst) {
     return windowInst.pageYOffset;
   }
-  
+
   // this function is here to simulate jquery's special meaning of value false for .on() and .off() functions
-  utils.returnFalse = function(event){
+  utils.returnFalse = function (event) {
     return false;
   }
 
+  utils.closestByTagName = function (element, tagName) {
+    var result = undefined;
+    var iteratorElem = element;
+    while (iteratorElem.nodeType !== 9 && result === undefined) {
+      if (iteratorElem.tagName === tagName.toUpperCase()) {
+        result = iteratorElem;
+      }
+      iteratorElem = iteratorElem.parentElement;
+    }
+
+    return result;
+  }
+
+  // this is here to simulate jQuery index function for a list of elements
+  // .querySelectorAll does not return an array, but returned structure has a length property and can be indexed as an array
+  // but returned structure doesn't have an indexOf function; so I wrote it
+  utils.indexOf = function (elemArray, needle) {
+    var result = -1,
+      arrIndex;
+
+    for (arrIndex = 0; arrIndex < elemArray.length; arrIndex += 1) {
+      if (elemArray[arrIndex] === needle) {
+        result = arrIndex;
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  // toggleClass is a helper function that turns on/off the specified cssClass
+  utils.toggleClass = function (element, cssClass) {
+    var cssClassList = cssClass.split(' '),
+      clIndex;
+
+    for (clIndex = 0; clIndex < cssClassList.length; clIndex += 1) {
+      if (cssClassList[clIndex] !== '') {
+        if (element.classList.contains(cssClassList[clIndex])) {
+          element.classList.remove(cssClassList[clIndex]);
+        } else {
+          element.classList.add(cssClassList[clIndex]);
+        }
+      }
+    }
+  }
+
+  // a simulation of jquery's show function
+  // elements is an array of htmlElements
+  utils.show = function (elements) {
+    var index, elem;
+    for (index = 0; index < elements.length; index += 1) {
+      var elem = elements[index];
+      elem.style.display = 'block';
+    }
+  }
+
+  // a simulation of jquery's hide function
+  // elements is an array of htmlElements
+  utils.hide = function (elements) {
+    var index, elem;
+    for (index = 0; index < elements.length; index += 1) {
+      var elem = elements[index];
+      elem.style.display = 'none';
+    }
+  }
 
 }(window.atFormDateUtils = window.atFormDateUtils || {}));

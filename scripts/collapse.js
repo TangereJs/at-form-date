@@ -403,7 +403,7 @@
       options;
     if (utils.isArray(elements)) {
       for (index = 0; index < elements.length; index += 1) {
-        element = elements[index].get(0);
+        element = elements[index];
         data = utils.getData(element, 'bs.collapse');
         options = utils.extend({}, Collapse.DEFAULTS, utils.getData(element), typeof option === 'object' && option);
 

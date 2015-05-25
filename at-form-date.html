@@ -86,7 +86,7 @@
       this._isReady = true;
     },
     disabledChanged: function (newValue, oldValue) {
-
+      this.toggleAttribute(this.$.text, this.disabled);
     },
     requiredChanged: function (newValue, oldValue) {
 
