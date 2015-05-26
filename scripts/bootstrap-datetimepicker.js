@@ -41,16 +41,12 @@
   } else if (typeof exports === 'object') {
     factory(require('jquery'), require('moment'));
   } else {
-    // Neither AMD nor CommonJS used. Use global variables.
-    if (typeof jQuery === 'undefined') {
-      throw 'bootstrap-datetimepicker requires jQuery to be loaded first';
-    }
     if (typeof moment === 'undefined') {
       throw 'bootstrap-datetimepicker requires Moment.js to be loaded first';
     }
-    factory(jQuery, moment, window.atFormDateUtils);
+    factory(moment, window.atFormDateUtils);
   }
-}(function ($, moment, utils) {
+}(function (moment, utils) {
   'use strict';
   if (!moment) {
     throw new Error('bootstrap-datetimepicker requires Moment.js to be loaded first');
@@ -581,8 +577,7 @@
           template.appendChild(rowDiv);
 
           template.appendChild(toolbar);
-          // REMOVE JQUERY WHEN SUPPORT FUNCTIONS ARE CONVERTED
-          template = $(template);
+
           return template;
         }
 
@@ -644,8 +639,8 @@
 
       place = function () {
         // extract html element from jQuery
-        var compent = (component || element)[0]; // compent = COMP[onent] + [elem]ENT
-        var htmlElement = element[0];
+        var compent = component || element; // compent = COMP[onent] + [elem]ENT
+        var htmlElement = element;
         var position = {
           left: compent.offsetLeft,
           top: compent.offsetTop
@@ -664,7 +659,7 @@
           parent;
 
         // REMOVE THIS REFERENCE TO JQUERY WHEN JQUERY IF FINALLY REMOVED
-        var htmlWidgetParent = options.widgetParent ? options.widgetParent[0] : null;
+        var htmlWidgetParent = options.widgetParent ? options.widgetParent : null;
 
         if (options.widgetParent) {
           parent = htmlWidgetParent;
@@ -771,12 +766,11 @@
         // jquery custom events can be done with dispatchEvent
         // listening to the dispatched event can be done by attaching the event listener to the 
         // parent element of the element on which event is dispatched on
-        var nojqElem = element[0]; // <- update this line when jQuery reference is finally removed
         var event = document.createEvent('CustomEvent');
         event.initCustomEvent(e.type, true, true);
         event.date = e.date;
         event.oldDate = e.oldDate;
-        nojqElem.dispatchEvent(event);
+        element.dispatchEvent(event);
       },
 
       showMode = function (dir) {
@@ -1148,15 +1142,31 @@
         }
         fillDate();
         fillTime();
+        reattachEventListeners();
+      },
+
+      reattachEventListeners = function () {
+        // added this here to fix broken event listeners
+        // jQuery remembers what handlers to call on what html elements even 
+        // when elements are removed and than added back to the same place
+        // in pure DOM API this doesn't happen; so we add the event listeners here
+        //          tdDay.addEventListener('click', doAction);
+
+        // DOM event attachment is currently buggy; will return to this later
+        var wcElems = widget.querySelectorAll('[data-action]'),
+          wcElemIndex, wcElem;
+        for (wcElemIndex = 0; wcElemIndex < wcElems.length; wcElemIndex += 1) {
+          wcElem = wcElems[wcElemIndex];
+          wcElem.addEventListener('click', doAction);
+        }
       },
 
       setValue = function (targetMoment) {
         var oldDate = unset ? null : date;
-        var nojqInput = input.get(0); // <- remove this after jquery is finally removed
         // case of calling setValue(null or false)
         if (!targetMoment) {
           unset = true;
-          nojqInput.value = '';
+          input.value = '';
           //          element.data('date', ''); // <- this data is never read, as far as I can see
           notifyEvent({
             type: 'dp.change',
@@ -1176,7 +1186,7 @@
         if (isValid(targetMoment)) {
           date = targetMoment;
           viewDate = date.clone();
-          nojqInput.value = date.format(actualFormat);
+          input.value = date.format(actualFormat);
           //          element.data('date', date.format(actualFormat)); // <- this data is never read, as far as I can see
           update();
           unset = false;
@@ -1187,7 +1197,7 @@
           });
         } else {
           if (!options.keepInvalid) {
-            nojqInput.value = unset ? '' : date.format(actualFormat);
+            input.value = unset ? '' : date.format(actualFormat);
           }
           notifyEvent({
             type: 'dp.error',
@@ -1202,7 +1212,7 @@
           return picker;
         }
         //        var nojqWidget = widget.get(0);
-        var nojqComponent = component.get(0);
+
         // Ignore event if in the middle of a picker transition
         var elemWithCollapseClass = widget.querySelector('.collapse');
         if (elemWithCollapseClass) {
@@ -1226,17 +1236,16 @@
         //        if (component && component.hasClass('btn')) {
         //          component.toggleClass('active');
         //        }
-        if (nojqComponent && nojqComponent.classList.contains('btn')) {
-          if (nojqComponent.classList.contains('active')) {
-            nojqComponent.classList.remove('active');
+        if (component && component.classList.contains('btn')) {
+          if (component.classList.contains('active')) {
+            component.classList.remove('active');
           } else {
-            nojqComponent.classList.add('active');
+            component.classList.add('active');
           }
         }
         widget.style.display = "none";
         //        widget.hide();
 
-        // TODO continue from here
         window.removeEventListener('resize', place);
         //        $(window).off('resize', place);
         //        widget.off('click', '[data-action]');
@@ -1493,11 +1502,10 @@
             }
           };
 
-        var nojqInput = input.get(0);
-        if (nojqInput.getAttribute('disabled') || (!options.ignoreReadonly && nojqInput.getAttribute('readonly')) || widget) {
+        if (input.hasAttribute('disabled') || (!options.ignoreReadonly && input.hasAttribute('readonly')) || widget) {
           return picker;
         }
-        if (options.useCurrent && unset && ((utils.isTag(nojqInput, 'input') && nojqInput.value.trim().length === 0) || options.inline)) {
+        if (options.useCurrent && unset && ((utils.isTag(input, 'input') && input.value.trim().length === 0) || options.inline)) {
           currentMoment = moment();
           if (typeof options.useCurrent === 'string') {
             currentMoment = useCurrentGranularity[options.useCurrent](currentMoment);
@@ -1523,27 +1531,24 @@
         //        $(window).on('resize', place);
         window.addEventListener('resize', place);
 
-        // DOM event attachment is currently buggy; will return to this later
-        //        var wcElems = widget.querySelectorAll('[data-action]'),
-        //          wcElemIndex, wcElem;
-        //        for (wcElemIndex = 0; wcElemIndex < wcElems.length; wcElemIndex += 1) {
-        //          wcElem = wcElems[wcElemIndex];
-        //          wcElem.addEventListener('click', doAction);
-        //        }
-        //        widget.addEventListener('mousedown', utils.returnFalse);
 
-        widget = $(widget);
-        widget.on('click', '[data-action]', doAction); // this handles clicks on the widget
-        widget.on('mousedown', utils.returnFalse);
-        widget = widget.get(0);
+        //        widget.addEventListener('click', doAction);        
+        widget.addEventListener('mousedown', utils.returnFalse);
 
-        if (component && component.hasClass('btn')) {
-          component.toggleClass('active');
+        //        widget = $(widget);
+        //        widget.on('click', '[data-action]', doAction); // this handles clicks on the widget
+        //        widget.on('mousedown', utils.returnFalse);
+        //        widget = widget.get(0);
+
+        if (component && component.classList.contains('btn')) {
+          utils.toggleClass(component, 'active');
         }
-        widget.style.display = 'block'; //.show();
+
+        widget.style.display = 'block';
         place();
-        
-        if (!input.is(':focus')) {
+
+        var isFocus = input.parentElement.querySelectorAll(':focus').length > 0;
+        if (!isFocus) {
           input.focus();
         }
 
@@ -1647,13 +1652,13 @@
         //          'keyup': keyup
         //        });
 
-        var nojqInput = input.get(0);
-        nojqInput.addEventListener('change', change);
+        //        var nojqInput = input.get(0);
+        input.addEventListener('change', change);
         if (!options.debug) {
-          nojqInput.addEventListener('blur', hide);
+          input.addEventListener('blur', hide);
         }
-        nojqInput.addEventListener('keydown', keydown);
-        nojqInput.addEventListener('keyup', keyup);
+        input.addEventListener('keydown', keydown);
+        input.addEventListener('keyup', keyup);
 
         //        if (element.is('input')) {
         //          input.on({
@@ -1664,32 +1669,41 @@
         //          component.on('mousedown', false);
         //        }
 
-        var nojqComponent = component.get(0);
-        if (utils.isTag(nojqComponent, 'input')) {
-          nojqInput.addEventListener('focus', show);
-        } else if (nojqComponent) {
-          nojqComponent.addEventListener('click', toggle);
-          nojqComponent.addEventListener('mousedown', utils.returnFalse);
+        if (utils.isTag(component, 'input')) {
+          input.addEventListener('focus', show);
+        } else if (component) {
+          component.addEventListener('click', toggle);
+          component.addEventListener('mousedown', utils.returnFalse);
         }
 
       },
 
       detachDatePickerElementEvents = function () {
-        input.off({
-          'change': change,
-          'blur': hide,
-          'keydown': keydown,
-          'keyup': keyup
-        });
+        input.removeEventListener('change', change);
+        input.removeEventListener('blur', hide);
+        input.removeEventListener('keydown', keydown);
+        input.removeEventListener('keyup', keyup);
+        //        input.off({
+        //          'change': change,
+        //          'blur': hide,
+        //          'keydown': keydown,
+        //          'keyup': keyup
+        //        });
 
-        if (element.is('input')) {
-          input.off({
-            'focus': show
-          });
-        } else if (component) {
-          component.off('click', toggle);
-          component.off('mousedown', false);
+        if (utils.isTag(element, 'input')) {
+          input.removeEventListener('focus', show);
+        } else if (element) {
+          element.removeEventListener('click', toggle);
+          element.removeEventListener('mousedown', utils.returnFalse);
         }
+        //        if (element.is('input')) {
+        //          input.off({
+        //            'focus': show
+        //          });
+        //        } else if (component) {
+        //          component.off('click', toggle);
+        //          component.off('mousedown', false);
+        //        }
       },
 
       indexGivenDates = function (givenDatesArray) {
@@ -1754,8 +1768,11 @@
     picker.destroy = function () {
       hide();
       detachDatePickerElementEvents();
-      element.removeData('DateTimePicker');
-      element.removeData('date');
+      //      element.removeData('DateTimePicker');
+      //      element.removeData('date');
+      var nojqElement = element.get(0);
+      utils.removeData(nojqElement, 'DateTimePicker');
+      utils.removeData(nojqElement, 'date');
     };
 
     picker.toggle = toggle;
@@ -1766,18 +1783,36 @@
 
     picker.disable = function () {
       hide();
-      if (component && component.hasClass('btn')) {
-        component.addClass('disabled');
+      //      if (component && component.hasClass('btn')) {
+      //        component.addClass('disabled');
+      //      }
+
+      var nojqComponent = component.get(0);
+      if (nojqComponent && nojqComponent.classList.contains('btn')) {
+        nojqComponent.classList.add('disabled');
       }
-      input.prop('disabled', true);
+
+      //      input.prop('disabled', true);
+
+      var nojqInput = input.get(0);
+      nojqInput.setAttribute('disabled', true);
+
       return picker;
     };
 
     picker.enable = function () {
-      if (component && component.hasClass('btn')) {
-        component.removeClass('disabled');
+      //      if (component && component.hasClass('btn')) {
+      //        component.removeClass('disabled');
+      //      }
+      var nojqComponent = component.get(0);
+      if (nojqComponent && nojqComponent.classList.contains('btn')) {
+        nojqComponent.classList.remove('disabled');
       }
-      input.prop('disabled', false);
+
+      //      input.prop('disabled', false);
+      var nojqInput = input.get(0);
+      nojqInput.removeAttribute('disabled');
+
       return picker;
     };
 
@@ -1794,20 +1829,33 @@
 
     picker.options = function (newOptions) {
       if (arguments.length === 0) {
-        return $.extend(true, {}, options);
+        return utils.extend(true, {}, options);
+        //        return $.extend(true, {}, options);
       }
 
       if (!(newOptions instanceof Object)) {
         throw new TypeError('options() options parameter should be an object');
       }
-      $.extend(true, options, newOptions);
-      $.each(options, function (key, value) {
+      //      $.extend(true, options, newOptions);
+      utils.extend(true, options, newOptions);
+
+      var key, value;
+      for (key in options) {
+        value = options[key];
         if (picker[key] !== undefined) {
           picker[key](value);
         } else {
           throw new TypeError('option ' + key + ' is not recognized!');
         }
-      });
+      }
+
+      //      $.each(options, function (key, value) {
+      //        if (picker[key] !== undefined) {
+      //          picker[key](value);
+      //        } else {
+      //          throw new TypeError('option ' + key + ' is not recognized!');
+      //        }
+      //      });
       return picker;
     };
 
@@ -1874,7 +1922,7 @@
 
     picker.disabledDates = function (dates) {
       if (arguments.length === 0) {
-        return (options.disabledDates ? $.extend({}, options.disabledDates) : options.disabledDates);
+        return (options.disabledDates ? utils.extend({}, options.disabledDates) : options.disabledDates);
       }
 
       if (!dates) {
@@ -1893,7 +1941,7 @@
 
     picker.enabledDates = function (dates) {
       if (arguments.length === 0) {
-        return (options.enabledDates ? $.extend({}, options.enabledDates) : options.enabledDates);
+        return (options.enabledDates ? utils.extend({}, options.enabledDates) : options.enabledDates);
       }
 
       if (!dates) {
@@ -2029,7 +2077,8 @@
 
       options.defaultDate = parsedDate;
 
-      if (options.defaultDate && input.val().trim() === '' && input.attr('placeholder') === undefined) {
+      var nojqInput = input.get(0);
+      if (options.defaultDate && nojqInput.value.trim() === '' && nojqInput.getAttribute('placeholder') === undefined) {
         setValue(options.defaultDate);
       }
       return picker;
@@ -2108,13 +2157,13 @@
 
     picker.icons = function (icons) {
       if (arguments.length === 0) {
-        return $.extend({}, options.icons);
+        return utils.extend({}, options.icons);
       }
 
       if (!(icons instanceof Object)) {
         throw new TypeError('icons() expects parameter to be an Object');
       }
-      $.extend(options.icons, icons);
+      utils.extend(options.icons, icons);
       if (widget) {
         hide();
         show();
@@ -2192,7 +2241,7 @@
 
     picker.widgetPositioning = function (widgetPositioning) {
       if (arguments.length === 0) {
-        return $.extend({}, options.widgetPositioning);
+        return utils.extend({}, options.widgetPositioning);
       }
 
       if (({}).toString.call(widgetPositioning) !== '[object Object]') {
@@ -2270,18 +2319,19 @@
       return picker;
     };
 
+    // TODO this function and options.widgetParent can be removed because its not needed for our use case
     picker.widgetParent = function (widgetParent) {
       if (arguments.length === 0) {
         return options.widgetParent;
       }
 
-      if (typeof widgetParent === 'string') {
-        widgetParent = $(widgetParent);
-      }
+      //      if (typeof widgetParent === 'string') {
+      //        widgetParent = $(widgetParent);
+      //      }
 
-      if (widgetParent !== null && (typeof widgetParent !== 'string' && !(widgetParent instanceof $))) {
-        throw new TypeError('widgetParent() expects a string or a jQuery object parameter');
-      }
+      //      if (widgetParent !== null && (typeof widgetParent !== 'string' && !(widgetParent instanceof $))) {
+      //        throw new TypeError('widgetParent() expects a string or a jQuery object parameter');
+      //      }
 
       options.widgetParent = widgetParent;
       if (widget) {
@@ -2375,27 +2425,39 @@
     };
 
     // initializing element and component attributes
-    if (element.is('input')) {
+    //    if (element.is('input')) {
+    //      input = element;
+    //    } else {
+    //      input = element.find(options.datepickerInput);
+    //      if (input.size() === 0) {
+    //        input = element.find('input');
+    //      } else if (!input.is('input')) {
+    //        throw new Error('CSS class "' + options.datepickerInput + '" cannot be applied to non input element');
+    //      }
+    //    }
+
+    if (utils.isTag(element, 'input')) {
       input = element;
     } else {
-      input = element.find(options.datepickerInput);
-      if (input.size() === 0) {
-        input = element.find('input');
-      } else if (!input.is('input')) {
+      input = element.querySelector(options.datepickerInput);
+      if (!input) {
+        input = element.querySelector('input');
+      } else if (!utils.isTag(input, 'input')) {
         throw new Error('CSS class "' + options.datepickerInput + '" cannot be applied to non input element');
       }
     }
 
-    if (element.hasClass('input-group')) {
+    if (element.classList.contains('input-group')) {
       // in case there is more then one 'input-group-addon' Issue #48
-      if (element.find('.datepickerbutton').size() === 0) {
-        component = element.find('[class^="input-group-"]');
+      var datePicketButton = element.querySelectorAll('.datepickerbutton');
+      if (datePicketButton.length === 0) {
+        component = element.querySelector('[class^="input-group-"]');
       } else {
-        component = element.find('.datepickerbutton');
+        component = element.querySelector('.datepickerbutton');
       }
     }
 
-    if (!options.inline && !input.is('input')) {
+    if (!options.inline && !utils.isTag(input, 'input')) {
       throw new Error('Could not initialize DateTimePicker without an input element');
     }
 
@@ -2409,12 +2471,12 @@
 
     attachDatePickerElementEvents();
 
-    if (input.prop('disabled')) {
+    if (input.hasAttribute('disabled')) {
       picker.disable();
     }
-    if (input.is('input') && input.val().trim().length !== 0) {
-      setValue(parseInputDate(input.val().trim()));
-    } else if (options.defaultDate && input.attr('placeholder') === undefined) {
+    if (utils.isTag(input, 'input') && input.value.trim().length !== 0) {
+      setValue(parseInputDate(input.value.trim()));
+    } else if (options.defaultDate && input.hasAttribute('placeholder')) {
       setValue(options.defaultDate);
     }
     if (options.inline) {
@@ -2429,18 +2491,17 @@
    *
    ********************************************************************************/
 
-  $.fn.datetimepicker = function (options) {
-    return this.each(function () {
-      var $this = $(this);
-      if (!$this.data('DateTimePicker')) {
-        // create a private copy of the defaults object
-        options = $.extend(true, {}, $.fn.datetimepicker.defaults, options);
-        $this.data('DateTimePicker', dateTimePicker($this, options));
-      }
-    });
+  utils.datetimepicker = function (element, options) {
+    if (!utils.getData(element, 'DateTimePicker')) {
+      // create a private copy of the defaults object
+      options = utils.extend(true, {}, utils.datetimepicker.defaults, options);
+      var instance = dateTimePicker(element, options)
+      utils.setData(element, 'DateTimePicker', instance);
+      return instance;
+    }
   };
 
-  $.fn.datetimepicker.defaults = {
+  utils.datetimepicker.defaults = {
     format: false,
     dayViewHeaderFormat: 'MMMM YYYY',
     extraFormats: false,

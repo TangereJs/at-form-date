@@ -1,5 +1,5 @@
 <script src="../moment/moment.js"></script>
-<script src="scripts/jquery-2.1.3.js"></script>
+<!--<script src="scripts/jquery-2.1.3.js"></script>-->
 <script src="scripts/at-form-date-utils.js"></script>
 <script src="scripts/collapse.js"></script>
 <script src="scripts/transition.js"></script>
@@ -49,11 +49,12 @@
       }
     },
     _isReady: false,
-    _scopeStyleViaAttr: true,
+    _scopeCssViaAttr: true,
     _dtInstance: undefined,
     ready: function () {
-      this._dtInstance = $(this.$.datetimepicker).datetimepicker({
+      this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
         calendarWeeks: true,
+        debug: true,
 //        sideBySide: true
 //        toolbarPlacement: 'top'
         format: 'YY-MM-DD HH:mm:ss',
@@ -63,13 +64,6 @@
       });
 
       var _self = this;
-      this._dtInstance.on('dp.change', function (event) {
-        if (event.date) {
-          _self.value = event.date._d;
-        } else {
-          _self.value = '';
-        }
-      });
 
       // @see bootstrap-datetimepicker.js, line 770 function notifyEvent
       // jquery custom events can be done with dispatchEvent

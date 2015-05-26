@@ -132,7 +132,7 @@
   var dataApiStorage = {};
   var dataApiStorageUniqueIdCounter = 100;
 
-  // returns an entry in the __dataApiStorage for specified element and entryKey
+  // returns an entry in the dataApiStorage for specified element and entryKey
   utils.getData = function (element, entryKey) {
     if (notNullAndUndefined(element)) {
       if (!element.utilsDataApiStorage) {
@@ -163,6 +163,14 @@
       }
     }
   };
+
+  utils.removeData = function (element, entryKey) {
+    if (notNullAndUndefined(element)) {
+      if (element.utilsDataApiStorage) {
+        delete dataApiStorage[element.utilsDataApiStorage];
+      }
+    }
+  }
 
   // sets or gets the width of the element;
   // when returned value is as number
@@ -373,4 +381,18 @@
     }
   }
 
+  var rmsPrefix = /^-ms-/;
+  var rdashAlpha = /-([\da-z])/gi;
+
+  // Used by jQuery.camelCase as callback to replace()
+  function fcamelCase(all, letter) {
+    return letter.toUpperCase();
+  };
+
+  // Convert dashed to camelCase; used by the css and data modules
+  // Support: IE9-11+
+  // Microsoft forgot to hump their vendor prefix (#9572)
+  utils.camelCase = function (string) {
+    return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
+  };
 }(window.atFormDateUtils = window.atFormDateUtils || {}));

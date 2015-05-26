@@ -7,7 +7,7 @@
  * ======================================================================== */
 
 
-(function ($, utils) {
+(function (utils) {
   'use strict';
 
   // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
@@ -104,4 +104,4 @@
   utils.support = {};
   utils.support.transition = transitionEnd();
 
-}(jQuery, window.atFormDateUtils = window.atFormDateUtils || {}));
+}(window.atFormDateUtils = window.atFormDateUtils || {}));

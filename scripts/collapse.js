@@ -7,7 +7,7 @@
  * ======================================================================== */
 
 
-(function ($, utils) {
+(function (utils) {
   'use strict';
 
   // COLLAPSE PUBLIC CLASS DEFINITION
@@ -201,7 +201,7 @@
       return complete.call(this);
     }
 
-    scrollSize = $.camelCase(['scroll', dimension].join('-'));
+    scrollSize = utils.camelCase(['scroll', dimension].join('-'));
 
     this.$element.addEventListener('bsTransitionEnd', complete);
 
@@ -462,4 +462,4 @@
   //    Plugin.call($target, option);
   //  });
 
-}(jQuery, window.atFormDateUtils));
+}(window.atFormDateUtils));
