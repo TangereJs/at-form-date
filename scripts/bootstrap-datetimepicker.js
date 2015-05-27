@@ -277,6 +277,7 @@
           tdElem.appendChild(aElem);
           aElem.setAttribute('href', '#');
           aElem.setAttribute('tabindex', '-1');
+          aElem.classList.add('btn');
           aElem.setAttribute('data-action', 'decrementHours');
 
           spanElem = document.createElement('span');
@@ -1010,6 +1011,7 @@
         updateMonths();
 
         updateYears();
+        reattachEventListeners(widget.querySelector('.datepicker'));
       },
 
       fillHours = function () {
@@ -1134,6 +1136,7 @@
         fillHours();
         fillMinutes();
         fillSeconds();
+        reattachEventListeners(widget.querySelector('.timepicker'));
       },
 
       update = function () {
@@ -1142,10 +1145,9 @@
         }
         fillDate();
         fillTime();
-        reattachEventListeners();
       },
 
-      reattachEventListeners = function () {
+      reattachEventListeners = function (container) {
         // added this here to fix broken event listeners
         // jQuery remembers what handlers to call on what html elements even 
         // when elements are removed and than added back to the same place
@@ -1153,11 +1155,13 @@
         //          tdDay.addEventListener('click', doAction);
 
         // DOM event attachment is currently buggy; will return to this later
-        var wcElems = widget.querySelectorAll('[data-action]'),
-          wcElemIndex, wcElem;
-        for (wcElemIndex = 0; wcElemIndex < wcElems.length; wcElemIndex += 1) {
-          wcElem = wcElems[wcElemIndex];
-          wcElem.addEventListener('click', doAction);
+        if (container) {
+          var wcElems = container.querySelectorAll('[data-action]'),
+            wcElemIndex, wcElem;
+          for (wcElemIndex = 0; wcElemIndex < wcElems.length; wcElemIndex += 1) {
+            wcElem = wcElems[wcElemIndex];
+            wcElem.addEventListener('click', doAction);
+          }
         }
       },
 
@@ -1211,7 +1215,6 @@
         if (!widget) {
           return picker;
         }
-        //        var nojqWidget = widget.get(0);
 
         // Ignore event if in the middle of a picker transition
         var elemWithCollapseClass = widget.querySelector('.collapse');
@@ -1474,10 +1477,12 @@
       },
 
       doAction = function (e) {
+        console.info('doAction executing ... ');
         if (e.currentTarget.classList.contains('disabled')) {
           return false;
         }
         var actionName = e.currentTarget.getAttribute('data-action');
+        console.info('executing ' + actionName);
         actions[actionName].apply(picker, arguments);
         return false;
       },
@@ -1637,7 +1642,7 @@
       },
 
       change = function (e) {
-        var val = $(e.target).val().trim(),
+        var val = e.target.value.trim(),
           parsedDate = val ? parseInputDate(val) : null;
         setValue(parsedDate);
         e.stopImmediatePropagation();
@@ -2550,7 +2555,7 @@
           return;
         }
         var d = this.date() || moment();
-        if (widget.find('.datepicker').is(':visible')) {
+        if (utils.isVisible(widget.querySelector('.datepicker'))) {
           this.date(d.clone().subtract(7, 'd'));
         } else {
           this.date(d.clone().add(1, 'm'));
@@ -2562,7 +2567,7 @@
           return;
         }
         var d = this.date() || moment();
-        if (widget.find('.datepicker').is(':visible')) {
+        if (utils.isVisible(widget.querySelector('.datepicker'))) {
           this.date(d.clone().add(7, 'd'));
         } else {
           this.date(d.clone().subtract(1, 'm'));
@@ -2573,7 +2578,7 @@
           return;
         }
         var d = this.date() || moment();
-        if (widget.find('.datepicker').is(':visible')) {
+        if (utils.isVisible(widget.querySelector('.datepicker'))) {
           this.date(d.clone().subtract(1, 'y'));
         } else {
           this.date(d.clone().add(1, 'h'));
@@ -2584,7 +2589,7 @@
           return;
         }
         var d = this.date() || moment();
-        if (widget.find('.datepicker').is(':visible')) {
+        if (utils.isVisible(widget.querySelector('.datepicker'))) {
           this.date(d.clone().add(1, 'y'));
         } else {
           this.date(d.clone().subtract(1, 'h'));
@@ -2595,7 +2600,7 @@
           return;
         }
         var d = this.date() || moment();
-        if (widget.find('.datepicker').is(':visible')) {
+        if (utils.isVisible(widget.querySelector('.datepicker'))) {
           this.date(d.clone().subtract(1, 'd'));
         }
       },
@@ -2604,7 +2609,7 @@
           return;
         }
         var d = this.date() || moment();
-        if (widget.find('.datepicker').is(':visible')) {
+        if (utils.isVisible(widget.querySelector('.datepicker'))) {
           this.date(d.clone().add(1, 'd'));
         }
       },
@@ -2613,7 +2618,7 @@
           return;
         }
         var d = this.date() || moment();
-        if (widget.find('.datepicker').is(':visible')) {
+        if (utils.isVisible(widget.querySelector('.datepicker'))) {
           this.date(d.clone().subtract(1, 'M'));
         }
       },
@@ -2622,7 +2627,7 @@
           return;
         }
         var d = this.date() || moment();
-        if (widget.find('.datepicker').is(':visible')) {
+        if (utils.isVisible(widget.querySelector('.datepicker'))) {
           this.date(d.clone().add(1, 'M'));
         }
       },
@@ -2637,8 +2642,14 @@
       //    if(toggle.length > 0) toggle.click();
       //},
       'control space': function (widget) {
-        if (widget.find('.timepicker').is(':visible')) {
-          widget.find('.btn[data-action="togglePeriod"]').click();
+        if (widget && utils.isVisible(widget.querySelector('.timepicker'))) {
+          var togglePeriodElem = widget.querySelector('.btn[data-action="togglePeriod"]');
+          if (togglePeriodElem) {
+            var clickEvent = document.createEvent('Event');
+            clickEvent.initEvent('click', true, true);
+            togglePeriodElem.dispatchEvent('click');
+          }
+          //          widget.find('.btn[data-action="togglePeriod"]').click();
         }
       },
       t: function () {

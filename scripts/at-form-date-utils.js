@@ -395,4 +395,9 @@
   utils.camelCase = function (string) {
     return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
   };
+
+  utils.isVisible = function (element) {
+    return element.offsetWidth > 0 && element.offsetHeight > 0;
+  }
+
 }(window.atFormDateUtils = window.atFormDateUtils || {}));
