@@ -1116,7 +1116,7 @@
         var timeComponents = widget.querySelectorAll('.timepicker span[data-time-component]');
 
         if (!use24Hours) {
-          var togglePeriodElem = nojqWidget.querySelector('.timepicker [data-action=togglePeriod]');
+          var togglePeriodElem = widget.querySelector('.timepicker [data-action=togglePeriod]');
           togglePeriodElem.textContent = date.format('A');
         }
 
@@ -1477,12 +1477,10 @@
       },
 
       doAction = function (e) {
-        console.info('doAction executing ... ');
         if (e.currentTarget.classList.contains('disabled')) {
           return false;
         }
         var actionName = e.currentTarget.getAttribute('data-action');
-        console.info('executing ' + actionName);
         actions[actionName].apply(picker, arguments);
         return false;
       },
@@ -1540,6 +1538,8 @@
         //        widget.addEventListener('click', doAction);        
         widget.addEventListener('mousedown', utils.returnFalse);
 
+        reattachEventListeners(widget);
+
         //        widget = $(widget);
         //        widget.on('click', '[data-action]', doAction); // this handles clicks on the widget
         //        widget.on('mousedown', utils.returnFalse);
@@ -1554,6 +1554,7 @@
 
         var isFocus = input.parentElement.querySelectorAll(':focus').length > 0;
         if (!isFocus) {
+          widget.setAttribute('tabindex', "0");
           input.focus();
         }
 
@@ -1660,7 +1661,30 @@
         //        var nojqInput = input.get(0);
         input.addEventListener('change', change);
         if (!options.debug) {
-          input.addEventListener('blur', hide);
+          input.addEventListener('blur', function (event) {
+            // *ij*
+            // When input goes out of focus, hide function is called.
+            // hide function destroys the UI Widget.
+            // The "out of focus" happens when user clicks on the UI widget. 
+            // But when user clicks on the UI widget a click callback function should be executed. 
+            // Its not executed because blur is triggered by the browser first,
+            // so click never gets the chance.
+            // hide function is called when the user has not clicked the widget            
+            if (event.relatedTarget !== widget) {
+              if (event.relatedTarget === null) {
+                // event.relatedTarget is null when user clicks outside the widget and the input
+                hide();
+              } else {
+                // user has clicked somewhere on the widget; fosuc the input field
+                // this  focusing ensures that this blur handler can be called again
+                input.focus();
+              }
+            } else {
+              // user has clicked somewhere on the widget; fosuc the input field
+              // this  focusing ensures that this blur handler can be called again
+              input.focus();
+            }
+          });
         }
         input.addEventListener('keydown', keydown);
         input.addEventListener('keyup', keyup);
@@ -2647,7 +2671,7 @@
           if (togglePeriodElem) {
             var clickEvent = document.createEvent('Event');
             clickEvent.initEvent('click', true, true);
-            togglePeriodElem.dispatchEvent('click');
+            togglePeriodElem.dispatchEvent(clickEvent);
           }
           //          widget.find('.btn[data-action="togglePeriod"]').click();
         }

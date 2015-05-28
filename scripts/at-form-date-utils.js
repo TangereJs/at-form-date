@@ -400,4 +400,16 @@
     return element.offsetWidth > 0 && element.offsetHeight > 0;
   }
 
+  utils.isChildOf = function (child, parent) {
+    var isChild = false;
+    var iterElem = child ? child.parentElement : null;
+
+    while (!isChild && iterElem !==null && iterElem.nodeType !== 9) {
+      isChild = iterElem === parent;
+      iterElem = iterElem.parentElement;
+    }
+
+    return isChild;
+  }
+
 }(window.atFormDateUtils = window.atFormDateUtils || {}));
