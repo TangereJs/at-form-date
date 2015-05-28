@@ -53,14 +53,14 @@
     _dtInstance: undefined,
     ready: function () {
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
-        calendarWeeks: true,
-//        debug: true,
-//        sideBySide: true,
-//        toolbarPlacement: 'top'
+        //        calendarWeeks: true,
+        debug: true,
+        //        sideBySide: true,
+        //        toolbarPlacement: 'top'
         format: 'YY-MM-DD hh:mm:ss A',
-//        showClear: true,
-//        showClose: true,
-//        showTodayButton: true
+        //        showClear: true,
+        //        showClose: true,
+        //        showTodayButton: true
       });
 
       var _self = this;
@@ -69,14 +69,14 @@
       // jquery custom events can be done with dispatchEvent
       // listening to the dispatched event can be done by attaching the event listener to the 
       // parent element of the element on which event is dispatched on
-      this.$.datetimepicker.addEventListener('dp.change', function(event){
-         if (event.date) {
+      this.$.datetimepicker.addEventListener('dp.change', function (event) {
+        if (event.date) {
           _self.value = event.date._d;
         } else {
           _self.value = '';
-        }   
+        }
       });
-      
+
       this._isReady = true;
     },
     disabledChanged: function (newValue, oldValue) {

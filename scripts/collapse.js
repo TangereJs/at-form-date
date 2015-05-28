@@ -190,10 +190,9 @@
       self.transitioning = 0;
 
       self.$element.removeEventListener('bsTransitionEnd', complete);
-
+      
       var shownBsCollapseEvent = document.createEvent('Event');
       shownBsCollapseEvent.initEvent('shown.bs.collapse', false, false);
-
       self.$element.dispatchEvent(shownBsCollapseEvent);
     };
 
@@ -202,11 +201,10 @@
     }
 
     scrollSize = utils.camelCase(['scroll', dimension].join('-'));
-
+    
     this.$element.addEventListener('bsTransitionEnd', complete);
-
     utils.emulateTransitionEnd(this.$element, Collapse.TRANSITION_DURATION);
-    utils[dimension](this.$element, this.$element[scrollSize]);
+    utils[dimension](this.$element, this.$element[scrollSize]+'px');
   };
 
 
@@ -285,7 +283,7 @@
     this.$element.classList.add('collapsing');
     this.$element.classList.remove('collapse');
     this.$element.classList.remove('in');
-    this.$element.removeAttribute('aria-expanded');
+    this.$element.setAttribute('aria-expanded', false);
 
     this.transitioning = 1;
 
@@ -299,16 +297,16 @@
 
       var hiddenBsCollapseEvent = document.createEvent('Event');
       hiddenBsCollapseEvent.initEvent('hidden.bs.collapse', false, false);
-      self.$element.dispatchEvent(hiddenBsCollapseEvent);
+      self.$element.dispatchEvent(hiddenBsCollapseEvent);            
     };
 
     if (!utils.support.transition) {
       return complete.call(this);
     }
-
+    
+    utils[dimension](this.$element, '0px');
     this.$element.addEventListener('bsTransitionEnd', complete);
     utils.emulateTransitionEnd(this.$element, Collapse.TRANSITION_DURATION);
-    utils[dimension](this.$element, 0);
   };
 
   //  Collapse.prototype.toggle = function () {
@@ -350,11 +348,7 @@
 
   Collapse.prototype.addAriaAndCollapsedClass = function ($element) {
     var isOpen = $element.classList.contains('in');
-    if (isOpen) {
       $element.setAttribute('aria-expanded', isOpen);
-    } else {
-      $element.removeAttribute('aria-expanded');
-    }
   };
   
 //  function getTargetFromTrigger($trigger) {
