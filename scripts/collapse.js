@@ -148,7 +148,8 @@
       throwAway,
       dimension,
       complete,
-      scrollSize;
+      scrollSize,
+      scrollSizeProp;
 
     if (actives && actives.length) {
       activesData = actives.data('bs.collapse');
@@ -190,7 +191,7 @@
       self.transitioning = 0;
 
       self.$element.removeEventListener('bsTransitionEnd', complete);
-      
+
       var shownBsCollapseEvent = document.createEvent('Event');
       shownBsCollapseEvent.initEvent('shown.bs.collapse', false, false);
       self.$element.dispatchEvent(shownBsCollapseEvent);
@@ -200,13 +201,19 @@
       return complete.call(this);
     }
 
-    scrollSize = utils.camelCase(['scroll', dimension].join('-'));
+    scrollSizeProp = utils.camelCase(['scroll', dimension].join('-'));
+    scrollSize = this.$element[scrollSizeProp];
+//    if (scrollSize > this._maxScrollSize) {
+//      this._maxScrollSize = scrollSize;
+//    }
     
+//    scrollSize = Math.max(this._maxScrollSize, scrollSize);
+//    console.info('scroll size: ' + scrollSize);
     this.$element.addEventListener('bsTransitionEnd', complete);
     utils.emulateTransitionEnd(this.$element, Collapse.TRANSITION_DURATION);
-    utils[dimension](this.$element, this.$element[scrollSize]+'px');
+    utils[dimension](this.$element, scrollSize + 'px');
   };
-
+//  Collapse.prototype._maxScrollSize = 0;
 
   //  Collapse.prototype.hide = function () {
   //    console.log('Collapse.prototype.hide = function () is not called NOT');
@@ -297,14 +304,16 @@
 
       var hiddenBsCollapseEvent = document.createEvent('Event');
       hiddenBsCollapseEvent.initEvent('hidden.bs.collapse', false, false);
-      self.$element.dispatchEvent(hiddenBsCollapseEvent);            
+      self.$element.dispatchEvent(hiddenBsCollapseEvent);
     };
 
     if (!utils.support.transition) {
       return complete.call(this);
     }
-    
-    utils[dimension](this.$element, '0px');
+    // *ij* setting the dimension is delayed in order to simulate jquery behavior
+    setTimeout(function () {
+      utils[dimension](self.$element, '0px');
+    }, 0);
     this.$element.addEventListener('bsTransitionEnd', complete);
     utils.emulateTransitionEnd(this.$element, Collapse.TRANSITION_DURATION);
   };
@@ -317,47 +326,47 @@
     this[this.$element.classList.contains('in') ? 'hide' : 'show']();
   };
 
-//  Collapse.prototype.getParent = function () {
-//    return $(this.options.parent)
-//      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
-//      .each($.proxy(function (i, element) {
-//        var $element = $(element);
-//        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element);
-//      }, this))
-//      .end();
-//  };
+  //  Collapse.prototype.getParent = function () {
+  //    return $(this.options.parent)
+  //      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
+  //      .each($.proxy(function (i, element) {
+  //        var $element = $(element);
+  //        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element);
+  //      }, this))
+  //      .end();
+  //  };
 
-//  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
-//    console.log("Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) is not called. NOT");
-//    var isOpen = $element.hasClass('in');
-//
-//    $element.attr('aria-expanded', isOpen);
-//    $trigger
-//      .toggleClass('collapsed', !isOpen)
-//      .attr('aria-expanded', isOpen);
-//  };
+  //  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
+  //    console.log("Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) is not called. NOT");
+  //    var isOpen = $element.hasClass('in');
+  //
+  //    $element.attr('aria-expanded', isOpen);
+  //    $trigger
+  //      .toggleClass('collapsed', !isOpen)
+  //      .attr('aria-expanded', isOpen);
+  //  };
 
-//  Collapse.prototype.addAriaAndCollapsedClass = function ($element) {
-//    var isOpen = $element.classList.contains('in');
-//    if (isOpen) {
-//      $element.setAttribute('aria-expanded', isOpen);
-//    } else {
-//      $element.removeAttribute('aria-expanded');
-//    }
-//  };
+  //  Collapse.prototype.addAriaAndCollapsedClass = function ($element) {
+  //    var isOpen = $element.classList.contains('in');
+  //    if (isOpen) {
+  //      $element.setAttribute('aria-expanded', isOpen);
+  //    } else {
+  //      $element.removeAttribute('aria-expanded');
+  //    }
+  //  };
 
   Collapse.prototype.addAriaAndCollapsedClass = function ($element) {
     var isOpen = $element.classList.contains('in');
-      $element.setAttribute('aria-expanded', isOpen);
+    $element.setAttribute('aria-expanded', isOpen);
   };
-  
-//  function getTargetFromTrigger($trigger) {
-//    var
-//      href,
-//      target = $trigger.attr('data-target') || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, ''); // strip for ie7
-//
-//    return $(target);
-//  }
+
+  //  function getTargetFromTrigger($trigger) {
+  //    var
+  //      href,
+  //      target = $trigger.attr('data-target') || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, ''); // strip for ie7
+  //
+  //    return $(target);
+  //  }
 
 
   // COLLAPSE PLUGIN DEFINITION
