@@ -75,6 +75,15 @@ body {
 .glyphicon-chevron-right:before {
   content: "\e080";
 }
+.glyphicon-screenshot:before {
+  content: "\e087";
+}
+.glyphicon-trash:before {
+  content: "\e020";
+}
+.glyphicon-remove:before {
+  content: "\e014";
+}
 
 * {
   -webkit-box-sizing: border-box;
@@ -189,6 +198,10 @@ input {
   padding-left: 15px;
 }
 
+.col-sm-6 {
+    width: 50%;
+  }
+
 .row {
   margin-right: -15px;
   margin-left: -15px;
@@ -255,3 +268,67 @@ table {
 td,th {
     padding: 0
 }
+
+.collapse {
+  display: none;
+  visibility: hidden;
+}
+
+.collapse.in {
+  display: block;
+  visibility: visible;
+}
+
+.collapsing {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  -webkit-transition-timing-function: ease;
+       -o-transition-timing-function: ease;
+          transition-timing-function: ease;
+  -webkit-transition-duration: .35s;
+       -o-transition-duration: .35s;
+          transition-duration: .35s;
+  -webkit-transition-property: height, visibility;
+       -o-transition-property: height, visibility;
+          transition-property: height, visibility;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;  
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+ 
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.table-condensed>thead>tr>th {
+  padding: 5px;
+}
+

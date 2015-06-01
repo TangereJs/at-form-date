@@ -710,7 +710,7 @@
         if (horizontal === 'right') {
           widget.classList.add('pull-right');
         } else {
-          widget.classList.remove('pull-right');
+          widget.classList.remove('pull-left');
         }
 
         var parentStyle = window.getComputedStyle(parent);

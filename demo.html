@@ -3,26 +3,49 @@
 
 <head>
   <title>at-form-date</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">          
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="../webcomponentsjs/webcomponents.js"></script>
+  <script src="../webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="../polymer/polymer.html" />
+  <link rel="import" href="../layout/layout.html" />
   <link rel="import" href="at-form-date.html" />
 </head>
 
 <body>
   <h2>This is demo for at-form-date</h2>
-  <div class="row">
-    <at-form-date id="atFormDate1"></at-form-date>
-    <div>
+  <div class="horizontal layout">
+    <at-form-date id="atFormDate1" class="flex-6"></at-form-date>
+    <div class="flex-6">
       <span>Echo value:</span><span id="echoValue1"></span>
     </div>
   </div>
-  <div  class="row">
-    <at-form-date id="atFormDate2"></at-form-date>
-    <div>
+  <div class="horizontal layout">
+    <at-form-date id="atFormDate2" class="flex-6"></at-form-date>
+    <div class="flex-6">
       <span>Echo value:</span><span id="echoValue2"></span>
+    </div>
+  </div>
+  <div class="vertical layout">
+    <div>
+      <h2>Disabled demo</h2>
+    </div>
+    <div class="horizontal layout">
+      <at-form-date id="atFormDate2" class="flex-6" disabled></at-form-date>
+      <div class="flex-6">
+        <span>Echo value:</span><span id="echoValue2"></span>
+      </div>
+    </div>
+  </div>
+  <div class="vertical layout">
+    <div>
+      <h2>Required demo</h2>
+    </div>
+    <div class="horizontal layout">
+      <at-form-date id="atFormDate2" class="flex-6" required></at-form-date>
+      <div class="flex-6">
+        <span>Echo value:</span><span id="echoValue2"></span>
+      </div>
     </div>
   </div>
   <script>
