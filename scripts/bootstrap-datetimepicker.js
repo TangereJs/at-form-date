@@ -1816,15 +1816,14 @@
       //        component.addClass('disabled');
       //      }
 
-      var nojqComponent = component.get(0);
-      if (nojqComponent && nojqComponent.classList.contains('btn')) {
-        nojqComponent.classList.add('disabled');
+      if (component && component.classList.contains('btn')) {
+        component.classList.add('disabled');
       }
 
       //      input.prop('disabled', true);
 
-      var nojqInput = input.get(0);
-      nojqInput.setAttribute('disabled', true);
+      //      var nojqInput = input.get(0);
+      input.setAttribute('disabled', true);
 
       return picker;
     };
@@ -1833,14 +1832,13 @@
       //      if (component && component.hasClass('btn')) {
       //        component.removeClass('disabled');
       //      }
-      var nojqComponent = component.get(0);
-      if (nojqComponent && nojqComponent.classList.contains('btn')) {
-        nojqComponent.classList.remove('disabled');
+      if (component && component.classList.contains('btn')) {
+        component.classList.remove('disabled');
       }
 
       //      input.prop('disabled', false);
-      var nojqInput = input.get(0);
-      nojqInput.removeAttribute('disabled');
+      //      var nojqInput = input.get(0);
+      input.removeAttribute('disabled');
 
       return picker;
     };
@@ -2106,8 +2104,7 @@
 
       options.defaultDate = parsedDate;
 
-      var nojqInput = input.get(0);
-      if (options.defaultDate && nojqInput.value.trim() === '' && nojqInput.getAttribute('placeholder') === undefined) {
+      if (options.defaultDate && nojqInput.value.trim() === '' && input.getAttribute('placeholder') === undefined) {
         setValue(options.defaultDate);
       }
       return picker;

@@ -1,3 +1,5 @@
+<link rel="import" href="../at-core-theme/at-core-theme.html">
+
 <script src="../moment/moment.js"></script>
 <script src="scripts/at-form-date-utils.js"></script>
 <script src="scripts/collapse.js"></script>
@@ -8,11 +10,17 @@
   <link rel="stylesheet" href="styles/at-form-date.css" />
   <link rel="stylesheet" href="styles/bootstrap-datetimepicker.css" />
   <template>
-    <div class="form-group">
+    <at-core-theme></at-core-theme>
+    <div class="ui form">
+      <div class="field">
+        <label>{{label}}</label>
+      </div>
+    </div>
+    <div id="requiredFormGroup" class="form-group">
       <div class='input-group date' id='datetimepicker'>
         <input type='text' class="form-control" />
         <span class="input-group-addon">
-              <span class="glyphicon glyphicon-calendar"></span>
+          <span class="glyphicon glyphicon-calendar"></span>
         </span>
       </div>
     </div>
@@ -23,10 +31,15 @@
   Polymer({
     is: 'at-form-date',
     properties: {
+      label: {
+        type: String,
+        value: ''
+      },
       value: {
         type: String,
         value: '',
-        notify: true
+        notify: true,
+        observer: 'valueChanged'
       },
       valid: {
         type: Boolean,
@@ -74,12 +87,35 @@
       });
 
       this._isReady = true;
+      this.disabledChanged();
+      this.valueChanged(this.value);
     },
     disabledChanged: function (newValue, oldValue) {
-      this.toggleAttribute(this.$.text, this.disabled);
+      if (this._isReady) {
+        this.toggleAttribute(this.$.text, this.disabled);
+        if (this.disabled) {
+          this._dtInstance.disable();
+        } else {
+          this._dtInstance.enable();
+        }
+      }
+    },
+    _refreshValidState() {
+      if (this.required && this.value === '') {
+        this.$.requiredFormGroup.classList.add('has-error');
+      } else {
+        this.$.requiredFormGroup.classList.remove('has-error');
+      }
+    },
+    valueChanged: function (newValue, oldValue) {
+      if (this._isReady) {
+        var newMoment = moment(newValue);
+        this._dtInstance.date(newMoment);
+      }
+      this._refreshValidState();
     },
     requiredChanged: function (newValue, oldValue) {
-
+      this._refreshValidState();
     }
   });
 </script>
