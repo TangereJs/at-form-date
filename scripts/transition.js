@@ -73,8 +73,8 @@
     var callback = function () {
       if (!called) {
         var transitionEvent = document.createEvent('Event');
-        transitionEvent.initEvent('bsTransitionEnd');
-        element.dispatchEvent(transitionEvent, false, false);
+        transitionEvent.initEvent('bsTransitionEnd', false, false, {});
+        element.dispatchEvent(transitionEvent);
       }
     }
 

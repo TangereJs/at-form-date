@@ -36,7 +36,7 @@
     }
     // Support: Android<4.0, iOS<6 (functionish RegExp)
     return typeof obj === "object" || typeof obj === "function" ?
-      class2type[toString.call(obj)] || "object" :
+      class2type[Object.prototype.toString.call(obj)] || "object" :
       typeof obj;
   };
 

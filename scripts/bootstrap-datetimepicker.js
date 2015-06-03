@@ -768,7 +768,7 @@
         // listening to the dispatched event can be done by attaching the event listener to the 
         // parent element of the element on which event is dispatched on
         var event = document.createEvent('CustomEvent');
-        event.initCustomEvent(e.type, true, true);
+        event.initCustomEvent(e.type, true, true, {});
         event.date = e.date;
         event.oldDate = e.oldDate;
         element.dispatchEvent(event);

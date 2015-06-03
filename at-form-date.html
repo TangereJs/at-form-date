@@ -18,7 +18,7 @@
     </div>
     <div id="requiredFormGroup" class="form-group">
       <div class='input-group date' id='datetimepicker'>
-        <input type='text' class="form-control" />
+        <input id='text' type='text' class="form-control" />
         <span class="input-group-addon">
           <span class="glyphicon glyphicon-calendar"></span>
         </span>
@@ -28,6 +28,7 @@
 </dom-module>
 
 <script>
+  'use strict';  
   Polymer({
     is: 'at-form-date',
     properties: {
@@ -92,7 +93,7 @@
     },
     disabledChanged: function (newValue, oldValue) {
       if (this._isReady) {
-        this.toggleAttribute(this.$.text, this.disabled);
+        this.toggleAttribute('disabled', this.disabled, this.$.text);
         if (this.disabled) {
           this._dtInstance.disable();
         } else {
@@ -100,7 +101,7 @@
         }
       }
     },
-    _refreshValidState() {
+    _refreshValidState: function() {
       if (this.required && this.value === '') {
         this.$.requiredFormGroup.classList.add('has-error');
       } else {
