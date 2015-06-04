@@ -1,14 +1,14 @@
 <link rel="import" href="../at-core-theme/at-core-theme.html">
+<link rel="import" href="../at-carbon-icon/at-carbon-icon.html">
 
 <script src="../moment/moment.js"></script>
 <script src="scripts/at-form-date-utils.js"></script>
 <script src="scripts/collapse.js"></script>
 <script src="scripts/transition.js"></script>
-<script src="scripts/bootstrap-datetimepicker.js"></script>
+<script src="scripts/datetimepicker.js"></script>
 
 <dom-module id="at-form-date">
-  <link rel="stylesheet" href="styles/at-form-date.css" />
-  <link rel="stylesheet" href="styles/bootstrap-datetimepicker.css" />
+  <link rel="stylesheet" href="at-form-date.css" />
   <template>
     <at-core-theme></at-core-theme>
     <div class="ui form">
@@ -20,7 +20,7 @@
       <div class='input-group date' id='datetimepicker'>
         <input id='text' type='text' class="form-control" />
         <span class="input-group-addon">
-          <span class="glyphicon glyphicon-calendar"></span>
+          <at-carbon-icon icon="now:calendar"></at-carbon-icon>
         </span>
       </div>
     </div>
@@ -28,7 +28,7 @@
 </dom-module>
 
 <script>
-  'use strict';  
+  'use strict';
   Polymer({
     is: 'at-form-date',
     properties: {
@@ -63,19 +63,19 @@
     _dtInstance: undefined,
     ready: function () {
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
-        //                calendarWeeks: true,
-        //                debug: true,
+        calendarWeeks: true,
+//        debug: true,
         //                sideBySide: true,
         //                toolbarPlacement: 'top',
         format: 'YY-MM-DD hh:mm:ss A',
-        //                showClear: true,
-        //                showClose: true,
-        //                showTodayButton: true
+        showClear: true,
+        showClose: true,
+        showTodayButton: true
       });
 
       var _self = this;
 
-      // @see bootstrap-datetimepicker.js, line 770 function notifyEvent
+      // @see datetimepicker.js, line 770 function notifyEvent
       // jquery custom events can be done with dispatchEvent
       // listening to the dispatched event can be done by attaching the event listener to the 
       // parent element of the element on which event is dispatched on
@@ -101,7 +101,7 @@
         }
       }
     },
-    _refreshValidState: function() {
+    _refreshValidState: function () {
       if (this.required && this.value === '') {
         this.$.requiredFormGroup.classList.add('has-error');
       } else {

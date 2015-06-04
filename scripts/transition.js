@@ -1,11 +1,3 @@
-/* ========================================================================
- * Bootstrap: transition.js v3.3.4
- * http://getbootstrap.com/javascript/#transitions
- * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
-
 
 (function (utils) {
   'use strict';
@@ -15,7 +7,7 @@
 
   function transitionEnd() {
     var
-      el = document.createElement('bootstrap'),
+      el = document.createElement('randomElem'),
 
       transEndEventNames = {
         WebkitTransition: 'webkitTransitionEnd',

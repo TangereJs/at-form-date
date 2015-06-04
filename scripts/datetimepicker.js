@@ -1,33 +1,3 @@
-/*! version : 4.7.14
- =========================================================
- bootstrap-datetimejs
- https://github.com/Eonasdan/bootstrap-datetimepicker
- Copyright (c) 2015 Jonathan Peterson
- =========================================================
- */
-/*
- The MIT License (MIT)
-
- Copyright (c) 2015 Jonathan Peterson
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- */
 /*global define:false */
 /*global exports:false */
 /*global require:false */
@@ -35,21 +5,16 @@
 /*global moment:false */
 (function (factory) {
   'use strict';
-  if (typeof define === 'function' && define.amd) {
-    // AMD is used - Register as an anonymous module.
-    define(['jquery', 'moment'], factory);
-  } else if (typeof exports === 'object') {
-    factory(require('jquery'), require('moment'));
-  } else {
-    if (typeof moment === 'undefined') {
-      throw 'bootstrap-datetimepicker requires Moment.js to be loaded first';
-    }
-    factory(moment, window.atFormDateUtils);
+
+  if (typeof moment === 'undefined') {
+    throw 'datetimepicker requires Moment.js to be loaded first';
   }
+  factory(moment, window.atFormDateUtils);
+
 }(function (moment, utils) {
   'use strict';
   if (!moment) {
-    throw new Error('bootstrap-datetimepicker requires Moment.js to be loaded first');
+    throw new Error('datetimepicker requires Moment.js to be loaded first');
   }
 
   var dateTimePicker = function (element, options) {
@@ -167,9 +132,9 @@
 
         trElem.appendChild(thElem);
 
-        var spanElem = document.createElement('span');
-        utils.addClasses(spanElem, options.icons.previous);
-        thElem.appendChild(spanElem);
+        var previousIcon = document.createElement('at-carbon-icon');
+        previousIcon.icon = "now:caret-left";
+        thElem.appendChild(previousIcon);
 
         thElem = document.createElement('th');
         thElem.classList.add('picker-switch');
@@ -184,10 +149,9 @@
 
         trElem.appendChild(thElem);
 
-        spanElem = document.createElement('span');
-        utils.addClasses(spanElem, options.icons.next);
-
-        thElem.appendChild(spanElem);
+        var nextIcon = document.createElement('at-carbon-icon');
+        nextIcon.icon = "now:caret-right";
+        thElem.appendChild(nextIcon);
 
         return headTemplate;
       },
@@ -257,9 +221,9 @@
           aElem.classList.add('btn');
           aElem.setAttribute('data-action', 'incrementHours');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.up);
+          var upIcon = document.createElement('at-carbon-icon');
+          upIcon.icon = options.nowicons.up;
+          aElem.appendChild(upIcon);
 
           tdElem = document.createElement('td');
           middleRow.appendChild(tdElem);
@@ -280,9 +244,9 @@
           aElem.classList.add('btn');
           aElem.setAttribute('data-action', 'decrementHours');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.down);
+          var downIcon = document.createElement('at-carbon-icon');
+          downIcon.icon = options.nowicons.down;
+          aElem.appendChild(downIcon);
         }
 
         if (isEnabled('m')) {
@@ -310,9 +274,9 @@
           aElem.classList.add('btn');
           aElem.setAttribute('data-action', 'incrementMinutes');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.up);
+          upIcon = document.createElement('at-carbon-icon');
+          upIcon.icon = options.nowicons.up;
+          aElem.appendChild(upIcon);
 
           // ----- for middle row ----- //
           tdElem = document.createElement('td');
@@ -335,9 +299,9 @@
           aElem.classList.add('btn');
           aElem.setAttribute('data-action', 'decrementMinutes');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.down);
+          downIcon = document.createElement('at-carbon-icon');
+          downIcon.icon = options.nowicons.down;
+          aElem.appendChild(downIcon);
         }
 
         if (isEnabled('s')) {
@@ -365,9 +329,9 @@
           aElem.classList.add('btn');
           aElem.setAttribute('data-action', 'incrementSeconds');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.up);
+          upIcon = document.createElement('at-carbon-icon');
+          upIcon.icon = options.nowicons.up;
+          aElem.appendChild(upIcon);
 
           // ----- for middle row ----- //
           tdElem = document.createElement('td');
@@ -390,9 +354,9 @@
           aElem.classList.add('btn');
           aElem.setAttribute('data-action', 'decrementSeconds');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.down);
+          downIcon = document.createElement('at-carbon-icon');
+          downIcon.icon = options.nowicons.down;
+          aElem.appendChild(downIcon);
         }
 
         if (!use24Hours) {
@@ -472,9 +436,9 @@
           tdElem.appendChild(aElem);
           aElem.setAttribute('data-action', 'today');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.today);
+          var todayIcon = document.createElement('at-carbon-icon');
+          todayIcon.icon = options.nowicons.today;
+          aElem.appendChild(todayIcon);
         }
         if (!options.sideBySide && hasDate() && hasTime()) {
           tdElem = document.createElement('td');
@@ -484,9 +448,9 @@
           tdElem.appendChild(aElem);
           aElem.setAttribute('data-action', 'togglePicker');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.time);
+          var switchIcon = document.createElement('at-carbon-icon');
+          switchIcon.icon = options.nowicons.time;
+          aElem.appendChild(switchIcon);
         }
         if (options.showClear) {
           tdElem = document.createElement('td');
@@ -496,9 +460,9 @@
           tdElem.appendChild(aElem);
           aElem.setAttribute('data-action', 'clear');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.clear);
+          var clearIcon = document.createElement('at-carbon-icon');
+          clearIcon.icon = options.nowicons.clear;
+          aElem.appendChild(clearIcon);
         }
         if (options.showClose) {
           tdElem = document.createElement('td');
@@ -508,9 +472,9 @@
           tdElem.appendChild(aElem);
           aElem.setAttribute('data-action', 'close');
 
-          spanElem = document.createElement('span');
-          aElem.appendChild(spanElem);
-          utils.addClasses(spanElem, options.icons.close);
+          var closeIcon = document.createElement('at-carbon-icon');
+          closeIcon.icon = options.nowicons.close;
+          aElem.appendChild(closeIcon);
         }
 
         var tableElem = document.createElement('table'),
@@ -534,7 +498,7 @@
           toolbar = document.createElement('li'),
           i;
 
-        template.classList.add('bootstrap-datetimepicker-widget');
+        template.classList.add('datetimepicker-widget');
         template.classList.add('dropdown-menu');
 
         dateView.classList.add('datepicker');
@@ -790,8 +754,10 @@
         }
 
         var filterSelector = '.datepicker-' + datePickerModes[currentViewMode].clsName;
-        var filterResult = widget.querySelector(filterSelector);        
-        if(filterResult) { filterResult.style.display = "block"; }
+        var filterResult = widget.querySelector(filterSelector);
+        if (filterResult) {
+          filterResult.style.display = "block";
+        }
       },
 
       fillDow = function () {
@@ -1394,15 +1360,21 @@
               closed.classList.add('in');
             }
 
-            if (utils.isTag(e.target, 'span')) {
-              utils.toggleClass(e.target, options.icons.time);
-              utils.toggleClass(e.target, options.icons.date);
+            if (utils.isTag(e.target, 'at-carbon-icon')) {
+              if (e.target.icon === options.nowicons.date) {
+                e.target.icon = options.nowicons.time;
+              } else {
+                e.target.icon = options.nowicons.date;
+              }
             } else {
-              var spans = e.target.querySelectorAll('span');
+              var spans = e.target.querySelectorAll('at-carbon-icon');
               for (var spansIndex = 0; spansIndex < spans.length; spansIndex += 1) {
                 var spanElem = spans[spansIndex];
-                utils.toggleClass(spanElem, options.icons.time);
-                utils.toggleClass(spanElem, options.icons.date);
+                if (spanElem.icon === options.nowicons.date) {
+                  spanElem.icon = options.nowicons.time;
+                } else {
+                  spanElem.icon = options.nowicons.date;
+                }
               }
             }
 
@@ -2187,13 +2159,13 @@
       return picker;
     };
 
-    picker.icons = function (icons) {
+    picker.nowicons = function (icons) {
       if (arguments.length === 0) {
         return utils.extend({}, options.icons);
       }
 
       if (!(icons instanceof Object)) {
-        throw new TypeError('icons() expects parameter to be an Object');
+        throw new TypeError('nowicons() expects parameter to be an Object');
       }
       utils.extend(options.icons, icons);
       if (widget) {
@@ -2546,16 +2518,16 @@
     defaultDate: false,
     disabledDates: false,
     enabledDates: false,
-    icons: {
-      time: 'glyphicon glyphicon-time',
-      date: 'glyphicon glyphicon-calendar',
-      up: 'glyphicon glyphicon-chevron-up',
-      down: 'glyphicon glyphicon-chevron-down',
-      previous: 'glyphicon glyphicon-chevron-left',
-      next: 'glyphicon glyphicon-chevron-right',
-      today: 'glyphicon glyphicon-screenshot',
-      clear: 'glyphicon glyphicon-trash',
-      close: 'glyphicon glyphicon-remove'
+    nowicons: {
+      time: 'now:clock',
+      date: 'now:calendar',
+      up: 'now:caret-up',
+      down: 'now:caret-down',
+      previous: 'now:caret-left',
+      next: 'now:caret-right',
+      today: 'now:plus',
+      clear: 'now:delete',
+      close: 'now:cancel'
     },
     useStrict: false,
     sideBySide: false,
