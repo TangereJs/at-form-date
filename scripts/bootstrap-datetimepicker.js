@@ -600,7 +600,9 @@
         if (hasTime()) {
           liElem = document.createElement('li');
           liClass = (options.collapse && hasDate() ? 'collapse' : '');
-          liElem.classList.add(liClass);
+          if (liClass !== '') {
+            utils.addClasses(liElem, liClass);
+          }
           liElem.appendChild(timeView);
           content.appendChild(liElem);
         }
@@ -788,8 +790,8 @@
         }
 
         var filterSelector = '.datepicker-' + datePickerModes[currentViewMode].clsName;
-        var filterResult = widget.querySelector(filterSelector);
-        filterResult.style.display = "block";
+        var filterResult = widget.querySelector(filterSelector);        
+        if(filterResult) { filterResult.style.display = "block"; }
       },
 
       fillDow = function () {
@@ -811,7 +813,9 @@
         }
 
         var thead = widget.querySelector('.datepicker-days thead');
-        thead.appendChild(row);
+        if (thead !== null) {
+          thead.appendChild(row);
+        }
       },
 
       isInDisabledDates = function (testDate) {
@@ -857,9 +861,11 @@
         }
 
         var widgetFind = widget.querySelector('.datepicker-months td');
-        widgetFind.innerHTML = '';
-        for (var spansIndex = 0; spansIndex < spans.length; spansIndex += 1) {
-          widgetFind.appendChild(spans[spansIndex]);
+        if (widgetFind) {
+          widgetFind.innerHTML = '';
+          for (var spansIndex = 0; spansIndex < spans.length; spansIndex += 1) {
+            widgetFind.appendChild(spans[spansIndex]);
+          }
         }
       },
 
@@ -932,16 +938,16 @@
       },
 
       fillDate = function () {
+        if (!hasDate()) {
+          return;
+        }
+
         var daysView = widget.querySelector('.datepicker-days');
         var daysViewHeader = daysView.querySelectorAll('th');
         var currentDate,
           html = [],
           row,
           clsName;
-
-        if (!hasDate()) {
-          return;
-        }
 
         var daysViewDisabledItems = daysView.querySelectorAll('.disabled');
         for (var daysViewDisabledItemsIndex = 0; daysViewDisabledItemsIndex < daysViewDisabledItems.length; daysViewDisabledItems += 1) {
