@@ -554,7 +554,9 @@
         if (hasDate()) {
           liElem = document.createElement('li');
           liClass = (options.collapse && hasTime() ? 'collapse in' : '');
-          atFormDateUtils.addClasses(liElem, liClass);
+          if (liClass !== '') {
+            atFormDateUtils.addClasses(liElem, liClass);
+          }
           liElem.appendChild(dateView);
           content.appendChild(liElem);
         }
@@ -1014,9 +1016,11 @@
           currentHour.add(1, 'h');
         }
 
-        table.innerHTML = '';
-        for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
-          table.appendChild(html[htmlIndex]);
+        if (table) {
+          table.innerHTML = '';
+          for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
+            table.appendChild(html[htmlIndex]);
+          }
         }
       },
 
@@ -1044,9 +1048,12 @@
           row.appendChild(td);
           currentMinute.add(step, 'm');
         }
-        table.innerHTML = '';
-        for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
-          table.appendChild(html[htmlIndex]);
+
+        if (table) {
+          table.innerHTML = '';
+          for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
+            table.appendChild(html[htmlIndex]);
+          }
         }
       },
 

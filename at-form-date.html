@@ -42,6 +42,10 @@
         notify: true,
         observer: 'valueChanged'
       },
+      format: {
+        type: String,
+        value: 'YY-MM-DD hh:mm:ss A'
+      },      
       valid: {
         type: Boolean,
         value: true,
@@ -67,7 +71,7 @@
         //        debug: true,
         //                sideBySide: true,
         //                toolbarPlacement: 'top',
-        format: 'YY-MM-DD hh:mm:ss A',
+        format: this.format,
         //        showClear: true,
         //        showClose: true,
         //        showTodayButton: true
