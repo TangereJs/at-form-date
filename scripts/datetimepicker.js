@@ -1659,14 +1659,14 @@
               if (event.relatedTarget === null) {
                 // event.relatedTarget is null when user clicks outside the widget and the input
                 hide();
-              } else {
+              } else if (utils.isChildOf(event.relatedTarget, widget)) {
                 // user has clicked somewhere on the widget; fosuc the input field
-                // this  focusing ensures that this blur handler can be called again
+                // this  focusing ensures that this blur handler can be called again               
                 input.focus();
               }
-            } else {
+            } else if (utils.isChildOf(event.relatedTarget, widget)) {
               // user has clicked somewhere on the widget; fosuc the input field
-              // this  focusing ensures that this blur handler can be called again
+              // this  focusing ensures that this blur handler can be called again               
               input.focus();
             }
           });

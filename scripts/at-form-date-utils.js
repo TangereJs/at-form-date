@@ -402,7 +402,7 @@
 
   utils.isChildOf = function (child, parent) {
     var isChild = false;
-    var iterElem = child ? child.parentElement : null;
+    var iterElem = child ? child : null;
 
     while (!isChild && iterElem !==null && iterElem.nodeType !== 9) {
       isChild = iterElem === parent;
