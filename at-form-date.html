@@ -20,7 +20,7 @@
       <div class='input-group date' id='datetimepicker'>
         <input id='text' type='text' class="form-control" />
         <span class="input-group-addon">
-          <at-carbon-icon icon="now:calendar"></at-carbon-icon>
+          <at-carbon-icon icon="{{icon}}"></at-carbon-icon>
         </span>
       </div>
     </div>
@@ -44,8 +44,13 @@
       },
       format: {
         type: String,
-        value: 'YY-MM-DD hh:mm:ss A'
-      },      
+        value: 'YY-MM-DD hh:mm:ss A',
+        observer: 'formatChanged'
+      },
+      icon: {
+        type: String,
+        value: 'now:calendar'
+      },
       valid: {
         type: Boolean,
         value: true,
@@ -94,6 +99,13 @@
       this._isReady = true;
       this.disabledChanged();
       this.valueChanged(this.value);
+    },
+    formatChanged: function (newValue, oldValue) {
+      if (this.format.indexOf('Y') === -1 &&
+        this.format.indexOf('M') === -1 &&
+        this.format.indexOf('D') === -1) {
+        this.icon = 'now:clock';
+      }
     },
     disabledChanged: function (newValue, oldValue) {
       if (this._isReady) {
