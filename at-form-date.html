@@ -86,7 +86,7 @@
 
       // @see datetimepicker.js, line 770 function notifyEvent
       // jquery custom events can be done with dispatchEvent
-      // listening to the dispatched event can be done by attaching the event listener to the 
+      // listening to the dispatched event can be done by attaching the event listener to the
       // parent element of the element on which event is dispatched on
       this.$.datetimepicker.addEventListener('dp.change', function (event) {
         if (event.date) {
@@ -105,6 +105,9 @@
         this.format.indexOf('M') === -1 &&
         this.format.indexOf('D') === -1) {
         this.icon = 'now:clock';
+      }
+      if (this._dtInstance && this._dtInstance.format) {
+        this._dtInstance.format(newValue);
       }
     },
     disabledChanged: function (newValue, oldValue) {

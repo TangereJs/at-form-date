@@ -288,7 +288,7 @@
           spanElem.setAttribute('data-time-component', 'minutes');
           spanElem.setAttribute('data-action', 'showMinutes');
 
-          // ----- for bottom row ----- //          
+          // ----- for bottom row ----- //
           tdElem = document.createElement('td');
           bottomRow.appendChild(tdElem);
 
@@ -343,7 +343,7 @@
           spanElem.setAttribute('data-time-component', 'seconds');
           spanElem.setAttribute('data-action', 'showSeconds');
 
-          // ----- for bottom row ----- //          
+          // ----- for bottom row ----- //
           tdElem = document.createElement('td');
           bottomRow.appendChild(tdElem);
 
@@ -581,7 +581,7 @@
         return template;
       },
 
-      // we are not using data-* attributes 
+      // we are not using data-* attributes
       // so this method is not needed
       dataToOptions = function () {
         var eData,
@@ -724,7 +724,8 @@
           widget.style.right = 'auto';
         } else {
           widget.style.left = 'auto';
-          widget.style.right = (utils.elementWidth(parent) - utils.elementOuterWidth(htmlElement)) + 'px';
+          widget.style.right = Math.abs(utils.elementWidth(parent) - utils.elementOuterWidth(htmlElement)) + 'px';
+
         }
       },
 
@@ -733,7 +734,7 @@
           return;
         }
         // jquery custom events can be done with dispatchEvent
-        // listening to the dispatched event can be done by attaching the event listener to the 
+        // listening to the dispatched event can be done by attaching the event listener to the
         // parent element of the element on which event is dispatched on
         var event = document.createEvent('CustomEvent');
         event.initCustomEvent(e.type, true, true, {});
@@ -1128,7 +1129,7 @@
 
       reattachEventListeners = function (container) {
         // added this here to fix broken event listeners
-        // jQuery remembers what handlers to call on what html elements even 
+        // jQuery remembers what handlers to call on what html elements even
         // when elements are removed and than added back to the same place
         // in pure DOM API this doesn't happen; so we add the event listeners here
         //          tdDay.addEventListener('click', doAction);
@@ -1520,7 +1521,7 @@
         window.addEventListener('resize', place);
 
 
-        //        widget.addEventListener('click', doAction);        
+        //        widget.addEventListener('click', doAction);
         widget.addEventListener('mousedown', utils.returnFalse);
 
         reattachEventListeners(widget);
@@ -1650,23 +1651,23 @@
             // *ij*
             // When input goes out of focus, hide function is called.
             // hide function destroys the UI Widget.
-            // The "out of focus" happens when user clicks on the UI widget. 
-            // But when user clicks on the UI widget a click callback function should be executed. 
+            // The "out of focus" happens when user clicks on the UI widget.
+            // But when user clicks on the UI widget a click callback function should be executed.
             // Its not executed because blur is triggered by the browser first,
             // so click never gets the chance.
-            // hide function is called when the user has not clicked the widget            
+            // hide function is called when the user has not clicked the widget
             if (event.relatedTarget !== widget) {
               if (event.relatedTarget === null) {
                 // event.relatedTarget is null when user clicks outside the widget and the input
                 hide();
               } else if (utils.isChildOf(event.relatedTarget, widget)) {
                 // user has clicked somewhere on the widget; fosuc the input field
-                // this  focusing ensures that this blur handler can be called again               
+                // this  focusing ensures that this blur handler can be called again
                 input.focus();
               }
             } else if (utils.isChildOf(event.relatedTarget, widget)) {
               // user has clicked somewhere on the widget; fosuc the input field
-              // this  focusing ensures that this blur handler can be called again               
+              // this  focusing ensures that this blur handler can be called again
               input.focus();
             }
           });
