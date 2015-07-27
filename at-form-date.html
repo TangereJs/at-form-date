@@ -90,7 +90,7 @@
       // parent element of the element on which event is dispatched on
       this.$.datetimepicker.addEventListener('dp.change', function(event) {
         if (event.date) {
-          if (_self.format === 'YY-MM-DD' || _self.format === 'hh:mm:ss') {
+          if (_self.format === 'YYYY-MM-DD' || _self.format === 'hh:mm:ss') {
             _self.value = event.date.format(_self.format);
           } else {
             _self.value = event.date.utc().toISOString();
