@@ -19,9 +19,12 @@
     <div id="requiredFormGroup" class="form-group">
       <div class='input-group date' id='datetimepicker'>
         <input id='text' type='text' class="form-control" />
-        <span class="input-group-addon">
+        <!-- var is used here instead of span to avoid a bug in IE11 -->
+        <!-- in IE11 span (and div) element gets focus; which should not happen. -->
+        <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
+        <var class="input-group-addon">
           <at-carbon-icon icon="{{icon}}"></at-carbon-icon>
-        </span>
+        </var>
       </div>
     </div>
   </template>
