@@ -1664,11 +1664,15 @@
                 // user has clicked somewhere on the widget; fosuc the input field
                 // this  focusing ensures that this blur handler can be called again
                 input.focus();
+              } else {
+                hide();
               }
             } else if (utils.isChildOf(event.relatedTarget, widget)) {
               // user has clicked somewhere on the widget; fosuc the input field
               // this  focusing ensures that this blur handler can be called again
               input.focus();
+            } else {
+              hide();
             }
           });
         }
