@@ -17,6 +17,8 @@
     throw new Error('datetimepicker requires Moment.js to be loaded first');
   }
 
+  var styleScopeValue = 'at-form-date';
+
   var dateTimePicker = function (element, options) {
     var picker = {},
       date = moment().startOf('d'),
@@ -122,21 +124,26 @@
       getHeadTemplate = function () {
         var
           headTemplate = document.createElement('thead');
+        headTemplate.setAttribute('style-scope', styleScopeValue);
 
         var trElem = document.createElement('tr');
+        trElem.setAttribute('style-scope', styleScopeValue);
         headTemplate.appendChild(trElem);
 
         var thElem = document.createElement('th');
+        thElem.setAttribute('style-scope', styleScopeValue);
         thElem.classList.add('prev');
         thElem.setAttribute('data-action', 'previous');
 
         trElem.appendChild(thElem);
 
         var previousIcon = document.createElement('at-carbon-icon');
+        previousIcon.setAttribute('style-scope', styleScopeValue);
         previousIcon.icon = "now:caret-left";
         thElem.appendChild(previousIcon);
 
         thElem = document.createElement('th');
+        thElem.setAttribute('style-scope', styleScopeValue);
         thElem.classList.add('picker-switch');
         thElem.setAttribute('data-action', 'pickerSwitch');
         thElem.setAttribute('colspan', (options.calendarWeeks ? '6' : '5'));
@@ -144,12 +151,14 @@
         trElem.appendChild(thElem);
 
         thElem = document.createElement('th');
+        thElem.setAttribute('style-scope', styleScopeValue);
         thElem.classList.add('next');
         thElem.setAttribute('data-action', 'next');
 
         trElem.appendChild(thElem);
 
         var nextIcon = document.createElement('at-carbon-icon');
+        nextIcon.setAttribute('style-scope', styleScopeValue);
         nextIcon.icon = "now:caret-right";
         thElem.appendChild(nextIcon);
 
@@ -158,11 +167,14 @@
 
       getContTemplate = function () {
         var contTemplate = document.createElement('tbody');
+        contTemplate.setAttribute('style-scope', styleScopeValue);
         var trElem, tdElem;
         trElem = document.createElement('tr');
+        trElem.setAttribute('style-scope', styleScopeValue);
         contTemplate.appendChild(trElem);
 
         tdElem = document.createElement('td');
+        tdElem.setAttribute('style-scope', styleScopeValue);
         tdElem.setAttribute('colspan', options.calendarWeeks ? '8' : '7');
 
         trElem.appendChild(tdElem);
@@ -175,25 +187,33 @@
         var result1, result2, result3, tableElem, tableBodyElem;
 
         result1 = document.createElement('div');
+        result1.setAttribute('style-scope', styleScopeValue);
         result1.classList.add('datepicker-days');
         tableElem = document.createElement('table');
+        tableElem.setAttribute('style-scope', styleScopeValue);
         tableElem.classList.add('table-condensed');
         tableBodyElem = document.createElement('tbody');
+        tableBodyElem.setAttribute('style-scope', styleScopeValue);
+
         result1.appendChild(tableElem);
         tableElem.appendChild(getHeadTemplate());
         tableElem.appendChild(tableBodyElem);
 
         result2 = document.createElement('div');
+        result2.setAttribute('style-scope', styleScopeValue);
         result2.classList.add('datepicker-months');
         tableElem = document.createElement('table');
+        tableElem.setAttribute('style-scope', styleScopeValue);
         tableElem.classList.add('table-condensed');
         result2.appendChild(tableElem);
         tableElem.appendChild(getHeadTemplate());
         tableElem.appendChild(getContTemplate());
 
         result3 = document.createElement('div');
+        result3.setAttribute('style-scope', styleScopeValue);
         result3.classList.add('datepicker-years');
         tableElem = document.createElement('table');
+        tableElem.setAttribute('style-scope', styleScopeValue);
         tableElem.classList.add('table-condensed');
         result3.appendChild(tableElem);
         tableElem.appendChild(getHeadTemplate());
@@ -207,13 +227,19 @@
           middleRow = document.createElement('tr'),
           bottomRow = document.createElement('tr');
 
+        topRow.setAttribute('style-scope', styleScopeValue);
+        middleRow.setAttribute('style-scope', styleScopeValue);
+        bottomRow.setAttribute('style-scope', styleScopeValue);
+
         var tdElem, aElem, spanElem;
 
         if (isEnabled('h')) {
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           topRow.appendChild(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
 
           aElem.setAttribute('href', '#');
@@ -222,22 +248,27 @@
           aElem.setAttribute('data-action', 'incrementHours');
 
           var upIcon = document.createElement('at-carbon-icon');
+          upIcon.setAttribute('style-scope', styleScopeValue);
           upIcon.icon = options.nowicons.up;
           aElem.appendChild(upIcon);
 
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           middleRow.appendChild(tdElem);
 
           spanElem = document.createElement('span');
+          spanElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(spanElem);
           spanElem.classList.add('timepicker-hour')
           spanElem.setAttribute('data-time-component', 'hours');
           spanElem.setAttribute('data-action', 'showHours');
 
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           bottomRow.appendChild(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('href', '#');
           aElem.setAttribute('tabindex', '-1');
@@ -245,6 +276,7 @@
           aElem.setAttribute('data-action', 'decrementHours');
 
           var downIcon = document.createElement('at-carbon-icon');
+          downIcon.setAttribute('style-scope', styleScopeValue);
           downIcon.icon = options.nowicons.down;
           aElem.appendChild(downIcon);
         }
@@ -252,22 +284,27 @@
         if (isEnabled('m')) {
           if (isEnabled('h')) {
             tdElem = document.createElement('td');
+            tdElem.setAttribute('style-scope', styleScopeValue);
             topRow.appendChild(tdElem);
             tdElem.classList.add('separator');
             tdElem = document.createElement('td');
+            tdElem.setAttribute('style-scope', styleScopeValue);
             middleRow.appendChild(tdElem);
             tdElem.classList.add('separator');
             tdElem.innerHTML = ':';
             tdElem = document.createElement('td');
+            tdElem.setAttribute('style-scope', styleScopeValue);
             bottomRow.appendChild(tdElem);
             tdElem.classList.add('separator');
           }
 
           // ----- for top row ----- //
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           topRow.appendChild(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('href', '#');
           aElem.setAttribute('tabindex', '-1');
@@ -275,14 +312,17 @@
           aElem.setAttribute('data-action', 'incrementMinutes');
 
           upIcon = document.createElement('at-carbon-icon');
+          upIcon.setAttribute('style-scope', styleScopeValue);
           upIcon.icon = options.nowicons.up;
           aElem.appendChild(upIcon);
 
           // ----- for middle row ----- //
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           middleRow.appendChild(tdElem);
 
           spanElem = document.createElement('span');
+          spanElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(spanElem);
           spanElem.classList.add('timepicker-minute');
           spanElem.setAttribute('data-time-component', 'minutes');
@@ -290,9 +330,11 @@
 
           // ----- for bottom row ----- //
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           bottomRow.appendChild(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('href', '#');
           aElem.setAttribute('tabindex', '-1');
@@ -300,6 +342,7 @@
           aElem.setAttribute('data-action', 'decrementMinutes');
 
           downIcon = document.createElement('at-carbon-icon');
+          downIcon.setAttribute('style-scope', styleScopeValue);
           downIcon.icon = options.nowicons.down;
           aElem.appendChild(downIcon);
         }
@@ -307,22 +350,27 @@
         if (isEnabled('s')) {
           if (isEnabled('m')) {
             tdElem = document.createElement('td');
+            tdElem.setAttribute('style-scope', styleScopeValue);
             topRow.appendChild(tdElem);
             tdElem.classList.add('separator');
             tdElem = document.createElement('td');
+            tdElem.setAttribute('style-scope', styleScopeValue);
             middleRow.appendChild(tdElem);
             tdElem.classList.add('separator');
             tdElem.innerHTML = ':';
             tdElem = document.createElement('td');
+            tdElem.setAttribute('style-scope', styleScopeValue);
             bottomRow.appendChild(tdElem);
             tdElem.classList.add('separator');
           }
 
           // ----- for top row ----- //
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           topRow.appendChild(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('href', '#');
           aElem.setAttribute('tabindex', '-1');
@@ -330,14 +378,17 @@
           aElem.setAttribute('data-action', 'incrementSeconds');
 
           upIcon = document.createElement('at-carbon-icon');
+          upIcon.setAttribute('style-scope', styleScopeValue);
           upIcon.icon = options.nowicons.up;
           aElem.appendChild(upIcon);
 
           // ----- for middle row ----- //
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           middleRow.appendChild(tdElem);
 
           spanElem = document.createElement('span');
+          spanElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(spanElem);
           spanElem.classList.add('timepicker-minute');
           spanElem.setAttribute('data-time-component', 'seconds');
@@ -345,9 +396,11 @@
 
           // ----- for bottom row ----- //
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           bottomRow.appendChild(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('href', '#');
           aElem.setAttribute('tabindex', '-1');
@@ -355,31 +408,38 @@
           aElem.setAttribute('data-action', 'decrementSeconds');
 
           downIcon = document.createElement('at-carbon-icon');
+          downIcon.setAttribute('style-scope', styleScopeValue);
           downIcon.icon = options.nowicons.down;
           aElem.appendChild(downIcon);
         }
 
         if (!use24Hours) {
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           topRow.appendChild(tdElem);
           tdElem.classList.add('separator');
 
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           middleRow.appendChild(tdElem);
 
           var buttonElem = document.createElement('button');
+          buttonElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(buttonElem);
           utils.addClasses(buttonElem, 'btn btn-primary');
           buttonElem.setAttribute('data-action', 'togglePeriod');
 
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           bottomRow.appendChild(tdElem);
           tdElem.classList.add('separator');
         }
 
         var divElem = document.createElement('div');
+        divElem.setAttribute('style-scope', styleScopeValue);
         divElem.classList.add('timepicker-picker');
         var tableElem = document.createElement('table');
+        tableElem.setAttribute('style-scope', styleScopeValue);
         divElem.appendChild(tableElem);
         tableElem.classList.add('table-condensed');
         tableElem.appendChild(topRow);
@@ -393,20 +453,26 @@
         var hoursView, minutesView, secondsView, tableElem, ret;
 
         hoursView = document.createElement('div');
+        hoursView.setAttribute('style-scope', styleScopeValue);
         hoursView.classList.add('timepicker-hours');
         tableElem = document.createElement('table');
+        tableElem.setAttribute('style-scope', styleScopeValue);
         hoursView.appendChild(tableElem);
         tableElem.classList.add('table-condensed');
 
         minutesView = document.createElement('div');
+        minutesView.setAttribute('style-scope', styleScopeValue);
         minutesView.classList.add('timepicker-minutes');
         tableElem = document.createElement('table');
+        tableElem.setAttribute('style-scope', styleScopeValue);
         minutesView.appendChild(tableElem);
         tableElem.classList.add('table-condensed');
 
         secondsView = document.createElement('div');
+        secondsView.setAttribute('style-scope', styleScopeValue);
         secondsView.classList.add('timepicker-seconds');
         tableElem = document.createElement('table');
+        tableElem.setAttribute('style-scope', styleScopeValue);
         secondsView.appendChild(tableElem);
         tableElem.classList.add('table-condensed');
 
@@ -430,49 +496,61 @@
           tdElem, aElem, spanElem;
         if (options.showTodayButton) {
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           row.push(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('data-action', 'today');
 
           var todayIcon = document.createElement('at-carbon-icon');
+          todayIcon.setAttribute('style-scope', styleScopeValue);
           todayIcon.icon = options.nowicons.today;
           aElem.appendChild(todayIcon);
         }
         if (!options.sideBySide && hasDate() && hasTime()) {
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           row.push(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('data-action', 'togglePicker');
 
           var switchIcon = document.createElement('at-carbon-icon');
+          switchIcon.setAttribute('style-scope', styleScopeValue);
           switchIcon.icon = options.nowicons.time;
           aElem.appendChild(switchIcon);
         }
         if (options.showClear) {
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           row.push(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('data-action', 'clear');
 
           var clearIcon = document.createElement('at-carbon-icon');
+          clearIcon.setAttribute('style-scope', styleScopeValue);
           clearIcon.icon = options.nowicons.clear;
           aElem.appendChild(clearIcon);
         }
         if (options.showClose) {
           tdElem = document.createElement('td');
+          tdElem.setAttribute('style-scope', styleScopeValue);
           row.push(tdElem);
 
           aElem = document.createElement('a');
+          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
           aElem.setAttribute('data-action', 'close');
 
           var closeIcon = document.createElement('at-carbon-icon');
+          closeIcon.setAttribute('style-scope', styleScopeValue);
           closeIcon.icon = options.nowicons.close;
           aElem.appendChild(closeIcon);
         }
@@ -480,6 +558,9 @@
         var tableElem = document.createElement('table'),
           tbodyElem = document.createElement('tbody'),
           trElem = document.createElement('tr');
+        tableElem.setAttribute('style-scope', styleScopeValue);
+        tbodyElem.setAttribute('style-scope', styleScopeValue);
+        trElem.setAttribute('style-scope', styleScopeValue);
         tableElem.classList.add('table-condensed');
         tableElem.appendChild(tbodyElem);
         tbodyElem.appendChild(trElem);
@@ -497,6 +578,12 @@
           content = document.createElement('ul'),
           toolbar = document.createElement('li'),
           i;
+
+        template.setAttribute('style-scope', styleScopeValue);
+        dateView.setAttribute('style-scope', styleScopeValue);
+        timeView.setAttribute('style-scope', styleScopeValue);
+        content.setAttribute('style-scope', styleScopeValue);
+        toolbar.setAttribute('style-scope', styleScopeValue);
 
         template.classList.add('datetimepicker-widget');
         template.classList.add('dropdown-menu');
@@ -531,6 +618,7 @@
         if (options.sideBySide && hasDate() && hasTime()) {
           template.classList.add('timepicker-sbs');
           var rowDiv = document.createElement('div');
+          rowDiv.setAttribute('style-scope', styleScopeValue);
           rowDiv.classList.add('row');
 
           dateView.classList.add('col-sm-6');
@@ -553,6 +641,7 @@
         }
         if (hasDate()) {
           liElem = document.createElement('li');
+          liElem.setAttribute('style-scope', styleScopeValue);
           liClass = (options.collapse && hasTime() ? 'collapse in' : '');
           if (liClass !== '') {
             atFormDateUtils.addClasses(liElem, liClass);
@@ -565,6 +654,7 @@
         }
         if (hasTime()) {
           liElem = document.createElement('li');
+          liElem.setAttribute('style-scope', styleScopeValue);
           liClass = (options.collapse && hasDate() ? 'collapse' : '');
           if (liClass !== '') {
             utils.addClasses(liElem, liClass);
@@ -765,10 +855,12 @@
 
       fillDow = function () {
         var row = document.createElement('tr');
+        row.setAttribute('style-scope', styleScopeValue);
         var currentDate = viewDate.clone().startOf('w');
 
         if (options.calendarWeeks === true) {
           var th = document.createElement('th');
+          th.setAttribute('style-scope', styleScopeValue);
           th.classList.add('cw');
           th.textContent = '#';
           row.appendChild(th);
@@ -776,6 +868,7 @@
 
         while (currentDate.isBefore(viewDate.clone().endOf('w'))) {
           var th1 = document.createElement('th');
+          th1.setAttribute('style-scope', styleScopeValue);
           th1.classList.add('dow');
           th1.textContent = currentDate.format('dd');
           currentDate.add(1, 'd');
@@ -822,6 +915,7 @@
           monthsShort = viewDate.clone().startOf('y').hour(12); // hour is changed to avoid DST issues in some browsers
         while (monthsShort.isSame(viewDate, 'y')) {
           var span = document.createElement('span');
+          span.setAttribute('style-scope', styleScopeValue);
           span.setAttribute('data-action', 'selectMonth');
           span.classList.add('month');
           span.textContent = monthsShort.format('MMM');
@@ -899,7 +993,7 @@
         }
 
         while (!startYear.isAfter(endYear, 'y')) {
-          html += '<span data-action="selectYear" class="year' + (startYear.isSame(date, 'y') ? ' active' : '') + (!isValid(startYear, 'y') ? ' disabled' : '') + '">' + startYear.year() + '</span>';
+          html += '<span data-action="selectYear" style-scope="at-form-date" class="year' + (startYear.isSame(date, 'y') ? ' active' : '') + (!isValid(startYear, 'y') ? ' disabled' : '') + '">' + startYear.year() + '</span>';
           startYear.add(1, 'y');
         }
 
@@ -938,8 +1032,10 @@
         while (!viewDate.clone().endOf('M').endOf('w').isBefore(currentDate, 'd')) {
           if (currentDate.weekday() === 0) {
             row = document.createElement('tr');
+            row.setAttribute('style-scope', styleScopeValue);
             if (options.calendarWeeks) {
               var td = document.createElement('td');
+              td.setAttribute('style-scope', styleScopeValue);
               td.classList.add('cw');
               td.textContent = currentDate.week();
               row.appendChild(td);
@@ -966,6 +1062,7 @@
             clsName += ' weekend';
           }
           var tdDay = document.createElement('td');
+          tdDay.setAttribute('style-scope', styleScopeValue);
           tdDay.setAttribute('data-action', 'selectDay');
           tdDay.classList.add('day');
           clsName = clsName.trim();
@@ -995,6 +1092,7 @@
           currentHour = viewDate.clone().startOf('d'),
           html = [],
           row = document.createElement('tr');
+        row.setAttribute('style-scope', styleScopeValue);
 
         if (viewDate.hour() > 11 && !use24Hours) {
           currentHour.hour(12);
@@ -1002,9 +1100,11 @@
         while (currentHour.isSame(viewDate, 'd') && (use24Hours || (viewDate.hour() < 12 && currentHour.hour() < 12) || viewDate.hour() > 11)) {
           if (currentHour.hour() % 4 === 0) {
             row = document.createElement('tr');
+            row.setAttribute('style-scope', styleScopeValue);
             html.push(row);
           }
           var tdSelectHour = document.createElement('td');
+          tdSelectHour.setAttribute('style-scope', styleScopeValue);
           tdSelectHour.setAttribute('data-action', 'selectHour');
           tdSelectHour.classList.add('hour');
           if (!isValid(currentHour, 'h')) {
@@ -1033,13 +1133,17 @@
           row = document.createElement('tr'),
           step = options.stepping === 1 ? 5 : options.stepping;
 
+        row.setAttribute('style-scope', styleScopeValue);
+
         while (viewDate.isSame(currentMinute, 'h')) {
           if (currentMinute.minute() % (step * 4) === 0) {
             row = document.createElement('tr');
+            row.setAttribute('style-scope', styleScopeValue);
             html.push(row);
           }
 
           var td = document.createElement('td');
+          td.setAttribute('style-scope', styleScopeValue);
           td.setAttribute('data-action', 'selectMinute');
           td.classList.add('minute');
           if (!isValid(currentMinute, 'm')) {
@@ -1065,6 +1169,8 @@
           html = [],
           row = document.createElement('tr');
 
+        row.setAttribute('style-scope', styleScopeValue);
+
         if (table === null) {
           return;
         }
@@ -1072,9 +1178,11 @@
         while (viewDate.isSame(currentSecond, 'm')) {
           if (currentSecond.second() % 20 === 0) {
             row = document.createElement('tr');
+            row.setAttribute('style-scope', styleScopeValue);
             html.push(row);
           }
           var td = document.createElement('td');
+          td.setAttribute('style-scope', styleScopeValue);
           td.setAttribute('data-action', 'selectSecond');
           td.classList.add('second');
           if (!isValid(currentSecond, 's')) {
