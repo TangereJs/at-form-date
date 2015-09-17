@@ -17,8 +17,8 @@
   color: #555;
   text-align: center;
   background-color: #eee;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid rgba(39, 41, 43, 0.15);
+  border-radius: 2px;
 }
 
 * {
@@ -37,8 +37,8 @@
   color: #555;
   background-color: #fff;
   background-image: none;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid rgba(39, 41, 43, 0.15);
+  border-radius: 2px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
   -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
@@ -171,9 +171,8 @@ input {
     background-color: #fff;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0,0,0,.15);
-    border-radius: 4px;
+    border: 1px solid rgba(39, 41, 43, 0.15);
+    border-radius: 2px;
     -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
     box-shadow: 0 6px 12px rgba(0,0,0,.175)
 }
@@ -255,7 +254,7 @@ td,th {
   user-select: none;
   background-image: none;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 button {
@@ -504,7 +503,7 @@ button {
 .datetimepicker-widget table td,
 .datetimepicker-widget table th {
   text-align: center;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 .datetimepicker-widget table th {
   height: 20px;
@@ -610,7 +609,7 @@ button {
   line-height: 54px;
   margin: 2px 1.5px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 .datetimepicker-widget table td span:hover {
   background: #eeeeee;
