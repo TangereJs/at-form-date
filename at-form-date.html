@@ -9,9 +9,14 @@
 
 <dom-module id="at-form-date">
   <link rel="import" type="css" href="at-form-date.css" />
+  <style>
+  .hide-label {
+    display: none;
+  }
+  </style>
   <template>
     <at-core-theme></at-core-theme>
-    <div class="ui form">
+    <div class="ui form" id="labelContainer">
       <div class="field">
         <label>{{label}}</label>
       </div>
@@ -38,6 +43,11 @@
       label: {
         type: String,
         value: ''
+      },
+      hideTitle: {
+        type: Boolean,
+        value: false,
+        observer: 'hideTitleChanged'
       },
       value: {
         type: String,
@@ -73,6 +83,9 @@
     _isReady: false,
     _scopeCssViaAttr: true,
     _dtInstance: undefined,
+    hideTitleChanged: function (newValue, oldValue) {
+      this.toggleClass("hide-label", newValue, this.$.labelContainer);
+    },
     ready: function() {
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
         //        calendarWeeks: true,
