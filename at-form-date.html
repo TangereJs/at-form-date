@@ -10,9 +10,9 @@
 <dom-module id="at-form-date">
   <link rel="import" type="css" href="at-form-date.css" />
   <style>
-  .hide-label {
-    display: none;
-  }
+    .hide-label {
+      display: none;
+    }
   </style>
   <template>
     <at-core-theme></at-core-theme>
@@ -80,10 +80,17 @@
         observer: 'requiredChanged'
       }
     },
+    $meta: {
+      title: "Date and time",
+      form: {
+        type: "string",
+        xtype: "date"
+      }
+    },
     _isReady: false,
     _scopeCssViaAttr: true,
     _dtInstance: undefined,
-    hideTitleChanged: function (newValue, oldValue) {
+    hideTitleChanged: function(newValue, oldValue) {
       this.toggleClass("hide-label", newValue, this.$.labelContainer);
     },
     ready: function() {
