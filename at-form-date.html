@@ -80,13 +80,19 @@
         observer: 'requiredChanged'
       }
     },
-    $meta: {
+    $meta: [{
+      title: "Date",
+      type: "string",
+      xtype: "date"
+    }, {
+      title: "Time",
+      type: "string",
+      xtype: "time"
+    }, {
       title: "Date and time",
-      form: {
-        type: "string",
-        xtype: ["date", "time", "datetime"]
-      }
-    },
+      type: "string",
+      xtype: "datetime"
+    }, ],
     _isReady: false,
     _scopeCssViaAttr: true,
     _dtInstance: undefined,
