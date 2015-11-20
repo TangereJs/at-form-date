@@ -44,10 +44,10 @@
         type: String,
         value: ''
       },
-      hideTitle: {
+      hideLabel: {
         type: Boolean,
         value: false,
-        observer: 'hideTitleChanged'
+        observer: 'hideLabelChanged'
       },
       value: {
         type: String,
@@ -96,7 +96,7 @@
     _isReady: false,
     _scopeCssViaAttr: true,
     _dtInstance: undefined,
-    hideTitleChanged: function(newValue, oldValue) {
+    hideLabelChanged: function(newValue, oldValue) {
       this.toggleClass("hide-label", newValue, this.$.labelContainer);
     },
     ready: function() {
