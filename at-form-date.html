@@ -28,7 +28,7 @@
         <!-- in IE11 span (and div) element gets focus; which should not happen. -->
         <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
         <var class="input-group-addon">
-          <at-carbon-icon icon="{{icon}}"></at-carbon-icon>
+          <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
         </var>
       </div>
     </div>
@@ -55,14 +55,12 @@
         notify: true,
         observer: 'valueChanged'
       },
-      format: {
+      xtype: {
         type: String,
-        value: 'YY-MM-DD hh:mm:ss A',
-        observer: 'formatChanged'
-      },
-      icon: {
-        type: String,
-        value: 'now:calendar'
+        value: 'datetime',
+        observer: 'xtypeChanged',
+        xtype: 'enum',
+        xvaluelist: 'date,time,datetime'
       },
       valid: {
         type: Boolean,
@@ -80,6 +78,19 @@
         observer: 'requiredChanged'
       }
     },
+    get format() {
+      return this._format;
+    },
+    set format(newValue) {
+      this._format = newValue;
+      this.formatChanged(this._format, undefined);
+    },
+    get icon() {
+      return this._icon;
+    },
+    set icon(newValue) {
+      this._icon = newValue;
+    },
     $meta: [{
       title: "Date",
       type: "string",
@@ -96,6 +107,8 @@
     _isReady: false,
     _scopeCssViaAttr: true,
     _dtInstance: undefined,
+    _format: 'YY-MM-DD hh:mm:ss A',
+    _icon: 'now:calendar',
     hideLabelChanged: function(newValue, oldValue) {
       this.toggleClass("hide-label", newValue, this.$.labelContainer);
     },
@@ -105,7 +118,7 @@
         //        debug: true,
         //                sideBySide: true,
         //                toolbarPlacement: 'top',
-        format: this.format,
+        format: this._format,
         //        showClear: true,
         //        showClose: true,
         //        showTodayButton: true
@@ -133,12 +146,19 @@
       this.disabledChanged();
       this.valueChanged(this.value);
     },
-    formatChanged: function(newValue, oldValue) {
-      if (this.format.indexOf('Y') === -1 &&
-        this.format.indexOf('M') === -1 &&
-        this.format.indexOf('D') === -1) {
-        this.icon = 'now:clock';
+    xtypeChanged: function (newValue, oldValue) {
+      if (newValue === "datetime") {
+        this.format = "YY-MM-DD hh:mm:ss A";
+        this._icon = 'now:calendar';
+      } else if (newValue === 'date') {
+        this.format = 'YYYY-MM-DD';
+        this._icon = 'now:calendar';
+      } else if (newValue === 'time') {
+        this.format = 'hh:mm:ss';
+        this._icon = 'now:clock';
       }
+    },
+    formatChanged: function(newValue, oldValue) {
       if (this._dtInstance && this._dtInstance.format) {
         this._dtInstance.format(newValue);
       }
