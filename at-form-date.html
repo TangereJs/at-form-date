@@ -10,26 +10,28 @@
 <dom-module id="at-form-date">
   <link rel="import" type="css" href="at-form-date.css" />
   <style>
-    .hide-label {
+    .hidden {
       display: none;
     }
   </style>
   <template>
     <at-core-theme></at-core-theme>
-    <div class="ui form" id="labelContainer">
-      <div class="field">
-        <label>{{label}}</label>
+    <div id="atFormDateWrapper">
+      <div class="ui form" id="labelContainer">
+        <div class="field">
+          <label>{{label}}</label>
+        </div>
       </div>
-    </div>
-    <div id="requiredFormGroup" class="form-group">
-      <div class='input-group date' id='datetimepicker'>
-        <input id='text' type='text' class="form-control" />
-        <!-- var is used here instead of span to avoid a bug in IE11 -->
-        <!-- in IE11 span (and div) element gets focus; which should not happen. -->
-        <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
-        <var class="input-group-addon">
-          <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
-        </var>
+      <div id="requiredFormGroup" class="form-group">
+        <div class='input-group date' id='datetimepicker'>
+          <input id='text' type='text' class="form-control" />
+          <!-- var is used here instead of span to avoid a bug in IE11 -->
+          <!-- in IE11 span (and div) element gets focus; which should not happen. -->
+          <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
+          <var class="input-group-addon">
+            <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
+          </var>
+        </div>
       </div>
     </div>
   </template>
@@ -76,7 +78,22 @@
         type: Boolean,
         value: false,
         observer: 'requiredChanged'
+      },
+      /**
+       * Hides the element. When hidden nothing is displayed for the element
+       * @property hide
+       * @type Boolean
+       * @default false
+       */
+      hide: {
+        type: Boolean,
+        value: false,
+        observer: 'hideChanged'
       }
+    },
+    hideChanged: function(newValue, oldValue) {
+      var wrapper = this.$.atFormDateWrapper;
+      this.toggleClass('hidden', newValue, wrapper);
     },
     get format() {
       return this._format;
@@ -110,7 +127,7 @@
     _format: 'YY-MM-DD hh:mm:ss A',
     _icon: 'now:calendar',
     hideLabelChanged: function(newValue, oldValue) {
-      this.toggleClass("hide-label", newValue, this.$.labelContainer);
+      this.toggleClass("hidden", newValue, this.$.labelContainer);
     },
     ready: function() {
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
@@ -146,7 +163,7 @@
       this.disabledChanged();
       this.valueChanged(this.value);
     },
-    xtypeChanged: function (newValue, oldValue) {
+    xtypeChanged: function(newValue, oldValue) {
       if (newValue === "datetime") {
         this.format = "YY-MM-DD hh:mm:ss A";
         this._icon = 'now:calendar';
