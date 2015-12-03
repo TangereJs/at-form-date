@@ -89,18 +89,16 @@
         type: Boolean,
         value: false,
         observer: 'hideChanged'
+      },
+      format: {
+        type: String,
+        value: 'YY-MM-DD hh:mm:ss',
+        observer: 'formatChanged'
       }
     },
     hideChanged: function(newValue, oldValue) {
       var wrapper = this.$.atFormDateWrapper;
       this.toggleClass('hidden', newValue, wrapper);
-    },
-    get format() {
-      return this._format;
-    },
-    set format(newValue) {
-      this._format = newValue;
-      this.formatChanged(this._format, undefined);
     },
     get icon() {
       return this._icon;
@@ -124,7 +122,14 @@
     _isReady: false,
     _scopeCssViaAttr: true,
     _dtInstance: undefined,
-    _format: 'YY-MM-DD hh:mm:ss A',
+    /**
+     * _internalFormat governs how value is formatted
+     * the value of _internalFormat is governed by xtype
+     * xtype="datetime" -> _internalFormat = 'YY-MM-DD hh:mm:ss'
+     * xtype="date"     -> _internalFormat = 'YY-MM-DD'
+     * xtype="time"     -> _internalFormat = 'hh:mm:ss'
+     */
+    _internalFormat: 'YY-MM-DD hh:mm:ss',
     _icon: 'now:calendar',
     hideLabelChanged: function(newValue, oldValue) {
       this.toggleClass("hidden", newValue, this.$.labelContainer);
@@ -135,13 +140,13 @@
         //        debug: true,
         //                sideBySide: true,
         //                toolbarPlacement: 'top',
-        format: this._format,
+        format: this.format,
         //        showClear: true,
         //        showClose: true,
         //        showTodayButton: true
       });
 
-      var _self = this;
+      var self = this;
 
       // @see datetimepicker.js, line 770 function notifyEvent
       // jquery custom events can be done with dispatchEvent
@@ -149,13 +154,9 @@
       // parent element of the element on which event is dispatched on
       this.$.datetimepicker.addEventListener('dp.change', function(event) {
         if (event.date) {
-          if (_self.format === 'YYYY-MM-DD' || _self.format === 'hh:mm:ss') {
-            _self.value = event.date.format(_self.format);
-          } else {
-            _self.value = event.date.utc().toISOString();
-          }
+          self._updateValue(event.date);
         } else {
-          _self.value = '';
+          self.value = '';
         }
       });
 
@@ -165,20 +166,78 @@
     },
     xtypeChanged: function(newValue, oldValue) {
       if (newValue === "datetime") {
-        this.format = "YY-MM-DD hh:mm:ss A";
+        this._internalFormat = "YY-MM-DD hh:mm:ss";
         this._icon = 'now:calendar';
       } else if (newValue === 'date') {
-        this.format = 'YYYY-MM-DD';
+        this._internalFormat = 'YYYY-MM-DD';
         this._icon = 'now:calendar';
       } else if (newValue === 'time') {
-        this.format = 'hh:mm:ss';
+        this._internalFormat = 'HH:mm:ss';
         this._icon = 'now:clock';
+      }
+      this.format = this._internalFormat;
+      if (this._dtInstance){
+        var date = this._dtInstance.date();
+        this._updateValue(date);
+      }
+    },
+    _updateValue: function (newValue) {
+      var self = this;
+      var momentValue = moment(newValue);
+      if (self.xtype === 'date' || self.xtype === 'time') {
+        self.value = momentValue.format(self._internalFormat);
+      } else {
+        self.value = momentValue.utc().toISOString();
       }
     },
     formatChanged: function(newValue, oldValue) {
-      if (this._dtInstance && this._dtInstance.format) {
-        this._dtInstance.format(newValue);
+      var xtype = this.xtype;
+      var format = newValue;
+      // format needs to be validated against xtype
+      if (xtype === 'datetime') {
+        // if xtype is datetime and format doens't contain chars for year, month, day, hour, minute and second
+        if (!this._containsChars(['Y', 'M', 'D', 'h', 'm', 's'], format)) {
+          // set format to the default format for datetime
+          format = this._internalFormat;
+          // log the error
+          console.log('Value ' + newValue + ' is not a valid format for datetime. Using default, ' + format +', format instead.');
+          this.fire('format-changed', { value: format });
+        }
+      } else if (xtype === 'date') {
+        // if xtype is date and format doens't contain chars for year, month, day or contains chars for hour, minute and second
+        if (!this._containsChars(['Y', 'M', 'D'], format) || this._containsChars(['h', 'm', 's'], format)) {
+          // set format to the default format for date
+          format = this._internalFormat;
+          // log the error
+          console.log('Value ' + newValue + ' is not a valid format for date. Using default, ' + format +', format instead.');
+          this.fire('format-changed', { value: format });
+        }
+      } else if (xtype === 'time') {
+        // if xtype is time and format doens't contain chars for hour, minute and second or contains chars for year, month and day
+        if (this._containsChars(['Y', 'M', 'D'], format) || !this._containsChars(['h', 'm', 's'], format)) {
+          // set format to the default format for time
+          format = this._internalFormat;
+          // log the error
+          console.log('Value ' + newValue + ' is not a valid format for time. Using default, ' + format +', format instead.');
+          this.fire('format-changed', { value: format });
+        }
       }
+
+      if (this._dtInstance) {
+        this._dtInstance.format(format);
+      }
+    },
+    /**
+     * checks if source contains any of the chars
+     * @param {Array} chars
+     * @param {String} source
+     */
+    _containsChars: function (chars, source) {
+      var result = false;
+      chars.forEach(function (char, index) {
+        result = result || source.indexOf(char) !== -1;
+      });
+      return result;
     },
     disabledChanged: function(newValue, oldValue) {
       if (this._isReady) {
