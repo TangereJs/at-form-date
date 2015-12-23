@@ -2,6 +2,9 @@
   "name": "at-form-date",
   "private": true,
   "dependencies": {
-    
+    "polymer": "Polymer/polymer#0.8-preview",
+    "at-core-theme": "TangereJs/at-core-theme#0.8-preview",
+    "at-carbon-icon": "TangereJs/at-carbon-icon#0.8-preview",
+    "at-form-behaviors": "TangereJs/at-form-behaviors#0.8-preview"
   }
 }

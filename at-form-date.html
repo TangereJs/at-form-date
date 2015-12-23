@@ -1,5 +1,6 @@
 <link rel="import" href="../at-core-theme/at-core-theme.html">
 <link rel="import" href="../at-carbon-icon/at-carbon-icon.html">
+<link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
 
 <script src="../moment/moment.js"></script>
 <script src="scripts/at-form-date-utils.js"></script>
@@ -13,12 +14,22 @@
     .hidden {
       display: none;
     }
+
+    --error-color: #e41e2b;
+
+    .label-container.error > label {
+      color: var(--error-color);
+    }
+
+    .hint-container.error > p {
+      color: var(--error-color);
+    }
   </style>
   <template>
     <at-core-theme></at-core-theme>
     <div id="atFormDateWrapper">
       <div class="ui form" id="labelContainer">
-        <div class="field">
+        <div class="field" id="labelSubContainer" class="label-container">
           <label>{{label}}</label>
         </div>
       </div>
@@ -33,6 +44,9 @@
           </var>
         </div>
       </div>
+      <div id="hintContainer" class="hint-container">
+        <p id="errorHtml" class="hint"></p>
+      </div>
     </div>
   </template>
 </dom-module>
@@ -41,6 +55,7 @@
   'use strict';
   Polymer({
     is: 'at-form-date',
+    behaviors: [ AtFormBehaviors.AtFormBehaviorsValidation ],
     properties: {
       label: {
         type: String,
@@ -63,11 +78,6 @@
         observer: 'xtypeChanged',
         xtype: 'enum',
         xvaluelist: 'date,time,datetime'
-      },
-      valid: {
-        type: Boolean,
-        value: true,
-        readOnly: true
       },
       disabled: {
         type: Boolean,
@@ -99,6 +109,9 @@
     hideChanged: function(newValue, oldValue) {
       var wrapper = this.$.atFormDateWrapper;
       this.toggleClass('hidden', newValue, wrapper);
+      if (this._isReady) {
+        this.validate();
+      }
     },
     get icon() {
       return this._icon;
@@ -118,8 +131,7 @@
       title: "Date and time",
       type: "string",
       xtype: "datetime"
-    }, ],
-    _isReady: false,
+    }],
     _scopeCssViaAttr: true,
     _dtInstance: undefined,
     /**
@@ -135,11 +147,12 @@
       this.toggleClass("hidden", newValue, this.$.labelContainer);
     },
     ready: function() {
+      this._isReady = false;
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
         //        calendarWeeks: true,
         //        debug: true,
-        //                sideBySide: true,
-        //                toolbarPlacement: 'top',
+        //        sideBySide: true,
+        //        toolbarPlacement: 'top',
         format: this.format,
         //        showClear: true,
         //        showClose: true,
@@ -247,24 +260,28 @@
         } else {
           this._dtInstance.enable();
         }
+        this.validate();
       }
     },
-    _refreshValidState: function() {
-      if (this.required && this.value === '') {
-        this.$.requiredFormGroup.classList.add('has-error');
-      } else {
-        this.$.requiredFormGroup.classList.remove('has-error');
-      }
+    _updateUIValidState: function(isValid) {
+      var formGroup = this.$.requiredFormGroup;
+      this.toggleClass('has-error', !isValid, formGroup);
+      var hintContainer = this.$.hintContainer;
+      this.toggleClass('error', !isValid, hintContainer);
+      var labelContainer = this.$.labelSubContainer;
+      this.toggleClass('error', !isValid, labelContainer);
     },
     valueChanged: function(newValue, oldValue) {
       if (this._isReady) {
         var newMoment = moment(newValue);
         this._dtInstance.date(newMoment);
+        this.validate();
       }
-      this._refreshValidState();
     },
     requiredChanged: function(newValue, oldValue) {
-      this._refreshValidState();
+      if (this._isReady) {
+          this.validate();
+      }
     }
   });
 </script>
