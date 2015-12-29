@@ -16,7 +16,6 @@
     }
 
     --error-color: #e41e2b;
-
     .label-container.error > label {
       color: var(--error-color);
     }
@@ -55,7 +54,7 @@
   'use strict';
   Polymer({
     is: 'at-form-date',
-    behaviors: [ AtFormBehaviors.AtFormBehaviorsValidation ],
+    behaviors: [AtFormBehaviors.AtFormBehaviorsValidation],
     properties: {
       label: {
         type: String,
@@ -189,12 +188,15 @@
         this._icon = 'now:clock';
       }
       this.format = this._internalFormat;
-      if (this._dtInstance){
+      if (this._dtInstance) {
         var date = this._dtInstance.date();
         this._updateValue(date);
       }
     },
-    _updateValue: function (newValue) {
+    _updateValue: function(newValue) {
+      if (!newValue) {
+        return;
+      }
       var self = this;
       var momentValue = moment(newValue);
       if (self.xtype === 'date' || self.xtype === 'time') {
@@ -213,8 +215,7 @@
           // set format to the default format for datetime
           format = this._internalFormat;
           // log the error
-          console.log('Value ' + newValue + ' is not a valid format for datetime. Using default, ' + format +', format instead.');
-          this.fire('format-changed', { value: format });
+          console.log('Value ' + newValue + ' is not a valid format for datetime. Using default, ' + format + ', format instead.');
         }
       } else if (xtype === 'date') {
         // if xtype is date and format doens't contain chars for year, month, day or contains chars for hour, minute and second
@@ -222,8 +223,7 @@
           // set format to the default format for date
           format = this._internalFormat;
           // log the error
-          console.log('Value ' + newValue + ' is not a valid format for date. Using default, ' + format +', format instead.');
-          this.fire('format-changed', { value: format });
+          console.log('Value ' + newValue + ' is not a valid format for date. Using default, ' + format + ', format instead.');
         }
       } else if (xtype === 'time') {
         // if xtype is time and format doens't contain chars for hour, minute and second or contains chars for year, month and day
@@ -231,10 +231,15 @@
           // set format to the default format for time
           format = this._internalFormat;
           // log the error
-          console.log('Value ' + newValue + ' is not a valid format for time. Using default, ' + format +', format instead.');
-          this.fire('format-changed', { value: format });
+          console.log('Value ' + newValue + ' is not a valid format for time. Using default, ' + format + ', format instead.');
         }
       }
+
+      this.format = format;
+      this.fire('format-changed', {
+        value: format
+      });
+
 
       if (this._dtInstance) {
         this._dtInstance.format(format);
@@ -245,9 +250,9 @@
      * @param {Array} chars
      * @param {String} source
      */
-    _containsChars: function (chars, source) {
+    _containsChars: function(chars, source) {
       var result = false;
-      chars.forEach(function (char, index) {
+      chars.forEach(function(char, index) {
         result = result || source.indexOf(char) !== -1;
       });
       return result;
@@ -280,7 +285,7 @@
     },
     requiredChanged: function(newValue, oldValue) {
       if (this._isReady) {
-          this.validate();
+        this.validate();
       }
     }
   });
