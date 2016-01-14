@@ -1,3 +1,6 @@
+variable-host {
+  --error-color: #e41e2b;
+}
 
 .input-group-addon {
   display: table-cell;
@@ -122,14 +125,14 @@ input {
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 .col-sm-6 {
   position: relative;
   min-height: 1px;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 14px;
+  padding-left: 14px;
 }
 
 .col-sm-6 {
@@ -137,8 +140,8 @@ input {
   }
 
 .row {
-  margin-right: -15px;
-  margin-left: -15px;
+  margin-right: -14px;
+  margin-left: -14px;
 }
 
 :before,
@@ -266,7 +269,8 @@ button {
 }
 
 .has-error .form-control {
-  border-color: #a94442;
+  color: var(--error-color);
+  border-color: var(--error-color);
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
           box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
 }
@@ -276,11 +280,10 @@ button {
           box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #ce8483;
 }
 .has-error .input-group-addon {
-  color: #a94442;
+  color: var(--error-color);
   background-color: #f2dede;
-  border-color: #a94442;
+  border-color: var(--error-color);
 }
-
 
 .datetimepicker-widget {
   list-style: none;

@@ -11,11 +11,14 @@
 <dom-module id="at-form-date">
   <link rel="import" type="css" href="at-form-date.css" />
   <style>
+    :host {
+      --error-color: #e41e2b;
+    }
+
     .hidden {
       display: none;
     }
 
-    --error-color: #e41e2b;
     .label-container.error > label {
       color: var(--error-color);
     }
@@ -146,6 +149,8 @@
       this.toggleClass("hidden", newValue, this.$.labelContainer);
     },
     ready: function() {
+      this._validationFunctions.push(this._validateValueAgainstFormat.bind(this));
+
       this._isReady = false;
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
         //        calendarWeeks: true,
@@ -178,7 +183,7 @@
     },
     xtypeChanged: function(newValue, oldValue) {
       if (newValue === "datetime") {
-        this._internalFormat = "YY-MM-DD hh:mm:ss";
+        this._internalFormat = "YYYY-MM-DD HH:mm:ss";
         this._icon = 'now:calendar';
       } else if (newValue === 'date') {
         this._internalFormat = 'YYYY-MM-DD';
@@ -198,12 +203,8 @@
         return;
       }
       var self = this;
-      var momentValue = moment(newValue);
-      if (self.xtype === 'date' || self.xtype === 'time') {
-        self.value = momentValue.format(self._internalFormat);
-      } else {
-        self.value = momentValue.utc().toISOString();
-      }
+      var momentValue = moment(newValue, self._internalFormat);
+      self.value = momentValue.format(self._internalFormat);
     },
     formatChanged: function(newValue, oldValue) {
       var xtype = this.xtype;
@@ -276,10 +277,27 @@
       var labelContainer = this.$.labelSubContainer;
       this.toggleClass('error', !isValid, labelContainer);
     },
+    _validateValueAgainstFormat: function(value) {
+      var valid = true;
+
+      if (value !== '') {
+        var internalFormat = this._internalFormat;
+        valid = moment(value, internalFormat, true).isValid();
+        if (!valid) {
+          this._errorMessage = "Value {0} is not in the correct format.".replace("{0}", value);
+        }
+      }
+
+      return valid;
+    },
     valueChanged: function(newValue, oldValue) {
       if (this._isReady) {
-        var newMoment = moment(newValue);
-        this._dtInstance.date(newMoment);
+        if (newValue === '') {
+          this._dtInstance.clear();
+        } else {
+          var newMoment = moment(newValue, this._internalFormat);
+          this._dtInstance.date(newMoment);
+        }
         this.validate();
       }
     },
