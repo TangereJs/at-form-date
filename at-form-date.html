@@ -19,6 +19,10 @@
       display: none;
     }
 
+    .label-container > label {
+      font-size: 1em;
+    }
+
     .label-container.error > label {
       color: var(--error-color);
     }
@@ -31,7 +35,7 @@
     <at-core-theme></at-core-theme>
     <div id="atFormDateWrapper">
       <div class="ui form" id="labelContainer">
-        <div class="field" id="labelSubContainer" class="label-container">
+        <div id="labelSubContainer" class="field label-container">
           <label>{{label}}</label>
         </div>
       </div>
