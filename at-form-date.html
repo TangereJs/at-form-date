@@ -212,7 +212,13 @@
       }
       var self = this;
       var momentValue = moment(newValue, self._internalFormat);
-      self.value = momentValue.format(self._internalFormat);
+      if (this.xtype === "datetime") {
+        this._isInternalValueUpdate = true;
+        self.value = momentValue.toISOString();
+        this._isInternalValueUpdate = true;
+      } else {
+        self.value = momentValue.format(self._internalFormat);
+      }
     },
     formatChanged: function(newValue, oldValue) {
       var xtype = this.xtype;
@@ -290,7 +296,11 @@
 
       if (value !== '') {
         var internalFormat = this._internalFormat;
-        valid = moment(value, internalFormat, true).isValid();
+        if (this.xtype === "datetime") {
+          valid = moment(value).isValid();
+        } else {
+          valid = moment(value, internalFormat, true).isValid();
+        }
         if (!valid) {
           this._errorMessage = "Value {0} is not in the correct format.".replace("{0}", value);
         }
@@ -303,7 +313,15 @@
         if (newValue === '') {
           this._dtInstance.clear();
         } else {
-          var newMoment = moment(newValue, this._internalFormat);
+          var newMoment;
+          if (this.xtype === "datetime" && this._isInternalValueUpdate) {
+            // moment.js automatically recognizes JSON ISO date format
+            newMoment = moment(newValue);
+            // also this branch should only be used for internal updates
+            // if its also used for external updates than _internalFormat for xtype=datetime is ignored
+          } else {
+            newMoment = moment(newValue, this._internalFormat);
+          }
           this._dtInstance.date(newMoment);
         }
         this.validate();
