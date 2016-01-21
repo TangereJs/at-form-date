@@ -189,6 +189,9 @@
       this.disabledChanged();
       this.valueChanged(this.value);
     },
+    focus: function () {
+      this.$.text.focus();
+    },
     xtypeChanged: function(newValue, oldValue) {
       if (newValue === "datetime") {
         this._internalFormat = "YYYY-MM-DD HH:mm:ss";
