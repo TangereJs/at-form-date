@@ -748,13 +748,12 @@
         }
 
         // Left and right logic
-        if (horizontal === 'auto') {
-          if (utils.elementWidth(parent) < offset.left + utils.elementOuterWidth(widget) / 2 &&
-            offset.left + utils.elementOuterWidth(widget) > utils.windowWidth(window)) {
-            horizontal = 'right';
-          } else {
-            horizontal = 'left';
-          }
+        var containerWidth = utils.elementOuterWidth(htmlElement);
+        var widgetWidth = utils.elementOuterWidth(widget);
+        if ((Math.ceil(containerWidth*0.75)) < widgetWidth) {
+          horizontal = 'right';
+        } else {
+          horizontal = 'left';
         }
 
         if (vertical === 'top') {
@@ -767,8 +766,10 @@
 
         if (horizontal === 'right') {
           widget.classList.add('pull-right');
-        } else {
           widget.classList.remove('pull-left');
+        } else {
+          widget.classList.remove('pull-right');
+          widget.classList.add('pull-left');
         }
 
         var parentStyle = window.getComputedStyle(parent);
@@ -814,8 +815,7 @@
           widget.style.right = 'auto';
         } else {
           widget.style.left = 'auto';
-          widget.style.right = Math.abs(utils.elementWidth(parent) - utils.elementOuterWidth(htmlElement)) + 'px';
-
+          widget.style.right = 0;
         }
       },
 
