@@ -189,7 +189,7 @@
       this.disabledChanged();
       this.valueChanged(this.value);
     },
-    focus: function () {
+    focus: function() {
       this.$.text.focus();
     },
     xtypeChanged: function(newValue, oldValue) {
@@ -218,9 +218,11 @@
       if (this.xtype === "datetime") {
         this._isInternalValueUpdate = true;
         self.value = momentValue.toISOString();
-        this._isInternalValueUpdate = true;
+        this._isInternalValueUpdate = false;
       } else {
-        self.value = momentValue.format(self._internalFormat);
+        this._isInternalValueUpdate = true;
+        self.value = momentValue.utc().format(self._internalFormat);
+        this._isInternalValueUpdate = false;
       }
     },
     formatChanged: function(newValue, oldValue) {
@@ -322,7 +324,10 @@
             newMoment = moment(newValue);
             // also this branch should only be used for internal updates
             // if its also used for external updates than _internalFormat for xtype=datetime is ignored
-          } else {
+          } if (this.xtype === "time" && this._isInternalValueUpdate) {
+            newMoment = moment.utc(newValue, this._internalFormat).local();
+          }
+          else {
             newMoment = moment(newValue, this._internalFormat);
           }
           this._dtInstance.date(newMoment);
