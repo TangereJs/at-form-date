@@ -1,6 +1,7 @@
 <link rel="import" href="../at-core-theme/at-core-theme.html">
 <link rel="import" href="../at-carbon-icon/at-carbon-icon.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
+<link rel="import" href="../at-form-resize-sensor/at-form-resize-sensor.html">
 
 <script src="../moment/moment.js"></script>
 <script src="scripts/at-form-date-utils.js"></script>
@@ -30,28 +31,40 @@
     .hint-container.error > p {
       color: var(--error-color);
     }
+
+    .clear-float {
+      clear: both;
+    }
+
+    .element-wrapper {
+      position: relative;
+    }
   </style>
   <template>
     <at-core-theme></at-core-theme>
-    <div id="atFormDateWrapper">
-      <div class="ui form" id="labelContainer">
-        <div id="labelSubContainer" class="field label-container">
-          <label>{{label}}</label>
+    <div id="atFormDateWrapper" class="element-wrapper">
+      <at-core-resize-sensor id="resizeSensor"></at-core-resize-sensor>
+      <div class="clear-float"></div>
+      <div>
+        <div class="ui form" id="labelContainer">
+          <div id="labelSubContainer" class="field label-container">
+            <label>{{label}}</label>
+          </div>
         </div>
-      </div>
-      <div id="requiredFormGroup" class="form-group">
-        <div class='input-group date' id='datetimepicker'>
-          <input id='text' type='text' class="form-control" />
-          <!-- var is used here instead of span to avoid a bug in IE11 -->
-          <!-- in IE11 span (and div) element gets focus; which should not happen. -->
-          <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
-          <var class="input-group-addon">
-            <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
-          </var>
+        <div id="requiredFormGroup" class="form-group">
+          <div class='input-group date' id='datetimepicker'>
+            <input id='text' type='text' class="form-control" />
+            <!-- var is used here instead of span to avoid a bug in IE11 -->
+            <!-- in IE11 span (and div) element gets focus; which should not happen. -->
+            <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
+            <var class="input-group-addon">
+              <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
+            </var>
+          </div>
         </div>
-      </div>
-      <div id="hintContainer" class="hint-container">
-        <p id="errorHtml" class="hint"></p>
+        <div id="hintContainer" class="hint-container">
+          <p id="errorHtml" class="hint"></p>
+        </div>
       </div>
     </div>
   </template>
@@ -116,13 +129,6 @@
         observer: 'formatChanged'
       }
     },
-    hideChanged: function(newValue, oldValue) {
-      var wrapper = this.$.atFormDateWrapper;
-      this.toggleClass('hidden', newValue, wrapper);
-      if (this._isReady) {
-        this.validate();
-      }
-    },
     get icon() {
       return this._icon;
     },
@@ -156,13 +162,43 @@
     hideLabelChanged: function(newValue, oldValue) {
       this.toggleClass("hidden", newValue, this.$.labelContainer);
     },
+    hideChanged: function(newValue, oldValue) {
+      var wrapper = this.$.atFormDateWrapper;
+      this.toggleClass('hidden', newValue, wrapper);
+      if (this._isReady) {
+        this.validate();
+
+        var resizeSensor = this.$.resizeSensor;
+        this.debounce('initResizeSensor', function () {
+          resizeSensor.reset();
+        }, 150);
+      }
+    },
+    attached: function () {
+      var resizeSensor = this.$.resizeSensor;
+      var initialWidth = resizeSensor.queryWidth();
+      var self = this;
+      resizeSensor.addEventListener('resize-sensed', function (event) {
+        var updatedWidth = event.detail.value.width;
+        var dropdownMenu = self.$$('.datetimepicker-widget.dropdown-menu');
+        if (dropdownMenu !== null && dropdownMenu !== undefined) {
+          dropdownMenu.style.width = '19em';
+          var boundingRect = dropdownMenu.getBoundingClientRect();
+          var ddWidth = boundingRect.width;
+          if (ddWidth > updatedWidth) {
+            dropdownMenu.style.width = updatedWidth + 'px';
+          }
+        }
+      });
+      resizeSensor.reset();
+    },
     ready: function() {
       this._validationFunctions.push(this._validateValueAgainstFormat.bind(this));
 
       this._isReady = false;
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
         //        calendarWeeks: true,
-        //        debug: true,
+                debug: true,
         //        sideBySide: true,
         //        toolbarPlacement: 'top',
         format: this.format,
@@ -314,7 +350,7 @@
       return valid;
     },
     valueChanged: function(newValue, oldValue) {
-      if (this._isInternalValueUpdate) { return; }      
+      if (this._isInternalValueUpdate) { return; }
       if (this._isReady) {
         if (newValue === '') {
           this._dtInstance.clear();
