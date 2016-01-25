@@ -221,6 +221,11 @@
         }
       });
 
+      var valueProvider = this.$.text;
+      valueProvider.addEventListener('blur', function(event) {
+        self.validate();
+      });
+
       this._isReady = true;
       this.disabledChanged();
       this.valueChanged(this.value);
