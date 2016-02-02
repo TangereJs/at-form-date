@@ -291,6 +291,7 @@ button {
 
 .datetimepicker-widget {
   list-style: none;
+  color: black;
 }
 .datetimepicker-widget.dropdown-menu {
   margin: 2px 0;

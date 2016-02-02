@@ -1,4 +1,5 @@
-<link rel="import" href="../at-core-theme/at-core-theme.html">
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../at-theme/at-theme.html">
 <link rel="import" href="../at-carbon-icon/at-carbon-icon.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
 <link rel="import" href="../at-core-resize-sensor/at-core-resize-sensor.html">
@@ -10,50 +11,111 @@
 <script src="scripts/datetimepicker.js"></script>
 
 <dom-module id="at-form-date">
-  <link rel="import" type="css" href="at-form-date.css" />
-  <style>
-    :host {
-      --error-color: #e41e2b;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .label-container > label {
-      font-size: 1em;
-    }
-
-    .label-container.error > label {
-      color: var(--error-color);
-    }
-
-    .hint-container.error > p {
-      color: var(--error-color);
-    }
-
-    .clear-float {
-      clear: both;
-    }
-
-    .element-wrapper {
-      position: relative;
-    }
-  </style>
+  <link rel="import" type="css" href="at-form-date.css">
   <template>
-    <at-core-theme></at-core-theme>
-    <div id="atFormDateWrapper" class="element-wrapper">
+    <style>
+      :host * {
+        box-sizing: border-box;
+      }
+
+      :host {
+        @apply(--at-form-host);
+      }
+
+      #input {
+        @apply(--at-form-input-common);
+      }
+
+      #input:focus {
+        @apply(--at-form-input-focus);
+      }
+
+      #input::-webkit-input-placeholder {
+        @apply(--at-form-input-placeholder);
+      }
+
+      #input:-moz-placeholder {
+        /* Mozilla Firefox 4 to 18 */
+        @apply(--at-form-input-placeholder);
+      }
+
+      #input::-moz-placeholder {
+        /* Mozilla Firefox 19+ */
+        @apply(--at-form-input-placeholder);
+      }
+
+      #input:-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        @apply(--at-form-input-placeholder);
+      }
+
+      #contentContainer.error #input::-webkit-input-placeholder {
+        @apply(--at-form-input-placeholder-error);
+      }
+
+      #contentContainer.error #input:-moz-placeholder {
+        /* Mozilla Firefox 4 to 18 */
+        @apply(--at-form-input-placeholder-error);
+        opacity: 1;
+      }
+
+      #contentContainer.error #input::-moz-placeholder {
+        /* Mozilla Firefox 19+ */
+        @apply(--at-form-input-placeholder-error);
+        opacity: 1;
+      }
+
+      #contentContainer.error #input:-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        @apply(--at-form-input-placeholder-error);
+      }
+
+      .clear-float {
+        clear: both;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .error {
+        color: var(--at-error-color);
+      }
+
+      .disabled {
+        @apply(--at-form-disabled);
+      }
+
+      #atContainer {
+        @apply(--at-form-element);
+      }
+
+      #label {
+        @apply(--at-form-label);
+      }
+
+      #contentContainer.error {
+        @apply(--at-form-error-margins);
+      }
+
+      #contentContainer.error #input {
+        @apply(--at-form-content-error);
+      }
+
+      #errorHtml {
+        @apply(--at-form-error-font);
+      }
+    </style>
+    <div id="atContainer" class="at-container">
       <at-core-resize-sensor id="resizeSensor"></at-core-resize-sensor>
       <div class="clear-float"></div>
       <div>
-        <div class="ui form" id="labelContainer">
-          <div id="labelSubContainer" class="field label-container">
-            <label>{{label}}</label>
-          </div>
+        <div id="labelContainer" class="at-label-container">
+          <label id="label" class="at-label">{{label}}</label>
         </div>
-        <div id="requiredFormGroup" class="form-group">
-          <div class='input-group date' id='datetimepicker'>
-            <input id='text' type='text' class="form-control" />
+        <div class="form-group">
+          <div id="contentContainer" class="at-content-container input-group date">
+            <input id='input' class="at-content" />
             <!-- var is used here instead of span to avoid a bug in IE11 -->
             <!-- in IE11 span (and div) element gets focus; which should not happen. -->
             <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
@@ -62,8 +124,8 @@
             </var>
           </div>
         </div>
-        <div id="hintContainer" class="hint-container">
-          <p id="errorHtml" class="hint"></p>
+        <div id="hintContainer" class="at-hint-container">
+          <div id="errorHtml" class="hint"></div>
         </div>
       </div>
     </div>
@@ -129,12 +191,6 @@
         observer: 'formatChanged'
       }
     },
-    get icon() {
-      return this._icon;
-    },
-    set icon(newValue) {
-      this._icon = newValue;
-    },
     $meta: [{
       title: "Date",
       type: "string",
@@ -148,7 +204,6 @@
       type: "string",
       xtype: "datetime"
     }],
-    _scopeCssViaAttr: true,
     _dtInstance: undefined,
     /**
      * _internalFormat governs how value is formatted
@@ -159,26 +214,34 @@
      */
     _internalFormat: 'YY-MM-DD hh:mm:ss',
     _icon: 'now:calendar',
-    hideLabelChanged: function(newValue, oldValue) {
-      this.toggleClass("hidden", newValue, this.$.labelContainer);
+    // *ij* this property must remain because external stylesheets are used
+    _scopeCssViaAttr: true,
+    get icon() {
+      return this._icon;
+    },
+    set icon(newValue) {
+      this._icon = newValue;
     },
     hideChanged: function(newValue, oldValue) {
-      var wrapper = this.$.atFormDateWrapper;
-      this.toggleClass('hidden', newValue, wrapper);
+      var container = this.$.atContainer;
+      this.toggleClass('hidden', newValue, container);
       if (this._isReady) {
         this.validate();
 
         var resizeSensor = this.$.resizeSensor;
-        this.debounce('initResizeSensor', function () {
+        this.debounce('initResizeSensor', function() {
           resizeSensor.reset();
         }, 150);
       }
     },
-    attached: function () {
+    hideLabelChanged: function(newValue, oldValue) {
+      this.toggleClass("hidden", newValue, this.$.labelContainer);
+    },
+    attached: function() {
       var resizeSensor = this.$.resizeSensor;
       var initialWidth = resizeSensor.queryWidth();
       var self = this;
-      resizeSensor.addEventListener('resize-sensed', function (event) {
+      resizeSensor.addEventListener('resize-sensed', function(event) {
         var updatedWidth = event.detail.value.width;
         var dropdownMenu = self.$$('.datetimepicker-widget.dropdown-menu');
         if (dropdownMenu !== null && dropdownMenu !== undefined) {
@@ -196,9 +259,9 @@
       this._validationFunctions.push(this._validateValueAgainstFormat.bind(this));
 
       this._isReady = false;
-      this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
+      this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.contentContainer, {
         //        calendarWeeks: true,
-                debug: true,
+        // debug: true,
         //        sideBySide: true,
         //        toolbarPlacement: 'top',
         format: this.format,
@@ -213,7 +276,7 @@
       // jquery custom events can be done with dispatchEvent
       // listening to the dispatched event can be done by attaching the event listener to the
       // parent element of the element on which event is dispatched on
-      this.$.datetimepicker.addEventListener('dp.change', function(event) {
+      this.$.contentContainer.addEventListener('dp.change', function(event) {
         if (event.date) {
           self._updateValue(event.date);
         } else {
@@ -221,7 +284,7 @@
         }
       });
 
-      var valueProvider = this.$.text;
+      var valueProvider = this.$.input;
       valueProvider.addEventListener('blur', function(event) {
         self.validate();
       });
@@ -231,7 +294,7 @@
       this.valueChanged(this.value);
     },
     focus: function() {
-      this.$.text.focus();
+      this.$.input.focus();
     },
     xtypeChanged: function(newValue, oldValue) {
       if (newValue === "datetime") {
@@ -248,6 +311,20 @@
       if (this._dtInstance) {
         var date = this._dtInstance.date();
         this._updateValue(date);
+      }
+    },
+    valueChanged: function(newValue, oldValue) {
+      if (this._isInternalValueUpdate) {
+        return;
+      }
+      if (this._isReady) {
+        if (newValue === '') {
+          this._dtInstance.clear();
+        } else {
+          var newMoment = moment(newValue, this._internalFormat);
+          this._dtInstance.date(newMoment);
+        }
+        this.validate();
       }
     },
     _updateValue: function(newValue) {
@@ -320,8 +397,11 @@
     },
     disabledChanged: function(newValue, oldValue) {
       if (this._isReady) {
-        this.toggleAttribute('disabled', this.disabled, this.$.text);
-        if (this.disabled) {
+        var atContainer = this.$.atContainer;
+        this.toggleClass('disabled', newValue, atContainer);
+        var valueProvider = this.$.input;
+        this.toggleAttribute('disabled', newValue, valueProvider);
+        if (newValue) {
           this._dtInstance.disable();
         } else {
           this._dtInstance.enable();
@@ -329,13 +409,18 @@
         this.validate();
       }
     },
+    requiredChanged: function(newValue, oldValue) {
+      if (this._isReady) {
+        this.validate();
+      }
+    },
     _updateUIValidState: function(isValid) {
-      var formGroup = this.$.requiredFormGroup;
-      this.toggleClass('has-error', !isValid, formGroup);
+      var labelContainer = this.$.labelContainer;
+      this.toggleClass('error', !isValid, labelContainer);
+      var contentContainer = this.$.contentContainer;
+      this.toggleClass('error', !isValid, contentContainer);
       var hintContainer = this.$.hintContainer;
       this.toggleClass('error', !isValid, hintContainer);
-      var labelContainer = this.$.labelSubContainer;
-      this.toggleClass('error', !isValid, labelContainer);
     },
     _validateValueAgainstFormat: function(value) {
       var valid = true;
@@ -353,23 +438,6 @@
       }
 
       return valid;
-    },
-    valueChanged: function(newValue, oldValue) {
-      if (this._isInternalValueUpdate) { return; }
-      if (this._isReady) {
-        if (newValue === '') {
-          this._dtInstance.clear();
-        } else {
-          var newMoment = moment(newValue, this._internalFormat);
-          this._dtInstance.date(newMoment);
-        }
-        this.validate();
-      }
-    },
-    requiredChanged: function(newValue, oldValue) {
-      if (this._isReady) {
-        this.validate();
-      }
     }
   });
 </script>
