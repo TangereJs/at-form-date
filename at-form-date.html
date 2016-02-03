@@ -260,6 +260,8 @@
 
       this._isReady = false;
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.contentContainer, {
+        keepInvalid: true,
+        useStrict: true,
         //        calendarWeeks: true,
         // debug: true,
         //        sideBySide: true,
@@ -276,15 +278,23 @@
       // jquery custom events can be done with dispatchEvent
       // listening to the dispatched event can be done by attaching the event listener to the
       // parent element of the element on which event is dispatched on
-      this.$.contentContainer.addEventListener('dp.change', function(event) {
+      var contentContainer = this.$.contentContainer;
+      contentContainer.addEventListener('dp.change', function(event) {
         if (event.date) {
           self._updateValue(event.date);
         } else {
           self.value = '';
         }
+        self.validate();
       });
 
       var valueProvider = this.$.input;
+
+      contentContainer.addEventListener('dp.error', function(event) {
+        self.value = valueProvider.value;
+        self.validate();
+      });
+
       valueProvider.addEventListener('blur', function(event) {
         self.validate();
       });
@@ -321,8 +331,8 @@
         if (newValue === '') {
           this._dtInstance.clear();
         } else {
-          var newMoment = moment(newValue, this._internalFormat);
-          this._dtInstance.date(newMoment);
+          var valueProvider = this.$.input;
+          valueProvider.value = newValue;
         }
         this.validate();
       }
@@ -433,7 +443,7 @@
           valid = moment(value, internalFormat, true).isValid();
         }
         if (!valid) {
-          this._errorMessage = "Value {0} is not in the correct format.".replace("{0}", value);
+          this._errorMessage = "Value {0} is not a valid.".replace("{0}", value);
         }
       }
 
