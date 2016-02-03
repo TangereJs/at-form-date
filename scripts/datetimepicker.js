@@ -820,7 +820,11 @@
       },
 
       notifyEvent = function (e) {
-        if (e.type === 'dp.change' && ((e.date && e.date.isSame(e.oldDate)) || (!e.date && !e.oldDate))) {
+        // if (e.type === 'dp.change' && ((e.date && e.date.isSame(e.oldDate)) || (!e.date && !e.oldDate))) {
+        if (e.type === 'dp.change' && (!e.date && !e.oldDate)) {
+          // *ij* AT-11 2016-02-03 (YYYY-MM-DD)
+          // we need dp.change to trigger when e.date && e.date.isSame(e.oldDate) because that will remove validation errors
+          // if dp.change doesn't trigger, validation error remain even when value is valid
           return;
         }
         // jquery custom events can be done with dispatchEvent
@@ -1259,7 +1263,7 @@
         if (!targetMoment) {
           unset = true;
           input.value = '';
-          //          element.data('date', ''); // <- this data is never read, as far as I can see
+          // element.data('date', ''); // <- this data is never read, as far as I can see
           notifyEvent({
             type: 'dp.change',
             date: null,
@@ -1279,7 +1283,7 @@
           date = targetMoment;
           viewDate = date.clone();
           input.value = date.format(actualFormat);
-          //          element.data('date', date.format(actualFormat)); // <- this data is never read, as far as I can see
+          // element.data('date', date.format(actualFormat)); // <- this data is never read, as far as I can see
           update();
           unset = false;
           notifyEvent({
@@ -1737,8 +1741,8 @@
       },
 
       change = function (e) {
-        var val = e.target.value.trim(),
-          parsedDate = val ? parseInputDate(val) : null;
+        var val = e.target.value.trim();
+        var parsedDate = val ? parseInputDate(val) : null;
         setValue(parsedDate);
         e.stopImmediatePropagation();
         return false;

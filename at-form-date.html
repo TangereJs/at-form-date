@@ -197,8 +197,10 @@
 
       this._isReady = false;
       this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
+        keepInvalid: true,
+        useStrict: true,
         //        calendarWeeks: true,
-                debug: true,
+        // debug: true,
         //        sideBySide: true,
         //        toolbarPlacement: 'top',
         format: this.format,
@@ -213,15 +215,23 @@
       // jquery custom events can be done with dispatchEvent
       // listening to the dispatched event can be done by attaching the event listener to the
       // parent element of the element on which event is dispatched on
-      this.$.datetimepicker.addEventListener('dp.change', function(event) {
+      var contentContainer = this.$.datetimepicker;
+      contentContainer.addEventListener('dp.change', function(event) {
         if (event.date) {
           self._updateValue(event.date);
         } else {
           self.value = '';
         }
+        self.validate();
       });
 
       var valueProvider = this.$.text;
+
+      contentContainer.addEventListener('dp.error', function(event) {
+        self.value = valueProvider.value;
+        self.validate();
+      });
+
       valueProvider.addEventListener('blur', function(event) {
         self.validate();
       });
@@ -248,6 +258,20 @@
       if (this._dtInstance) {
         var date = this._dtInstance.date();
         this._updateValue(date);
+      }
+    },
+    valueChanged: function(newValue, oldValue) {
+      if (this._isInternalValueUpdate) {
+        return;
+      }
+      if (this._isReady) {
+        if (newValue === '') {
+          this._dtInstance.clear();
+        } else {
+          var valueProvider = this.$.text;
+          valueProvider.value = newValue;
+        }
+        this.validate();
       }
     },
     _updateValue: function(newValue) {
@@ -348,23 +372,11 @@
           valid = moment(value, internalFormat, true).isValid();
         }
         if (!valid) {
-          this._errorMessage = "Value {0} is not in the correct format.".replace("{0}", value);
+          this._errorMessage = "Value {0} is not a valid.".replace("{0}", value);
         }
       }
 
       return valid;
-    },
-    valueChanged: function(newValue, oldValue) {
-      if (this._isInternalValueUpdate) { return; }
-      if (this._isReady) {
-        if (newValue === '') {
-          this._dtInstance.clear();
-        } else {
-          var newMoment = moment(newValue, this._internalFormat);
-          this._dtInstance.date(newMoment);
-        }
-        this.validate();
-      }
     },
     requiredChanged: function(newValue, oldValue) {
       if (this._isReady) {
