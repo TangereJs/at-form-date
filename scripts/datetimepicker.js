@@ -122,62 +122,52 @@
       },
 
       getHeadTemplate = function () {
-        var
-          headTemplate = document.createElement('thead');
-        headTemplate.setAttribute('style-scope', styleScopeValue);
-
+        var headTemplate = document.createElement('thead');
         var trElem = document.createElement('tr');
-        trElem.setAttribute('style-scope', styleScopeValue);
-        headTemplate.appendChild(trElem);
+        Polymer.dom(headTemplate).appendChild(trElem);
 
         var thElem = document.createElement('th');
-        thElem.setAttribute('style-scope', styleScopeValue);
-        thElem.classList.add('prev');
-        thElem.setAttribute('data-action', 'previous');
+        Polymer.dom(thElem).classList.add('prev');
+        Polymer.dom(thElem).setAttribute('data-action', 'previous');
 
-        trElem.appendChild(thElem);
+        Polymer.dom(trElem).appendChild(thElem);
 
         var previousIcon = document.createElement('at-carbon-icon');
-        previousIcon.setAttribute('style-scope', styleScopeValue);
         previousIcon.icon = "now:caret-left";
-        thElem.appendChild(previousIcon);
+        Polymer.dom(thElem).appendChild(previousIcon);
 
         thElem = document.createElement('th');
-        thElem.setAttribute('style-scope', styleScopeValue);
-        thElem.classList.add('picker-switch');
-        thElem.setAttribute('data-action', 'pickerSwitch');
-        thElem.setAttribute('colspan', (options.calendarWeeks ? '6' : '5'));
+        Polymer.dom(thElem).classList.add('picker-switch');
+        Polymer.dom(thElem).setAttribute('data-action', 'pickerSwitch');
+        Polymer.dom(thElem).setAttribute('colspan', (options.calendarWeeks ? '6' : '5'));
 
-        trElem.appendChild(thElem);
+        Polymer.dom(trElem).appendChild(thElem);
 
         thElem = document.createElement('th');
-        thElem.setAttribute('style-scope', styleScopeValue);
-        thElem.classList.add('next');
-        thElem.setAttribute('data-action', 'next');
+        Polymer.dom(thElem).classList.add('next');
+        Polymer.dom(thElem).setAttribute('data-action', 'next');
 
-        trElem.appendChild(thElem);
+        Polymer.dom(trElem).appendChild(thElem);
 
         var nextIcon = document.createElement('at-carbon-icon');
-        nextIcon.setAttribute('style-scope', styleScopeValue);
         nextIcon.icon = "now:caret-right";
-        thElem.appendChild(nextIcon);
+        Polymer.dom(thElem).appendChild(nextIcon);
 
         return headTemplate;
       },
 
       getContTemplate = function () {
         var contTemplate = document.createElement('tbody');
-        contTemplate.setAttribute('style-scope', styleScopeValue);
         var trElem, tdElem;
         trElem = document.createElement('tr');
-        trElem.setAttribute('style-scope', styleScopeValue);
-        contTemplate.appendChild(trElem);
+        Polymer.dom(trElem).setAttribute('style-scope', styleScopeValue);
+        Polymer.dom(contTemplate).appendChild(trElem);
 
         tdElem = document.createElement('td');
-        tdElem.setAttribute('style-scope', styleScopeValue);
-        tdElem.setAttribute('colspan', options.calendarWeeks ? '8' : '7');
+        Polymer.dom(tdElem).setAttribute('style-scope', styleScopeValue);
+        Polymer.dom(tdElem).setAttribute('colspan', options.calendarWeeks ? '8' : '7');
 
-        trElem.appendChild(tdElem);
+        Polymer.dom(trElem).appendChild(tdElem);
 
         return contTemplate;
       },
@@ -187,37 +177,30 @@
         var result1, result2, result3, tableElem, tableBodyElem;
 
         result1 = document.createElement('div');
-        result1.setAttribute('style-scope', styleScopeValue);
-        result1.classList.add('datepicker-days');
+        Polymer.dom(result1).classList.add('datepicker-days');
         tableElem = document.createElement('table');
-        tableElem.setAttribute('style-scope', styleScopeValue);
-        tableElem.classList.add('table-condensed');
+        Polymer.dom(tableElem).classList.add('table-condensed');
         tableBodyElem = document.createElement('tbody');
-        tableBodyElem.setAttribute('style-scope', styleScopeValue);
 
-        result1.appendChild(tableElem);
-        tableElem.appendChild(getHeadTemplate());
-        tableElem.appendChild(tableBodyElem);
+        Polymer.dom(result1).appendChild(tableElem);
+        Polymer.dom(tableElem).appendChild(getHeadTemplate());
+        Polymer.dom(tableElem).appendChild(tableBodyElem);
 
         result2 = document.createElement('div');
-        result2.setAttribute('style-scope', styleScopeValue);
-        result2.classList.add('datepicker-months');
+        Polymer.dom(result2).classList.add('datepicker-months');
         tableElem = document.createElement('table');
-        tableElem.setAttribute('style-scope', styleScopeValue);
-        tableElem.classList.add('table-condensed');
-        result2.appendChild(tableElem);
-        tableElem.appendChild(getHeadTemplate());
-        tableElem.appendChild(getContTemplate());
+        Polymer.dom(tableElem).classList.add('table-condensed');
+        Polymer.dom(result2).appendChild(tableElem);
+        Polymer.dom(tableElem).appendChild(getHeadTemplate());
+        Polymer.dom(tableElem).appendChild(getContTemplate());
 
         result3 = document.createElement('div');
-        result3.setAttribute('style-scope', styleScopeValue);
-        result3.classList.add('datepicker-years');
+        Polymer.dom(result3).classList.add('datepicker-years');
         tableElem = document.createElement('table');
-        tableElem.setAttribute('style-scope', styleScopeValue);
-        tableElem.classList.add('table-condensed');
-        result3.appendChild(tableElem);
-        tableElem.appendChild(getHeadTemplate());
-        tableElem.appendChild(getContTemplate());
+        Polymer.dom(tableElem).classList.add('table-condensed');
+        Polymer.dom(result3).appendChild(tableElem);
+        Polymer.dom(tableElem).appendChild(getHeadTemplate());
+        Polymer.dom(tableElem).appendChild(getContTemplate());
 
         return [result1, result2, result3];
       },
@@ -227,224 +210,185 @@
           middleRow = document.createElement('tr'),
           bottomRow = document.createElement('tr');
 
-        topRow.setAttribute('style-scope', styleScopeValue);
-        middleRow.setAttribute('style-scope', styleScopeValue);
-        bottomRow.setAttribute('style-scope', styleScopeValue);
-
         var tdElem, aElem, spanElem;
 
         if (isEnabled('h')) {
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          topRow.appendChild(tdElem);
+          Polymer.dom(topRow).appendChild(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(aElem);
+          Polymer.dom(tdElem).appendChild(aElem);
 
-          aElem.setAttribute('href', '#');
-          aElem.setAttribute('tabindex', '-1');
-          aElem.classList.add('btn');
-          aElem.setAttribute('data-action', 'incrementHours');
+          Polymer.dom(aElem).setAttribute('href', '#');
+          Polymer.dom(aElem).setAttribute('tabindex', '-1');
+          Polymer.dom(aElem).classList.add('btn');
+          Polymer.dom(aElem).setAttribute('data-action', 'incrementHours');
 
           var upIcon = document.createElement('at-carbon-icon');
-          upIcon.setAttribute('style-scope', styleScopeValue);
           upIcon.icon = options.nowicons.up;
-          aElem.appendChild(upIcon);
+          Polymer.dom(aElem).appendChild(upIcon);
 
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          middleRow.appendChild(tdElem);
+          Polymer.dom(middleRow).appendChild(tdElem);
 
           spanElem = document.createElement('span');
-          spanElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(spanElem);
-          spanElem.classList.add('timepicker-hour')
-          spanElem.setAttribute('data-time-component', 'hours');
-          spanElem.setAttribute('data-action', 'showHours');
+          Polymer.dom(tdElem).appendChild(spanElem);
+          Polymer.dom(spanElem).classList.add('timepicker-hour')
+          Polymer.dom(spanElem).setAttribute('data-time-component', 'hours');
+          Polymer.dom(spanElem).setAttribute('data-action', 'showHours');
 
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          bottomRow.appendChild(tdElem);
+          Polymer.dom(bottomRow).appendChild(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(aElem);
-          aElem.setAttribute('href', '#');
-          aElem.setAttribute('tabindex', '-1');
-          aElem.classList.add('btn');
-          aElem.setAttribute('data-action', 'decrementHours');
+          Polymer.dom(tdElem).appendChild(aElem);
+          Polymer.dom(aElem).setAttribute('href', '#');
+          Polymer.dom(aElem).setAttribute('tabindex', '-1');
+          Polymer.dom(aElem).classList.add('btn');
+          Polymer.dom(aElem).setAttribute('data-action', 'decrementHours');
 
           var downIcon = document.createElement('at-carbon-icon');
-          downIcon.setAttribute('style-scope', styleScopeValue);
           downIcon.icon = options.nowicons.down;
-          aElem.appendChild(downIcon);
+          Polymer.dom(aElem).appendChild(downIcon);
         }
 
         if (isEnabled('m')) {
           if (isEnabled('h')) {
             tdElem = document.createElement('td');
-            tdElem.setAttribute('style-scope', styleScopeValue);
-            topRow.appendChild(tdElem);
-            tdElem.classList.add('separator');
+            Polymer.dom(topRow).appendChild(tdElem);
+            Polymer.dom(tdElem).classList.add('separator');
             tdElem = document.createElement('td');
-            tdElem.setAttribute('style-scope', styleScopeValue);
-            middleRow.appendChild(tdElem);
-            tdElem.classList.add('separator');
-            tdElem.innerHTML = ':';
+            Polymer.dom(middleRow).appendChild(tdElem);
+            Polymer.dom(tdElem).classList.add('separator');
+            Polymer.dom(tdElem).innerHTML = ':';
             tdElem = document.createElement('td');
-            tdElem.setAttribute('style-scope', styleScopeValue);
-            bottomRow.appendChild(tdElem);
-            tdElem.classList.add('separator');
+            Polymer.dom(bottomRow).appendChild(tdElem);
+            Polymer.dom(tdElem).classList.add('separator');
           }
 
           // ----- for top row ----- //
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          topRow.appendChild(tdElem);
+          Polymer.dom(topRow).appendChild(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(aElem);
-          aElem.setAttribute('href', '#');
-          aElem.setAttribute('tabindex', '-1');
-          aElem.classList.add('btn');
-          aElem.setAttribute('data-action', 'incrementMinutes');
+          Polymer.dom(tdElem).appendChild(aElem);
+          Polymer.dom(aElem).setAttribute('href', '#');
+          Polymer.dom(aElem).setAttribute('tabindex', '-1');
+          Polymer.dom(aElem).classList.add('btn');
+          Polymer.dom(aElem).setAttribute('data-action', 'incrementMinutes');
 
           upIcon = document.createElement('at-carbon-icon');
-          upIcon.setAttribute('style-scope', styleScopeValue);
           upIcon.icon = options.nowicons.up;
-          aElem.appendChild(upIcon);
+          Polymer.dom(aElem).appendChild(upIcon);
 
           // ----- for middle row ----- //
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          middleRow.appendChild(tdElem);
+          Polymer.dom(middleRow).appendChild(tdElem);
 
           spanElem = document.createElement('span');
-          spanElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(spanElem);
-          spanElem.classList.add('timepicker-minute');
-          spanElem.setAttribute('data-time-component', 'minutes');
-          spanElem.setAttribute('data-action', 'showMinutes');
+          Polymer.dom(tdElem).appendChild(spanElem);
+          Polymer.dom(spanElem).classList.add('timepicker-minute');
+          Polymer.dom(spanElem).setAttribute('data-time-component', 'minutes');
+          Polymer.dom(spanElem).setAttribute('data-action', 'showMinutes');
 
           // ----- for bottom row ----- //
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          bottomRow.appendChild(tdElem);
+          Polymer.dom(bottomRow).appendChild(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(aElem);
-          aElem.setAttribute('href', '#');
-          aElem.setAttribute('tabindex', '-1');
-          aElem.classList.add('btn');
-          aElem.setAttribute('data-action', 'decrementMinutes');
+          Polymer.dom(tdElem).appendChild(aElem);
+          Polymer.dom(aElem).setAttribute('href', '#');
+          Polymer.dom(aElem).setAttribute('tabindex', '-1');
+          Polymer.dom(aElem).classList.add('btn');
+          Polymer.dom(aElem).setAttribute('data-action', 'decrementMinutes');
 
           downIcon = document.createElement('at-carbon-icon');
-          downIcon.setAttribute('style-scope', styleScopeValue);
           downIcon.icon = options.nowicons.down;
-          aElem.appendChild(downIcon);
+          Polymer.dom(aElem).appendChild(downIcon);
         }
 
         if (isEnabled('s')) {
           if (isEnabled('m')) {
             tdElem = document.createElement('td');
-            tdElem.setAttribute('style-scope', styleScopeValue);
-            topRow.appendChild(tdElem);
-            tdElem.classList.add('separator');
+            Polymer.dom(topRow).appendChild(tdElem);
+            Polymer.dom(tdElem).classList.add('separator');
             tdElem = document.createElement('td');
-            tdElem.setAttribute('style-scope', styleScopeValue);
-            middleRow.appendChild(tdElem);
-            tdElem.classList.add('separator');
-            tdElem.innerHTML = ':';
+            Polymer.dom(middleRow).appendChild(tdElem);
+            Polymer.dom(tdElem).classList.add('separator');
+            Polymer.dom(tdElem).innerHTML = ':';
             tdElem = document.createElement('td');
-            tdElem.setAttribute('style-scope', styleScopeValue);
-            bottomRow.appendChild(tdElem);
-            tdElem.classList.add('separator');
+            Polymer.dom(bottomRow).appendChild(tdElem);
+            Polymer.dom(tdElem).classList.add('separator');
           }
 
           // ----- for top row ----- //
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          topRow.appendChild(tdElem);
+          Polymer.dom(topRow).appendChild(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(aElem);
-          aElem.setAttribute('href', '#');
-          aElem.setAttribute('tabindex', '-1');
-          aElem.classList.add('btn');
-          aElem.setAttribute('data-action', 'incrementSeconds');
+          Polymer.dom(tdElem).appendChild(aElem);
+          Polymer.dom(aElem).setAttribute('href', '#');
+          Polymer.dom(aElem).setAttribute('tabindex', '-1');
+          Polymer.dom(aElem).classList.add('btn');
+          Polymer.dom(aElem).setAttribute('data-action', 'incrementSeconds');
 
           upIcon = document.createElement('at-carbon-icon');
-          upIcon.setAttribute('style-scope', styleScopeValue);
           upIcon.icon = options.nowicons.up;
-          aElem.appendChild(upIcon);
+          Polymer.dom(aElem).appendChild(upIcon);
 
           // ----- for middle row ----- //
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          middleRow.appendChild(tdElem);
+          Polymer.dom(middleRow).appendChild(tdElem);
 
           spanElem = document.createElement('span');
-          spanElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(spanElem);
-          spanElem.classList.add('timepicker-minute');
-          spanElem.setAttribute('data-time-component', 'seconds');
-          spanElem.setAttribute('data-action', 'showSeconds');
+          Polymer.dom(tdElem).appendChild(spanElem);
+          Polymer.dom(spanElem).classList.add('timepicker-minute');
+          Polymer.dom(spanElem).setAttribute('data-time-component', 'seconds');
+          Polymer.dom(spanElem).setAttribute('data-action', 'showSeconds');
 
           // ----- for bottom row ----- //
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          bottomRow.appendChild(tdElem);
+          Polymer.dom(bottomRow).appendChild(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(aElem);
-          aElem.setAttribute('href', '#');
-          aElem.setAttribute('tabindex', '-1');
-          aElem.classList.add('btn');
-          aElem.setAttribute('data-action', 'decrementSeconds');
+          Polymer.dom(tdElem).appendChild(aElem);
+          Polymer.dom(aElem).setAttribute('href', '#');
+          Polymer.dom(aElem).setAttribute('tabindex', '-1');
+          Polymer.dom(aElem).classList.add('btn');
+          Polymer.dom(aElem).setAttribute('data-action', 'decrementSeconds');
 
           downIcon = document.createElement('at-carbon-icon');
-          downIcon.setAttribute('style-scope', styleScopeValue);
           downIcon.icon = options.nowicons.down;
-          aElem.appendChild(downIcon);
+          Polymer.dom(aElem).appendChild(downIcon);
         }
 
         if (!use24Hours) {
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          topRow.appendChild(tdElem);
-          tdElem.classList.add('separator');
+          Polymer.dom(topRow).appendChild(tdElem);
+          Polymer.dom(tdElem).classList.add('separator');
 
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          middleRow.appendChild(tdElem);
+          Polymer.dom(middleRow).appendChild(tdElem);
 
           var buttonElem = document.createElement('button');
-          buttonElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(buttonElem);
-          utils.addClasses(buttonElem, 'btn btn-primary');
-          buttonElem.setAttribute('data-action', 'togglePeriod');
+          Polymer.dom(tdElem).appendChild(buttonElem);
+          Polymer.dom(buttonElem).classList.add('btn');
+          Polymer.dom(buttonElem).classList.add('btn-primary');
+          Polymer.dom(buttonElem).setAttribute('data-action', 'togglePeriod');
 
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
-          bottomRow.appendChild(tdElem);
-          tdElem.classList.add('separator');
+          Polymer.dom(bottomRow).appendChild(tdElem);
+          Polymer.dom(tdElem).classList.add('separator');
         }
 
         var divElem = document.createElement('div');
-        divElem.setAttribute('style-scope', styleScopeValue);
-        divElem.classList.add('timepicker-picker');
+        Polymer.dom(divElem).classList.add('timepicker-picker');
         var tableElem = document.createElement('table');
-        tableElem.setAttribute('style-scope', styleScopeValue);
-        divElem.appendChild(tableElem);
-        tableElem.classList.add('table-condensed');
-        tableElem.appendChild(topRow);
-        tableElem.appendChild(middleRow);
-        tableElem.appendChild(bottomRow);
+        Polymer.dom(divElem).appendChild(tableElem);
+        Polymer.dom(tableElem).classList.add('table-condensed');
+        Polymer.dom(tableElem).appendChild(topRow);
+        Polymer.dom(tableElem).appendChild(middleRow);
+        Polymer.dom(tableElem).appendChild(bottomRow);
 
         return divElem;
       },
@@ -453,28 +397,22 @@
         var hoursView, minutesView, secondsView, tableElem, ret;
 
         hoursView = document.createElement('div');
-        hoursView.setAttribute('style-scope', styleScopeValue);
-        hoursView.classList.add('timepicker-hours');
+        Polymer.dom(hoursView).classList.add('timepicker-hours');
         tableElem = document.createElement('table');
-        tableElem.setAttribute('style-scope', styleScopeValue);
-        hoursView.appendChild(tableElem);
-        tableElem.classList.add('table-condensed');
+        Polymer.dom(hoursView).appendChild(tableElem);
+        Polymer.dom(tableElem).classList.add('table-condensed');
 
         minutesView = document.createElement('div');
-        minutesView.setAttribute('style-scope', styleScopeValue);
-        minutesView.classList.add('timepicker-minutes');
+        Polymer.dom(minutesView).classList.add('timepicker-minutes');
         tableElem = document.createElement('table');
-        tableElem.setAttribute('style-scope', styleScopeValue);
-        minutesView.appendChild(tableElem);
-        tableElem.classList.add('table-condensed');
+        Polymer.dom(minutesView).appendChild(tableElem);
+        Polymer.dom(tableElem).classList.add('table-condensed');
 
         secondsView = document.createElement('div');
-        secondsView.setAttribute('style-scope', styleScopeValue);
-        secondsView.classList.add('timepicker-seconds');
+        Polymer.dom(secondsView).classList.add('timepicker-seconds');
         tableElem = document.createElement('table');
-        tableElem.setAttribute('style-scope', styleScopeValue);
-        secondsView.appendChild(tableElem);
-        tableElem.classList.add('table-condensed');
+        Polymer.dom(secondsView).appendChild(tableElem);
+        Polymer.dom(tableElem).classList.add('table-condensed');
 
         ret = [getTimePickerMainTemplate()];
 
@@ -496,77 +434,62 @@
           tdElem, aElem, spanElem;
         if (options.showTodayButton) {
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
           row.push(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(aElem);
-          aElem.setAttribute('data-action', 'today');
+          Polymer.dom(tdElem).appendChild(aElem);
+          Polymer.dom(aElem).setAttribute('data-action', 'today');
 
           var todayIcon = document.createElement('at-carbon-icon');
-          todayIcon.setAttribute('style-scope', styleScopeValue);
           todayIcon.icon = options.nowicons.today;
-          aElem.appendChild(todayIcon);
+          Polymer.dom(aElem).appendChild(todayIcon);
         }
         if (!options.sideBySide && hasDate() && hasTime()) {
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
           row.push(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
-          aElem.setAttribute('data-action', 'togglePicker');
+          Polymer.dom(aElem).setAttribute('data-action', 'togglePicker');
 
           var switchIcon = document.createElement('at-carbon-icon');
-          switchIcon.setAttribute('style-scope', styleScopeValue);
           switchIcon.icon = options.nowicons.time;
-          aElem.appendChild(switchIcon);
+          Polymer.dom(aElem).appendChild(switchIcon);
         }
         if (options.showClear) {
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
           row.push(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
           tdElem.appendChild(aElem);
-          aElem.setAttribute('data-action', 'clear');
+          Polymer.dom(aElem).setAttribute('data-action', 'clear');
 
           var clearIcon = document.createElement('at-carbon-icon');
-          clearIcon.setAttribute('style-scope', styleScopeValue);
           clearIcon.icon = options.nowicons.clear;
-          aElem.appendChild(clearIcon);
+          Polymer.dom(aElem).appendChild(clearIcon);
         }
         if (options.showClose) {
           tdElem = document.createElement('td');
-          tdElem.setAttribute('style-scope', styleScopeValue);
           row.push(tdElem);
 
           aElem = document.createElement('a');
-          aElem.setAttribute('style-scope', styleScopeValue);
-          tdElem.appendChild(aElem);
-          aElem.setAttribute('data-action', 'close');
+          Polymer.dom(tdElem).appendChild(aElem);
+          Polymer.dom(aElem).setAttribute('data-action', 'close');
 
           var closeIcon = document.createElement('at-carbon-icon');
-          closeIcon.setAttribute('style-scope', styleScopeValue);
           closeIcon.icon = options.nowicons.close;
-          aElem.appendChild(closeIcon);
+          Polymer.dom(aElem).appendChild(closeIcon);
         }
 
         var tableElem = document.createElement('table'),
           tbodyElem = document.createElement('tbody'),
           trElem = document.createElement('tr');
-        tableElem.setAttribute('style-scope', styleScopeValue);
-        tbodyElem.setAttribute('style-scope', styleScopeValue);
-        trElem.setAttribute('style-scope', styleScopeValue);
-        tableElem.classList.add('table-condensed');
-        tableElem.appendChild(tbodyElem);
-        tbodyElem.appendChild(trElem);
+        Polymer.dom(tableElem).classList.add('table-condensed');
+        Polymer.dom(tableElem).appendChild(tbodyElem);
+        Polymer.dom(tbodyElem).appendChild(trElem);
 
         for (var i = 0; i < row.length; i += 1) {
-          trElem.appendChild(row[i]);
+          Polymer.dom(trElem).appendChild(row[i]);
         }
         return tableElem;
       },
@@ -579,57 +502,50 @@
           toolbar = document.createElement('li'),
           i;
 
-        template.setAttribute('style-scope', styleScopeValue);
-        dateView.setAttribute('style-scope', styleScopeValue);
-        timeView.setAttribute('style-scope', styleScopeValue);
-        content.setAttribute('style-scope', styleScopeValue);
-        toolbar.setAttribute('style-scope', styleScopeValue);
+        Polymer.dom(template).classList.add('datetimepicker-widget');
+        Polymer.dom(template).classList.add('dropdown-menu');
 
-        template.classList.add('datetimepicker-widget');
-        template.classList.add('dropdown-menu');
-
-        dateView.classList.add('datepicker');
+        Polymer.dom(dateView).classList.add('datepicker');
         var datePickerTemplate = getDatePickerTemplate();
         for (i = 0; i < datePickerTemplate.length; i++) {
-          dateView.appendChild(datePickerTemplate[i]);
+          Polymer.dom(dateView).appendChild(datePickerTemplate[i]);
         }
 
-        timeView.classList.add('timepicker');
+        Polymer.dom(timeView).classList.add('timepicker');
         var timePickerTemplate = getTimePickerTemplate();
         for (i = 0; i < timePickerTemplate.length; i++) {
-          timeView.appendChild(timePickerTemplate[i]);
+          Polymer.dom(timeView).appendChild(timePickerTemplate[i]);
         }
 
-        content.classList.add('list-unstyled');
+        Polymer.dom(content).classList.add('list-unstyled');
 
         var toolbarClass = (options.collapse ? 'accordion-toggle' : '');
         var toolbarTemplate = getToolbar();
-        toolbar.classList.add('picker-switch');
-        toolbar.classList.add(toolbarClass);
-        toolbar.appendChild(toolbarTemplate);
+        Polymer.dom(toolbar).classList.add('picker-switch');
+        Polymer.dom(toolbar).classList.add(toolbarClass);
+        Polymer.dom(toolbar).appendChild(toolbarTemplate);
 
         if (options.inline) {
-          template.classList.remove('dropdown-menu');
+          Polymer.dom(template).classList.remove('dropdown-menu');
         }
 
         if (use24Hours) {
-          template.classList.add('usetwentyfour');
+          Polymer.dom(template).classList.add('usetwentyfour');
         }
         if (options.sideBySide && hasDate() && hasTime()) {
-          template.classList.add('timepicker-sbs');
+          Polymer.dom(template).classList.add('timepicker-sbs');
           var rowDiv = document.createElement('div');
-          rowDiv.setAttribute('style-scope', styleScopeValue);
-          rowDiv.classList.add('row');
+          Polymer.dom(rowDiv).classList.add('row');
 
-          dateView.classList.add('col-sm-6');
-          rowDiv.appendChild(dateView);
+          Polymer.dom(dateView).classList.add('col-sm-6');
+          Polymer.dom(rowDiv).appendChild(dateView);
 
-          timeView.classList.add('col-sm-6');
-          rowDiv.appendChild(timeView);
+          Polymer.dom(timeView).classList.add('col-sm-6');
+          Polymer.dom(rowDiv).appendChild(timeView);
 
-          template.appendChild(rowDiv);
+          Polymer.dom(template).appendChild(rowDiv);
 
-          template.appendChild(toolbar);
+          Polymer.dom(template).appendChild(toolbar);
 
           return template;
         }
@@ -637,36 +553,34 @@
         var liElem, liClass;
 
         if (options.toolbarPlacement === 'top') {
-          content.appendChild(toolbar);
+          Polymer.dom(content).appendChild(toolbar);
         }
         if (hasDate()) {
           liElem = document.createElement('li');
-          liElem.setAttribute('style-scope', styleScopeValue);
           liClass = (options.collapse && hasTime() ? 'collapse in' : '');
           if (liClass !== '') {
-            atFormDateUtils.addClasses(liElem, liClass);
+            utils.addClasses(liElem, liClass);
           }
-          liElem.appendChild(dateView);
-          content.appendChild(liElem);
+          Polymer.dom(liElem).appendChild(dateView);
+          Polymer.dom(content).appendChild(liElem);
         }
         if (options.toolbarPlacement === 'default') {
-          content.appendChild(toolbar);
+          Polymer.dom(content).appendChild(toolbar);
         }
         if (hasTime()) {
           liElem = document.createElement('li');
-          liElem.setAttribute('style-scope', styleScopeValue);
           liClass = (options.collapse && hasDate() ? 'collapse' : '');
           if (liClass !== '') {
             utils.addClasses(liElem, liClass);
           }
-          liElem.appendChild(timeView);
-          content.appendChild(liElem);
+          Polymer.dom(liElem).appendChild(timeView);
+          Polymer.dom(content).appendChild(liElem);
         }
         if (options.toolbarPlacement === 'bottom') {
-          content.appendChild(toolbar);
+          Polymer.dom(content).appendChild(toolbar);
         }
 
-        template.appendChild(content);
+        Polymer.dom(template).appendChild(content);
 
         return template;
       },
@@ -722,18 +636,18 @@
 
         if (options.widgetParent) {
           parent = htmlWidgetParent;
-          parent.appendChild(widget);
+          Polymer.dom(parent).appendChild(widget);
         } else if (utils.isTag(htmlElement, 'input')) {
           parent = htmlElement.parentElement;
-          parent.appendChild(widget);
+          Polymer.dom(parent).appendChild(widget);
         } else if (options.inline) {
           parent = htmlElement.parentElement;
-          parent.appendChild(widget);
+          Polymer.dom(parent).appendChild(widget);
           return;
         } else {
-          var referenceElem = htmlElement.children[1];
-          htmlElement.insertBefore(widget, referenceElem);
-          var firstChild = htmlElement.children[0];
+          var referenceElem = Polymer.dom(htmlElement).children[1];
+          Polymer.dom(htmlElement).insertBefore(widget, referenceElem);
+          var firstChild = Polymer.dom(htmlElement).children[0];
           parent = firstChild;
         }
 
@@ -757,19 +671,19 @@
         }
 
         if (vertical === 'top') {
-          widget.classList.add('top');
-          widget.classList.remove('bottom');
+          Polymer.dom(widget).classList.add('top');
+          Polymer.dom(widget).classList.remove('bottom');
         } else {
-          widget.classList.add('bottom');
-          widget.classList.remove('top');
+          Polymer.dom(widget).classList.add('bottom');
+          Polymer.dom(widget).classList.remove('top');
         }
 
         if (horizontal === 'right') {
-          widget.classList.add('pull-right');
-          widget.classList.remove('pull-left');
+          Polymer.dom(widget).classList.add('pull-right');
+          Polymer.dom(widget).classList.remove('pull-left');
         } else {
-          widget.classList.remove('pull-right');
-          widget.classList.add('pull-left');
+          Polymer.dom(widget).classList.remove('pull-right');
+          Polymer.dom(widget).classList.add('pull-left');
         }
 
         var parentStyle = window.getComputedStyle(parent);
@@ -845,13 +759,13 @@
           currentViewMode = Math.max(minViewModeNumber, Math.min(2, currentViewMode + dir));
         }
 
-        var findResults = widget.querySelectorAll('.datepicker > div');
+        var findResults = Polymer.dom(widget).querySelectorAll('.datepicker > div');
         for (var findResultsIndex = 0; findResultsIndex < findResults.length; findResultsIndex += 1) {
           findResults[findResultsIndex].style.display = "none";
         }
 
         var filterSelector = '.datepicker-' + datePickerModes[currentViewMode].clsName;
-        var filterResult = widget.querySelector(filterSelector);
+        var filterResult = Polymer.dom(widget).querySelector(filterSelector);
         if (filterResult) {
           filterResult.style.display = "block";
         }
@@ -859,28 +773,25 @@
 
       fillDow = function () {
         var row = document.createElement('tr');
-        row.setAttribute('style-scope', styleScopeValue);
         var currentDate = viewDate.clone().startOf('w');
 
         if (options.calendarWeeks === true) {
           var th = document.createElement('th');
-          th.setAttribute('style-scope', styleScopeValue);
-          th.classList.add('cw');
-          th.textContent = '#';
-          row.appendChild(th);
+          Polymer.dom(th).classList.add('cw');
+          Polymer.dom(th).innerHTML = '#';
+          Polymer.dom(row).appendChild(th);
         }
 
         while (currentDate.isBefore(viewDate.clone().endOf('w'))) {
           var th1 = document.createElement('th');
-          th1.setAttribute('style-scope', styleScopeValue);
-          th1.classList.add('dow');
-          th1.textContent = currentDate.format('dd');
+          Polymer.dom(th1).classList.add('dow');
+          Polymer.dom(th1).innerHTML = currentDate.format('dd');
           currentDate.add(1, 'd');
         }
 
-        var thead = widget.querySelector('.datepicker-days thead');
+        var thead = Polymer.dom(widget).querySelector('.datepicker-days thead');
         if (thead !== null) {
-          thead.appendChild(row);
+          Polymer.dom(thead).appendChild(row);
         }
       },
 
@@ -919,89 +830,88 @@
           monthsShort = viewDate.clone().startOf('y').hour(12); // hour is changed to avoid DST issues in some browsers
         while (monthsShort.isSame(viewDate, 'y')) {
           var span = document.createElement('span');
-          span.setAttribute('style-scope', styleScopeValue);
-          span.setAttribute('data-action', 'selectMonth');
-          span.classList.add('month');
-          span.textContent = monthsShort.format('MMM');
+          Polymer.dom(span).setAttribute('data-action', 'selectMonth');
+          Polymer.dom(span).classList.add('month');
+          Polymer.dom(span).innerHTML = monthsShort.format('MMM');
           spans.push(span);
           monthsShort.add(1, 'M');
         }
 
-        var widgetFind = widget.querySelector('.datepicker-months td');
+        var widgetFind = Polymer.dom(widget).querySelector('.datepicker-months td');
         if (widgetFind) {
-          widgetFind.innerHTML = '';
+          Polymer.dom(widgetFind).innerHTML = '';
           for (var spansIndex = 0; spansIndex < spans.length; spansIndex += 1) {
-            widgetFind.appendChild(spans[spansIndex]);
+            Polymer.dom(widgetFind).appendChild(spans[spansIndex]);
           }
         }
       },
 
       updateMonths = function () {
-        var monthsView = widget.querySelector('.datepicker-months');
-        var monthsViewHeader = monthsView.querySelectorAll('th');
-        var months = monthsView.querySelector('tbody').querySelectorAll('span');
+        var monthsView = Polymer.dom(widget).querySelector('.datepicker-months');
+        var monthsViewHeader = Polymer.dom(monthsView).querySelectorAll('th');
+        var months = Polymer.dom(monthsView).querySelector('tbody').querySelectorAll('span');
 
-        var monthsViewDisabledItems = monthsView.querySelectorAll('.disabled');
+        var monthsViewDisabledItems = Polymer.dom(monthsView).querySelectorAll('.disabled');
         for (var monthsViewDisabledItemsIndex = 0; monthsViewDisabledItemsIndex < monthsViewDisabledItems.length; monthsViewDisabledItemsIndex += 1) {
           var monthsViewDisabledItem = monthsViewDisabledItems[monthsViewDisabledItemsIndex];
-          monthsViewDisabledItem.classList.remove('disabled');
+          Polymer.dom(monthsViewDisabledItem).classList.remove('disabled');
         }
 
         if (!isValid(viewDate.clone().subtract(1, 'y'), 'y')) {
-          monthsViewHeader[0].classList.add('disabled');
+          Polymer.dom(monthsViewHeader[0]).classList.add('disabled');
         }
 
-        monthsViewHeader[1].textContent = viewDate.year();
+        Polymer.dom(monthsViewHeader[1]).innerHTML = viewDate.year();
 
         if (!isValid(viewDate.clone().add(1, 'y'), 'y')) {
-          monthsViewHeader[2].classList.add('disabled');
+          Polymer.dom(monthsViewHeader[2]).classList.add('disabled');
         }
 
         for (var monthsIndex = 0; monthsIndex < months.length; monthsIndex += 1) {
           var month = months[monthsIndex];
-          month.classList.remove('active');
+          Polymer.dom(month).classList.remove('active');
         }
 
         if (date.isSame(viewDate, 'y')) {
-          months[date.month()].classList.add('active');
+          Polymer.dom(months[date.month()]).classList.add('active');
         }
 
         for (var monthsIndex = 0; monthsIndex < months.length; monthsIndex += 1) {
           if (!isValid(viewDate.clone().month(monthsIndex), 'M')) {
-            months[monthsIndex].classList.add('disabled');
+            Polymer.dom(months[monthsIndex]).classList.add('disabled');
           }
         }
       },
 
       updateYears = function () {
-        var yearsView = widget.querySelector('.datepicker-years');
-        var yearsViewHeader = yearsView.querySelectorAll('th');
+        var yearsView = Polymer.dom(widget).querySelector('.datepicker-years');
+        var yearsViewHeader = Polymer.dom(yearsView).querySelectorAll('th');
         var startYear = viewDate.clone().subtract(5, 'y');
         var endYear = viewDate.clone().add(6, 'y');
         var html = '';
 
-        var yearsViewDisabledItems = yearsView.querySelectorAll('.disabled');
+        var yearsViewDisabledItems = Polymer.dom(yearsView).querySelectorAll('.disabled');
         for (var yearsViewDisabledItemsIndex = 0; yearsViewDisabledItemsIndex < yearsViewDisabledItems.length; yearsViewDisabledItems += 1) {
           var yearsViewDisabledItem = yearsViewDisabledItems[yearsViewDisabledItemsIndex];
-          yearsViewDisabledItem.classList.remove('disabled');
+          Polymer.dom(yearsViewDisabledItem).classList.remove('disabled');
         }
 
         if (options.minDate && options.minDate.isAfter(startYear, 'y')) {
-          yearsViewHeader[0].classList.add('disabled');
+          Polymer.dom(yearsViewHeader[0]).classList.add('disabled');
         }
 
-        yearsViewHeader[1].textContent = startYear.year() + '-' + endYear.year();
+        Polymer.dom(yearsViewHeader[1]).innerHTML = startYear.year() + '-' + endYear.year();
 
         if (options.maxDate && options.maxDate.isBefore(endYear, 'y')) {
-          yearsViewHeader[2].classList.add('disabled');
+          Polymer.dom(yearsViewHeader[2]).classList.add('disabled');
         }
 
         while (!startYear.isAfter(endYear, 'y')) {
-          html += '<span data-action="selectYear" style-scope="at-form-date" class="year' + (startYear.isSame(date, 'y') ? ' active' : '') + (!isValid(startYear, 'y') ? ' disabled' : '') + '">' + startYear.year() + '</span>';
+          html += '<span data-action="selectYear" class="at-form-date year' + (startYear.isSame(date, 'y') ? ' active' : '') + (!isValid(startYear, 'y') ? ' disabled' : '') + '">' + startYear.year() + '</span>';
           startYear.add(1, 'y');
         }
 
-        yearsView.querySelector('td').innerHTML = html;
+        Polymer.dom(yearsView).querySelector('td').innerHTML = html;
       },
 
       fillDate = function () {
@@ -1009,26 +919,26 @@
           return;
         }
 
-        var daysView = widget.querySelector('.datepicker-days');
-        var daysViewHeader = daysView.querySelectorAll('th');
+        var daysView = Polymer.dom(widget).querySelector('.datepicker-days');
+        var daysViewHeader = Polymer.dom(daysView).querySelectorAll('th');
         var currentDate,
           html = [],
           row,
           clsName;
 
-        var daysViewDisabledItems = daysView.querySelectorAll('.disabled');
+        var daysViewDisabledItems = Polymer.dom(daysView).querySelectorAll('.disabled');
         for (var daysViewDisabledItemsIndex = 0; daysViewDisabledItemsIndex < daysViewDisabledItems.length; daysViewDisabledItems += 1) {
           var daysViewDisabledItem = daysViewDisabledItems[daysViewDisabledItemsIndex];
-          daysViewDisabledItem.classList.remove('disabled');
+          Polymer.dom(daysViewDisabledItem).classList.remove('disabled');
         }
 
-        daysViewHeader[1].textContent = viewDate.format(options.dayViewHeaderFormat);
+        Polymer.dom(daysViewHeader[1]).innerHTML = viewDate.format(options.dayViewHeaderFormat);
 
         if (!isValid(viewDate.clone().subtract(1, 'M'), 'M')) {
-          daysViewHeader[0].classList.add('disabled');
+          Polymer.dom(daysViewHeader[0]).classList.add('disabled');
         }
         if (!isValid(viewDate.clone().add(1, 'M'), 'M')) {
-          daysViewHeader[2].classList.add('disabled');
+          Polymer.dom(daysViewHeader[2]).classList.add('disabled');
         }
 
         currentDate = viewDate.clone().startOf('M').startOf('week');
@@ -1036,13 +946,11 @@
         while (!viewDate.clone().endOf('M').endOf('w').isBefore(currentDate, 'd')) {
           if (currentDate.weekday() === 0) {
             row = document.createElement('tr');
-            row.setAttribute('style-scope', styleScopeValue);
             if (options.calendarWeeks) {
               var td = document.createElement('td');
-              td.setAttribute('style-scope', styleScopeValue);
-              td.classList.add('cw');
-              td.textContent = currentDate.week();
-              row.appendChild(td);
+              Polymer.dom(td).classList.add('cw');
+              Polymer.dom(td).innerHTML = currentDate.week();
+              Polymer.dom(row).appendChild(td);
             }
             html.push(row);
           }
@@ -1066,37 +974,34 @@
             clsName += ' weekend';
           }
           var tdDay = document.createElement('td');
-          tdDay.setAttribute('style-scope', styleScopeValue);
-          tdDay.setAttribute('data-action', 'selectDay');
-          tdDay.classList.add('day');
+          Polymer.dom(tdDay).setAttribute('data-action', 'selectDay');
+          Polymer.dom(tdDay).classList.add('day');
           clsName = clsName.trim();
           if (clsName != '') {
             utils.addClasses(tdDay, clsName);
           }
-          tdDay.textContent = currentDate.date();
-          row.appendChild(tdDay);
+          Polymer.dom(tdDay).innerHTML = currentDate.date();
+          Polymer.dom(row).appendChild(tdDay);
           currentDate.add(1, 'd');
         }
 
-        var daysViewTBody = daysView.querySelector('tbody');
-        daysViewTBody.innerHTML = '';
+        var daysViewTBody = Polymer.dom(daysView).querySelector('tbody');
+        Polymer.dom(daysViewTBody).innerHTML = '';
         for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
-          daysViewTBody.appendChild(html[htmlIndex]);
+          Polymer.dom(daysViewTBody).appendChild(html[htmlIndex]);
         }
 
         updateMonths();
 
         updateYears();
-        reattachEventListeners(widget.querySelector('.datepicker'));
+        reattachEventListeners(Polymer.dom(widget).querySelector('.datepicker'));
       },
 
       fillHours = function () {
-        var
-          table = widget.querySelector('.timepicker-hours table'),
-          currentHour = viewDate.clone().startOf('d'),
-          html = [],
-          row = document.createElement('tr');
-        row.setAttribute('style-scope', styleScopeValue);
+        var table = Polymer.dom(widget).querySelector('.timepicker-hours table');
+        var currentHour = viewDate.clone().startOf('d');
+        var html = [];
+        var row = document.createElement('tr');
 
         if (viewDate.hour() > 11 && !use24Hours) {
           currentHour.hour(12);
@@ -1104,76 +1009,66 @@
         while (currentHour.isSame(viewDate, 'd') && (use24Hours || (viewDate.hour() < 12 && currentHour.hour() < 12) || viewDate.hour() > 11)) {
           if (currentHour.hour() % 4 === 0) {
             row = document.createElement('tr');
-            row.setAttribute('style-scope', styleScopeValue);
             html.push(row);
           }
           var tdSelectHour = document.createElement('td');
-          tdSelectHour.setAttribute('style-scope', styleScopeValue);
-          tdSelectHour.setAttribute('data-action', 'selectHour');
-          tdSelectHour.classList.add('hour');
+          Polymer.dom(tdSelectHour).setAttribute('data-action', 'selectHour');
+          Polymer.dom(tdSelectHour).classList.add('hour');
           if (!isValid(currentHour, 'h')) {
-            tdSelectHour.classList.add('disabled');
+            Polymer.dom(tdSelectHour).classList.add('disabled');
           }
-          tdSelectHour.textContent = currentHour.format(use24Hours ? 'HH' : 'hh');
+          Polymer.dom(tdSelectHour).innerHTML = currentHour.format(use24Hours ? 'HH' : 'hh');
 
-          row.appendChild(tdSelectHour);
+          Polymer.dom(row).appendChild(tdSelectHour);
 
           currentHour.add(1, 'h');
         }
 
         if (table) {
-          table.innerHTML = '';
+          Polymer.dom(table).innerHTML = '';
           for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
-            table.appendChild(html[htmlIndex]);
+            Polymer.dom(table).appendChild(html[htmlIndex]);
           }
         }
       },
 
       fillMinutes = function () {
-        var
-          table = widget.querySelector('.timepicker-minutes table'),
-          currentMinute = viewDate.clone().startOf('h'),
-          html = [],
-          row = document.createElement('tr'),
-          step = options.stepping === 1 ? 5 : options.stepping;
-
-        row.setAttribute('style-scope', styleScopeValue);
+        var table = Polymer.dom(widget).querySelector('.timepicker-minutes table');
+        var currentMinute = viewDate.clone().startOf('h');
+        var html = [];
+        var row = document.createElement('tr');
+        var step = options.stepping === 1 ? 5 : options.stepping;
 
         while (viewDate.isSame(currentMinute, 'h')) {
           if (currentMinute.minute() % (step * 4) === 0) {
             row = document.createElement('tr');
-            row.setAttribute('style-scope', styleScopeValue);
             html.push(row);
           }
 
           var td = document.createElement('td');
-          td.setAttribute('style-scope', styleScopeValue);
-          td.setAttribute('data-action', 'selectMinute');
-          td.classList.add('minute');
+          Polymer.dom(td).setAttribute('data-action', 'selectMinute');
+          Polymer.dom(td).classList.add('minute');
           if (!isValid(currentMinute, 'm')) {
-            td.classList.add('disabled');
+            Polymer.dom(td).classList.add('disabled');
           }
-          td.textContent = currentMinute.format('mm');
-          row.appendChild(td);
+          Polymer.dom(td).innerHTML = currentMinute.format('mm');
+          Polymer.dom(row).appendChild(td);
           currentMinute.add(step, 'm');
         }
 
         if (table) {
-          table.innerHTML = '';
+          Polymer.dom(table).innerHTML = '';
           for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
-            table.appendChild(html[htmlIndex]);
+            Polymer.dom(table).appendChild(html[htmlIndex]);
           }
         }
       },
 
       fillSeconds = function () {
-        var
-          table = widget.querySelector('.timepicker-seconds table'),
-          currentSecond = viewDate.clone().startOf('m'),
-          html = [],
-          row = document.createElement('tr');
-
-        row.setAttribute('style-scope', styleScopeValue);
+        var table = Polymer.dom(widget).querySelector('.timepicker-seconds table');
+        var currentSecond = viewDate.clone().startOf('m');
+        var html = [];
+        var row = document.createElement('tr');
 
         if (table === null) {
           return;
@@ -1182,34 +1077,32 @@
         while (viewDate.isSame(currentSecond, 'm')) {
           if (currentSecond.second() % 20 === 0) {
             row = document.createElement('tr');
-            row.setAttribute('style-scope', styleScopeValue);
             html.push(row);
           }
           var td = document.createElement('td');
-          td.setAttribute('style-scope', styleScopeValue);
-          td.setAttribute('data-action', 'selectSecond');
-          td.classList.add('second');
+          Polymer.dom(td).setAttribute('data-action', 'selectSecond');
+          Polymer.dom(td).classList.add('second');
           if (!isValid(currentSecond, 's')) {
-            td.classList.add('disabled');
+            Polymer.dom(td).classList.add('disabled');
           }
-          td.textContent = currentSecond.format('ss');
-          row.appendChild(td);
+          Polymer.dom(td).innerHTML = currentSecond.format('ss');
+          Polymer.dom(row).appendChild(td);
           currentSecond.add(5, 's');
         }
 
-        table.innerHTML = '';
+        Polymer.dom(table).innerHTML = '';
         for (var htmlIndex = 0; htmlIndex < html.length; htmlIndex += 1) {
-          table.appendChild(html[htmlIndex]);
+          Polymer.dom(table).appendChild(html[htmlIndex]);
         }
       },
 
       fillTime = function () {
         var tcIndex;
-        var timeComponents = widget.querySelectorAll('.timepicker span[data-time-component]');
+        var timeComponents = Polymer.dom(widget).querySelectorAll('.timepicker span[data-time-component]');
 
         if (!use24Hours) {
-          var togglePeriodElem = widget.querySelector('.timepicker [data-action=togglePeriod]');
-          togglePeriodElem.textContent = date.format('A');
+          var togglePeriodElem = Polymer.dom(widget).querySelector('.timepicker [data-action=togglePeriod]');
+          Polymer.dom(togglePeriodElem).innerHTML = date.format('A');
         }
 
         for (tcIndex = 0; tcIndex < timeComponents.length; tcIndex += 1) {
@@ -1217,18 +1110,18 @@
           var dtcAttrValue = timeComponent.getAttribute('data-time-component');
 
           if (dtcAttrValue === 'hours') {
-            timeComponent.textContent = date.format(use24Hours ? 'HH' : 'hh');
+            Polymer.dom(timeComponent).innerHTML = date.format(use24Hours ? 'HH' : 'hh');
           } else if (dtcAttrValue === 'minutes') {
-            timeComponent.textContent = date.format('mm');
+            Polymer.dom(timeComponent).innerHTML = date.format('mm');
           } else if (dtcAttrValue === 'seconds') {
-            timeComponent.textContent = date.format('ss');
+            Polymer.dom(timeComponent).innerHTML = date.format('ss');
           }
         }
 
         fillHours();
         fillMinutes();
         fillSeconds();
-        reattachEventListeners(widget.querySelector('.timepicker'));
+        reattachEventListeners(Polymer.dom(widget).querySelector('.timepicker'));
       },
 
       update = function () {
@@ -1248,8 +1141,8 @@
 
         // DOM event attachment is currently buggy; will return to this later
         if (container) {
-          var wcElems = container.querySelectorAll('[data-action]'),
-            wcElemIndex, wcElem;
+          var wcElems = Polymer.dom(container).querySelectorAll('[data-action]');
+          var wcElemIndex, wcElem;
           for (wcElemIndex = 0; wcElemIndex < wcElems.length; wcElemIndex += 1) {
             wcElem = wcElems[wcElemIndex];
             wcElem.addEventListener('click', doAction);
@@ -1309,7 +1202,7 @@
         }
 
         // Ignore event if in the middle of a picker transition
-        var elemWithCollapseClass = widget.querySelector('.collapse');
+        var elemWithCollapseClass = Polymer.dom(widget).querySelector('.collapse');
         if (elemWithCollapseClass) {
           var collapseData = utils.getData(elemWithCollapseClass, 'collapse');
           if (collapseData && collapseData.transitioning) {
@@ -1331,11 +1224,11 @@
         //        if (component && component.hasClass('btn')) {
         //          component.toggleClass('active');
         //        }
-        if (component && component.classList.contains('btn')) {
-          if (component.classList.contains('active')) {
-            component.classList.remove('active');
+        if (component && Polymer.dom(component).classList.contains('btn')) {
+          if (Polymer.dom(component).classList.contains('active')) {
+            Polymer.dom(component).classList.remove('active');
           } else {
-            component.classList.add('active');
+            Polymer.dom(component).classList.add('active');
           }
         }
         widget.style.display = "none";
@@ -1344,7 +1237,7 @@
         window.removeEventListener('resize', place);
         //        $(window).off('resize', place);
         //        widget.off('click', '[data-action]');
-        var nojqWidgetChildren = widget.querySelectorAll('[data-action]');
+        var nojqWidgetChildren = Polymer.dom(widget).querySelectorAll('[data-action]');
         for (var nojqwcIndex = 0; nojqwcIndex < nojqWidgetChildren.length; nojqwcIndex += 1) {
           var nojqwChild = nojqWidgetChildren[nojqwcIndex];
           nojqwChild.removeEventListener('click', doAction);
@@ -1352,7 +1245,8 @@
         widget.removeEventListener('mousedown', utils.returnFalse);
         //        widget.off('mousedown', false);
 
-        widget.parentElement.removeChild(widget);
+        var parentElement = Polymer.dom(widget).parentNode;
+        Polymer.dom(parentElement).removeChild(widget);
         //        widget.remove();
         widget = false;
 
