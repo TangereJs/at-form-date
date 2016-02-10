@@ -13,7 +13,8 @@
 
 <dom-module id="at-form-date">
   <template>
-  <style include="at-form-date-style"></style>
+    <style include="at-form-common"></style>
+    <style include="at-form-date-style"></style>
     <style>
       :host * {
         box-sizing: border-box;
@@ -22,112 +23,24 @@
       :host {
         @apply(--at-form-host);
       }
-
-      #input {
-        @apply(--at-form-input-common);
-      }
-
-      #input:focus {
-        @apply(--at-form-input-focus);
-      }
-
-      #input::-webkit-input-placeholder {
-        @apply(--at-form-input-placeholder);
-      }
-
-      #input:-moz-placeholder {
-        /* Mozilla Firefox 4 to 18 */
-        @apply(--at-form-input-placeholder);
-      }
-
-      #input::-moz-placeholder {
-        /* Mozilla Firefox 19+ */
-        @apply(--at-form-input-placeholder);
-      }
-
-      #input:-ms-input-placeholder {
-        /* Internet Explorer 10-11 */
-        @apply(--at-form-input-placeholder);
-      }
-
-      #contentContainer.error #input::-webkit-input-placeholder {
-        @apply(--at-form-input-placeholder-error);
-      }
-
-      #contentContainer.error #input:-moz-placeholder {
-        /* Mozilla Firefox 4 to 18 */
-        @apply(--at-form-input-placeholder-error);
-        opacity: 1;
-      }
-
-      #contentContainer.error #input::-moz-placeholder {
-        /* Mozilla Firefox 19+ */
-        @apply(--at-form-input-placeholder-error);
-        opacity: 1;
-      }
-
-      #contentContainer.error #input:-ms-input-placeholder {
-        /* Internet Explorer 10-11 */
-        @apply(--at-form-input-placeholder-error);
-      }
-
-      .clear-float {
-        clear: both;
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      .error {
-        color: var(--at-error-color);
-      }
-
-      .disabled {
-        @apply(--at-form-disabled);
-      }
-
-      #atContainer {
-        @apply(--at-form-element);
-      }
-
-      #label {
-        @apply(--at-form-label);
-      }
-
-      #contentContainer.error {
-        @apply(--at-form-error-margins);
-      }
-
-      #contentContainer.error #input {
-        @apply(--at-form-content-error);
-      }
-
-      #errorHtml {
-        @apply(--at-form-error-font);
-      }
     </style>
     <div id="atContainer" class="at-container">
       <at-core-resize-sensor id="resizeSensor"></at-core-resize-sensor>
       <div class="clear-float"></div>
       <div>
-        <div id="labelContainer" class="at-label-container">
-          <label id="label" class="at-label">{{label}}</label>
+        <iron-label id="label" for="input">{{label}}</iron-label>
+
+        <div id="contentContainer" class="at-content-container input-group">
+          <input id='input' class="at-content has-placeholder">
+          <!-- var is used here instead of span to avoid a bug in IE11 -->
+          <!-- in IE11 span (and div) element gets focus; which should not happen. -->
+          <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
+          <var class="input-group-addon">
+            <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
+          </var>
         </div>
-        <div class="form-group">
-          <div id="contentContainer" class="at-content-container input-group date">
-            <input id='input' class="at-content" />
-            <!-- var is used here instead of span to avoid a bug in IE11 -->
-            <!-- in IE11 span (and div) element gets focus; which should not happen. -->
-            <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
-            <var class="input-group-addon">
-              <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
-            </var>
-          </div>
-        </div>
-        <div id="hintContainer" class="at-hint-container">
-          <div id="errorHtml" class="hint"></div>
-        </div>
+
+        <div id="hint" class="hint"></div>
       </div>
     </div>
   </template>
@@ -424,12 +337,12 @@
       }
     },
     _updateUIValidState: function(isValid) {
-      var labelContainer = this.$.labelContainer;
-      this.toggleClass('error', !isValid, labelContainer);
+      var label = this.$.label;
+      this.toggleClass('error', !isValid, label);
       var contentContainer = this.$.contentContainer;
       this.toggleClass('error', !isValid, contentContainer);
-      var hintContainer = this.$.hintContainer;
-      this.toggleClass('error', !isValid, hintContainer);
+      var hint = this.$.hint;
+      this.toggleClass('error', !isValid, hint);
     },
     _validateValueAgainstFormat: function(value) {
       var valid = true;

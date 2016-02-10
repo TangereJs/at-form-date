@@ -6,6 +6,7 @@
     "at-core-theme": "TangereJs/at-core-theme#0.8-preview",
     "at-carbon-icon": "TangereJs/at-carbon-icon#0.8-preview",
     "at-form-behaviors": "TangereJs/at-form-behaviors#0.8-preview",
-    "at-core-resize-sensor": "TangereJs/at-core-resize-sensor#0.8-preview"
+    "at-core-resize-sensor": "TangereJs/at-core-resize-sensor#0.8-preview",
+    "iron-label": "PolymerElements/iron-label#master"
   }
 }
