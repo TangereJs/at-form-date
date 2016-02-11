@@ -1,7 +1,9 @@
-<link rel="import" href="../at-core-theme/at-core-theme.html">
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../at-theme/at-theme.html">
 <link rel="import" href="../at-carbon-icon/at-carbon-icon.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
 <link rel="import" href="../at-core-resize-sensor/at-core-resize-sensor.html">
+<link rel="import" href="at-form-date-style.html">
 
 <script src="../moment/moment.js"></script>
 <script src="scripts/at-form-date-utils.js"></script>
@@ -10,61 +12,35 @@
 <script src="scripts/datetimepicker.js"></script>
 
 <dom-module id="at-form-date">
-  <link rel="import" type="css" href="at-form-date.css" />
-  <style>
-    :host {
-      --error-color: #e41e2b;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .label-container > label {
-      font-size: 1em;
-    }
-
-    .label-container.error > label {
-      color: var(--error-color);
-    }
-
-    .hint-container.error > p {
-      color: var(--error-color);
-    }
-
-    .clear-float {
-      clear: both;
-    }
-
-    .element-wrapper {
-      position: relative;
-    }
-  </style>
   <template>
-    <at-core-theme></at-core-theme>
-    <div id="atFormDateWrapper" class="element-wrapper">
+    <style include="at-form-common"></style>
+    <style include="at-form-date-style"></style>
+    <style>
+      :host * {
+        box-sizing: border-box;
+      }
+
+      :host {
+        @apply(--at-form-host);
+      }
+    </style>
+    <div id="atContainer" class="at-container">
       <at-core-resize-sensor id="resizeSensor"></at-core-resize-sensor>
       <div class="clear-float"></div>
       <div>
-        <div class="ui form" id="labelContainer">
-          <div id="labelSubContainer" class="field label-container">
-            <label>{{label}}</label>
-          </div>
+        <iron-label id="label" for="input">{{label}}</iron-label>
+
+        <div id="contentContainer" class="at-content-container input-group">
+          <input id="input" class="at-content has-placeholder">
+          <!-- var is used here instead of span to avoid a bug in IE11 -->
+          <!-- in IE11 span (and div) element gets focus; which should not happen. -->
+          <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
+          <var class="input-group-addon">
+            <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
+          </var>
         </div>
-        <div id="requiredFormGroup" class="form-group">
-          <div class='input-group date' id='datetimepicker'>
-            <input id='text' type='text' class="form-control" />
-            <!-- var is used here instead of span to avoid a bug in IE11 -->
-            <!-- in IE11 span (and div) element gets focus; which should not happen. -->
-            <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
-            <var class="input-group-addon">
-              <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
-            </var>
-          </div>
-        </div>
-        <div id="hintContainer" class="hint-container">
-          <p id="errorHtml" class="hint"></p>
-        </div>
+
+        <div id="hint" class="hint"></div>
       </div>
     </div>
   </template>
@@ -88,7 +64,6 @@
       value: {
         type: String,
         value: '',
-        notify: true,
         observer: 'valueChanged'
       },
       xtype: {
@@ -129,12 +104,6 @@
         observer: 'formatChanged'
       }
     },
-    get icon() {
-      return this._icon;
-    },
-    set icon(newValue) {
-      this._icon = newValue;
-    },
     $meta: [{
       title: "Date",
       type: "string",
@@ -148,7 +117,6 @@
       type: "string",
       xtype: "datetime"
     }],
-    _scopeCssViaAttr: true,
     _dtInstance: undefined,
     /**
      * _internalFormat governs how value is formatted
@@ -159,26 +127,32 @@
      */
     _internalFormat: 'YY-MM-DD hh:mm:ss',
     _icon: 'now:calendar',
-    hideLabelChanged: function(newValue, oldValue) {
-      this.toggleClass("hidden", newValue, this.$.labelContainer);
+    get icon() {
+      return this._icon;
+    },
+    set icon(newValue) {
+      this._icon = newValue;
     },
     hideChanged: function(newValue, oldValue) {
-      var wrapper = this.$.atFormDateWrapper;
-      this.toggleClass('hidden', newValue, wrapper);
+      var container = this.$.atContainer;
+      this.toggleClass('hidden', newValue, container);
       if (this._isReady) {
         this.validate();
 
         var resizeSensor = this.$.resizeSensor;
-        this.debounce('initResizeSensor', function () {
+        this.debounce('initResizeSensor', function() {
           resizeSensor.reset();
         }, 150);
       }
     },
-    attached: function () {
+    hideLabelChanged: function(newValue, oldValue) {
+      this.toggleClass("hidden", newValue, this.$.label);
+    },
+    attached: function() {
       var resizeSensor = this.$.resizeSensor;
       var initialWidth = resizeSensor.queryWidth();
       var self = this;
-      resizeSensor.addEventListener('resize-sensed', function (event) {
+      resizeSensor.addEventListener('resize-sensed', function(event) {
         var updatedWidth = event.detail.value.width;
         var dropdownMenu = self.$$('.datetimepicker-widget.dropdown-menu');
         if (dropdownMenu !== null && dropdownMenu !== undefined) {
@@ -196,7 +170,7 @@
       this._validationFunctions.push(this._validateValueAgainstFormat.bind(this));
 
       this._isReady = false;
-      this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.datetimepicker, {
+      this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.contentContainer, {
         keepInvalid: true,
         useStrict: true,
         //        calendarWeeks: true,
@@ -215,25 +189,31 @@
       // jquery custom events can be done with dispatchEvent
       // listening to the dispatched event can be done by attaching the event listener to the
       // parent element of the element on which event is dispatched on
-      var contentContainer = this.$.datetimepicker;
+      var contentContainer = this.$.contentContainer;
       contentContainer.addEventListener('dp.change', function(event) {
         if (event.date) {
           self._updateValue(event.date);
         } else {
           self.value = '';
         }
+        self._isInternalValueUpdate = true;
         self.validate();
+        self._isInternalValueUpdate = false;
+        self.fire('value-changed', { value: self.value });
       });
 
-      var valueProvider = this.$.text;
+      var valueProvider = this.$.input;
 
       contentContainer.addEventListener('dp.error', function(event) {
         self.value = valueProvider.value;
         self.validate();
+        self.fire('value-changed', { value: self.value });
       });
 
       valueProvider.addEventListener('blur', function(event) {
+        self._isInternalValueUpdate = true;
         self.validate();
+        self._isInternalValueUpdate = false;
       });
 
       this._isReady = true;
@@ -241,7 +221,7 @@
       this.valueChanged(this.value);
     },
     focus: function() {
-      this.$.text.focus();
+      this.$.input.focus();
     },
     xtypeChanged: function(newValue, oldValue) {
       if (newValue === "datetime") {
@@ -268,7 +248,7 @@
         if (newValue === '') {
           this._dtInstance.clear();
         } else {
-          var valueProvider = this.$.text;
+          var valueProvider = this.$.input;
           valueProvider.value = newValue;
         }
         this.validate();
@@ -281,11 +261,11 @@
       var self = this;
       var momentValue = moment(newValue, self._internalFormat);
       if (this.xtype === "datetime") {
-        this._isInternalValueUpdate = true;
+        this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
         self.value = momentValue.toISOString();
         this._isInternalValueUpdate = false;
       } else {
-        this._isInternalValueUpdate = true;
+        this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
         self.value = momentValue.utc().format(self._internalFormat);
         this._isInternalValueUpdate = false;
       }
@@ -344,8 +324,11 @@
     },
     disabledChanged: function(newValue, oldValue) {
       if (this._isReady) {
-        this.toggleAttribute('disabled', this.disabled, this.$.text);
-        if (this.disabled) {
+        var atContainer = this.$.atContainer;
+        this.toggleClass('disabled', newValue, atContainer);
+        var valueProvider = this.$.input;
+        this.toggleAttribute('disabled', newValue, valueProvider);
+        if (newValue) {
           this._dtInstance.disable();
         } else {
           this._dtInstance.enable();
@@ -353,26 +336,32 @@
         this.validate();
       }
     },
+    requiredChanged: function(newValue, oldValue) {
+      if (this._isReady) {
+        this.validate();
+      }
+    },
     _updateUIValidState: function(isValid) {
-      var formGroup = this.$.requiredFormGroup;
-      this.toggleClass('has-error', !isValid, formGroup);
-      var hintContainer = this.$.hintContainer;
-      this.toggleClass('error', !isValid, hintContainer);
-      var labelContainer = this.$.labelSubContainer;
-      this.toggleClass('error', !isValid, labelContainer);
+      var label = this.$.label;
+      this.toggleClass('error', !isValid, label);
+      var contentContainer = this.$.contentContainer;
+      this.toggleClass('error', !isValid, contentContainer);
+      var hint = this.$.hint;
+      this.toggleClass('error', !isValid, hint);
     },
     _validateValueAgainstFormat: function(value) {
       var valid = true;
 
       if (value !== '') {
         var internalFormat = this._internalFormat;
-        if (this.xtype === "datetime") {
-          valid = moment(value).isValid();
+        if (this.xtype === "datetime" && this._isInternalValueUpdate) {
+          internalFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+          valid = moment(value, internalFormat, true).isValid();
         } else {
           valid = moment(value, internalFormat, true).isValid();
         }
         if (!valid) {
-          this._errorMessage = "Value {0} is not a valid.".replace("{0}", value);
+          this._errorMessage = "Value {0} is not valid.".replace("{0}", value);
         }
       }
 

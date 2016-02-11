@@ -204,7 +204,7 @@
     var classesArray = classes.split(' '),
       i;
     for (i = 0; i < classesArray.length; i += 1) {
-      element.classList.add(classesArray[i]);
+      Polymer.dom(element).classList.add(classesArray[i]);
     }
   }
 
