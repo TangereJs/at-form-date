@@ -387,7 +387,8 @@
       .datetimepicker-widget table td.today:before {
         content: '';
         display: inline-block;
-        border: 0 0 7px 7px solid transparent;
+        border: 1px solid transparent;
+        border-width: 0 0 7px 7px;
         border-bottom-color: var(--at-form-date-active-background-color);
         border-top-color: rgba(0, 0, 0, 0.2);
         position: absolute;
@@ -397,9 +398,7 @@
 
       .datetimepicker-widget table td.active,
       .datetimepicker-widget table td.active:hover {
-        background-color: var(--default-primary-color);
-        color: var(--at-form-date-active-color);
-        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+        @apply(--at-form-active-item);
       }
 
       .datetimepicker-widget table td.active.today:before {
