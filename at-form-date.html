@@ -346,8 +346,6 @@
       this.toggleClass('error', !isValid, label);
       var contentContainer = this.$.contentContainer;
       this.toggleClass('error', !isValid, contentContainer);
-      var hint = this.$.hint;
-      this.toggleClass('error', !isValid, hint);
     },
     _validateValueAgainstFormat: function(value) {
       var valid = true;
@@ -366,6 +364,10 @@
       }
 
       return valid;
+    },
+    _getFocusableElement: function () {
+      var focusable = this.$.input;
+      return focusable;
     }
   });
 </script>
