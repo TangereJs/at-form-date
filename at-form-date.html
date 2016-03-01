@@ -1,7 +1,8 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../tangere/Tangere.html">
 <link rel="import" href="../at-theme/at-theme.html">
 <link rel="import" href="../at-carbon-icon/at-carbon-icon.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
+<link rel="import" href="../at-i18n/at-i18n-behavior.html">
 <link rel="import" href="../at-core-resize-sensor/at-core-resize-sensor.html">
 <link rel="import" href="at-form-date-style.html">
 
@@ -50,7 +51,7 @@
   'use strict';
   Polymer({
     is: 'at-form-date',
-    behaviors: [AtFormBehaviors.AtFormBehaviorsValidation],
+    behaviors: [ Tangere.behaviors.formValidation, Tangere.behaviors.i18n ],
     properties: {
       label: {
         type: String,
