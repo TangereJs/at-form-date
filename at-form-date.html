@@ -101,7 +101,7 @@
        */
       format: {
         type: String,
-        value: 'YY-MM-DD hh:mm:ss',
+        value: '',
         observer: 'formatChanged'
       }
     },
@@ -227,13 +227,13 @@
     },
     xtypeChanged: function(newValue, oldValue) {
       if (newValue === "datetime") {
-        this._internalFormat = "YYYY-MM-DD HH:mm:ss";
+        this._internalFormat = this._localizedFormat("datetime");
         this._icon = 'now:calendar';
       } else if (newValue === 'date') {
-        this._internalFormat = 'YYYY-MM-DD';
+        this._internalFormat = this._localizedFormat("date");
         this._icon = 'now:calendar';
       } else if (newValue === 'time') {
-        this._internalFormat = 'HH:mm:ss';
+        this._internalFormat = this._localizedFormat("time");
         this._icon = 'now:clock';
       }
       this.format = this._internalFormat;
@@ -306,7 +306,6 @@
       this.fire('format-changed', {
         value: format
       });
-
 
       if (this._dtInstance) {
         this._dtInstance.format(format);
