@@ -251,7 +251,11 @@
           this._dtInstance.clear();
         } else {
           var valueProvider = this.$.input;
-          valueProvider.value = newValue;
+          var formattedValue = moment(newValue).format(this.format);
+          if (formattedValue === "Invalid date") {
+            formattedValue = newValue;
+          }
+          valueProvider.value = formattedValue;
         }
         this.validate();
       }
@@ -302,7 +306,13 @@
         }
       }
 
+      if (format.indexOf('A') === -1 && (format.indexOf('hh')!== -1 || format.indexOf('h') !== -1)) {
+        format = format + " A";
+      } else if (format.indexOf('hh') === -1 || format.indexOf('h') === -1) {
+        format = format.replace("A", "").trim();
+      }
       this.format = format;
+
       this.fire('format-changed', {
         value: format
       });
@@ -310,6 +320,11 @@
       if (this._dtInstance) {
         this._dtInstance.format(format);
       }
+      var newFormattedValue = moment(this.value).format(format);
+      if (newFormattedValue === "Invalid date") {
+        newFormattedValue = this.value;
+      }
+      this.$.input.value = newFormattedValue;
     },
     /**
      * checks if source contains any of the chars
@@ -350,14 +365,16 @@
     },
     _validateValueAgainstFormat: function(value) {
       var valid = true;
-
+      var utcFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
       if (value !== '') {
         var internalFormat = this._internalFormat;
         if (this.xtype === "datetime" && this._isInternalValueUpdate) {
-          internalFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+          internalFormat = utcFormat;
           valid = moment(value, internalFormat, true).isValid();
         } else {
-          valid = moment(value, internalFormat, true).isValid();
+          var internalValid = moment(value, internalFormat, true).isValid();
+          var jsonUtcValid = moment(value, utcFormat, true).isValid();
+          valid = internalValid || jsonUtcValid;
         }
         if (!valid) {
           this._errorMessage = "Value {0} is not valid.".replace("{0}", value);
