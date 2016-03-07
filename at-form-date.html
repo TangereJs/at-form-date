@@ -54,7 +54,8 @@
     properties: {
       label: {
         type: String,
-        value: ''
+        value: '',
+        title: 'Label'
       },
       hideLabel: {
         type: Boolean,
@@ -64,7 +65,8 @@
       value: {
         type: String,
         value: '',
-        observer: 'valueChanged'
+        observer: 'valueChanged',
+        title: 'Value'
       },
       xtype: {
         type: String,
@@ -76,12 +78,14 @@
       disabled: {
         type: Boolean,
         value: false,
-        observer: 'disabledChanged'
+        observer: 'disabledChanged',
+        title: 'Field value can not be changed'
       },
       required: {
         type: Boolean,
         value: false,
-        observer: 'requiredChanged'
+        observer: 'requiredChanged',
+        title: 'Input requred'
       },
       /**
        * Hides the element. When hidden nothing is displayed for the element
@@ -92,7 +96,8 @@
       hide: {
         type: Boolean,
         value: false,
-        observer: 'hideChanged'
+        observer: 'hideChanged',
+        title: 'Field is invisible'
       },
       /**
        * Formating is based [moment.js](http://momentjs.com/). A list of supported tokens in format can be found in the [moment.js documentation](http://momentjs.com/docs/#/displaying/).

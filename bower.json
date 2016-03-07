@@ -8,5 +8,6 @@
     "at-form-behaviors": "TangereJs/at-form-behaviors#0.8-preview",
     "at-core-resize-sensor": "TangereJs/at-core-resize-sensor#0.8-preview",
     "iron-label": "PolymerElements/iron-label#master"
-  }
+  },
+  "version": "0.0.1.4"
 }
