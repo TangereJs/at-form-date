@@ -5,6 +5,7 @@
 <link rel="import" href="../at-i18n/at-i18n-behavior.html">
 <link rel="import" href="../at-core-resize-sensor/at-core-resize-sensor.html">
 <link rel="import" href="at-form-date-style.html">
+<link rel="import" href="../iron-label/iron-label.html">
 
 <script src="scripts/at-form-date-utils.js"></script>
 <script src="scripts/collapse.js"></script>
@@ -241,8 +242,8 @@
         this._internalFormat = this._localizedFormat("time");
         this._icon = 'now:clock';
       }
-      this.format = this._internalFormat;
       if (this._dtInstance) {
+        this._dtInstance.format(this._internalFormat);
         var date = this._dtInstance.date();
         this._updateValue(date);
       }
@@ -256,7 +257,7 @@
           this._dtInstance.clear();
         } else {
           var valueProvider = this.$.input;
-          var formattedValue = moment(newValue).format(this.format);
+          var formattedValue = moment(newValue).format(this._internalFormat);
           if (formattedValue === "Invalid date") {
             formattedValue = newValue;
           }
@@ -316,7 +317,7 @@
       } else if (format.indexOf('hh') === -1 || format.indexOf('h') === -1) {
         format = format.replace("A", "").trim();
       }
-      this.format = format;
+      this._internalFormat = format;
 
       this.fire('format-changed', {
         value: format
