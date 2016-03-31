@@ -6,6 +6,8 @@
 <link rel="import" href="../at-core-resize-sensor/at-core-resize-sensor.html">
 <link rel="import" href="at-form-date-style.html">
 <link rel="import" href="../iron-label/iron-label.html">
+<link rel="import" href="../at-carbon-date-picker/at-carbon-date-picker.html">
+<link rel="import" href="../at-carbon-time-picker/at-carbon-time-picker.html">
 
 <script src="scripts/at-form-date-utils.js"></script>
 <script src="scripts/collapse.js"></script>
@@ -24,6 +26,13 @@
       :host {
         @apply(--at-form-host);
       }
+
+      .dropdown-container {
+        @apply(--layout-horizontal);
+      }
+      .dropdown-container.hidden {
+        display: none;
+      }
     </style>
     <div id="atContainer" class="at-container">
       <at-core-resize-sensor id="resizeSensor"></at-core-resize-sensor>
@@ -32,16 +41,20 @@
         <iron-label id="label" for="input">{{label}}</iron-label>
 
         <div id="contentContainer" class="at-content-container input-group">
-          <input id="input" class="at-content has-placeholder">
+          <input id="input" readonly class="at-content has-placeholder">
           <!-- var is used here instead of span to avoid a bug in IE11 -->
           <!-- in IE11 span (and div) element gets focus; which should not happen. -->
           <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
           <var class="input-group-addon">
-            <at-carbon-icon icon="[[_icon]]"></at-carbon-icon>
+            <at-carbon-icon id="inputIcon" icon="[[_icon]]"></at-carbon-icon>
           </var>
         </div>
 
         <div id="hint" class="hint"></div>
+      </div>
+      <div id="dropdownContainer" class="dropdown-container hidden">
+        <at-carbon-date-picker id="datePicker"></at-carbon-date-picker>
+        <at-carbon-time-picker id="timePicker"></at-carbon-time-picker>
       </div>
     </div>
   </template>
@@ -177,19 +190,19 @@
       this._validationFunctions.push(this._validateValueAgainstFormat.bind(this));
 
       this._isReady = false;
-      this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.contentContainer, {
-        keepInvalid: true,
-        useStrict: true,
-        useCurrent: false,
-        //        calendarWeeks: true,
-        // debug: true,
-        //        sideBySide: true,
-        //        toolbarPlacement: 'top',
-        format: this.format,
-        //        showClear: true,
-        //        showClose: true,
-        //        showTodayButton: true
-      });
+      // this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.contentContainer, {
+      //   keepInvalid: true,
+      //   useStrict: true,
+      //   useCurrent: false,
+      //   //        calendarWeeks: true,
+      //   // debug: true,
+      //   //        sideBySide: true,
+      //   //        toolbarPlacement: 'top',
+      //   format: this.format,
+      //   //        showClear: true,
+      //   //        showClose: true,
+      //   //        showTodayButton: true
+      // });
 
       var self = this;
 
@@ -211,6 +224,8 @@
       });
 
       var valueProvider = this.$.input;
+      var dropdownContainer = this.$.dropdownContainer;
+      var inputIcon = this.$.inputIcon;
 
       contentContainer.addEventListener('dp.error', function(event) {
         self.value = valueProvider.value;
@@ -218,10 +233,28 @@
         self.fire('value-changed', { value: self.value });
       });
 
+      inputIcon.addEventListener('click', function(event) {
+        self.toggleClass('hidden', false, dropdownContainer);
+        valueProvider.focus();
+      });
+
+      valueProvider.addEventListener('click', function(event) {
+        self.toggleClass('hidden', false, dropdownContainer);
+      });
+
       valueProvider.addEventListener('blur', function(event) {
         self._isInternalValueUpdate = true;
         self.validate();
         self._isInternalValueUpdate = false;
+      });
+
+      document.addEventListener('click', function(event) {
+        var target = event.target;
+        if (target === valueProvider || target === inputIcon) {
+          return;
+        } else if (target !== dropdownContainer && !dropdownContainer.contains(target)) {
+          self.toggleClass('hidden', true, dropdownContainer);
+        }
       });
 
       this._isReady = true;
@@ -254,7 +287,7 @@
       }
       if (this._isReady) {
         if (newValue === '') {
-          this._dtInstance.clear();
+          // this._dtInstance.clear();
         } else {
           var valueProvider = this.$.input;
           var formattedValue = moment(newValue).format(this._internalFormat);
@@ -351,9 +384,9 @@
         var valueProvider = this.$.input;
         this.toggleAttribute('disabled', newValue, valueProvider);
         if (newValue) {
-          this._dtInstance.disable();
+          // this._dtInstance.disable();
         } else {
-          this._dtInstance.enable();
+          // this._dtInstance.enable();
         }
         this.validate();
       }
