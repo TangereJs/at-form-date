@@ -346,24 +346,18 @@
         if (!this._containsChars(['Y', 'M', 'D', 'h', 'm', 's'], format)) {
           // set format to the default format for datetime
           format = this._internalFormat;
-          // log the error
-          console.log('Value ' + newValue + ' is not a valid format for datetime. Using default, ' + format + ', format instead.');
         }
       } else if (xtype === 'date') {
         // if xtype is date and format doens't contain chars for year, month, day or contains chars for hour, minute and second
         if (!this._containsChars(['Y', 'M', 'D'], format) || this._containsChars(['h', 'm', 's'], format)) {
           // set format to the default format for date
           format = this._internalFormat;
-          // log the error
-          console.log('Value ' + newValue + ' is not a valid format for date. Using default, ' + format + ', format instead.');
         }
       } else if (xtype === 'time') {
         // if xtype is time and format doens't contain chars for hour, minute and second or contains chars for year, month and day
         if (this._containsChars(['Y', 'M', 'D'], format) || !this._containsChars(['h', 'm', 's'], format)) {
           // set format to the default format for time
           format = this._internalFormat;
-          // log the error
-          console.log('Value ' + newValue + ' is not a valid format for time. Using default, ' + format + ', format instead.');
         }
       }
 
