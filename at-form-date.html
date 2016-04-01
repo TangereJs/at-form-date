@@ -9,11 +9,6 @@
 <link rel="import" href="../at-carbon-date-picker/at-carbon-date-picker.html">
 <link rel="import" href="../at-carbon-time-picker/at-carbon-time-picker.html">
 
-<script src="scripts/at-form-date-utils.js"></script>
-<script src="scripts/collapse.js"></script>
-<script src="scripts/transition.js"></script>
-<script src="scripts/datetimepicker.js"></script>
-
 <dom-module id="at-form-date">
   <template>
     <style include="at-form-common"></style>
@@ -189,57 +184,37 @@
     ready: function() {
       this._validationFunctions.push(this._validateValueAgainstFormat.bind(this));
 
-      this._isReady = false;
-      // this._dtInstance = window.atFormDateUtils.datetimepicker(this.$.contentContainer, {
-      //   keepInvalid: true,
-      //   useStrict: true,
-      //   useCurrent: false,
-      //   //        calendarWeeks: true,
-      //   // debug: true,
-      //   //        sideBySide: true,
-      //   //        toolbarPlacement: 'top',
-      //   format: this.format,
-      //   //        showClear: true,
-      //   //        showClose: true,
-      //   //        showTodayButton: true
-      // });
-
       var self = this;
-
-      // @see datetimepicker.js, line 770 function notifyEvent
-      // jquery custom events can be done with dispatchEvent
-      // listening to the dispatched event can be done by attaching the event listener to the
-      // parent element of the element on which event is dispatched on
-      var contentContainer = this.$.contentContainer;
-      contentContainer.addEventListener('dp.change', function(event) {
-        if (event.date) {
-          self._updateValue(event.date);
-        } else {
-          self.value = '';
-        }
-        self._isInternalValueUpdate = true;
-        self.validate();
-        self._isInternalValueUpdate = false;
-        self.fire('value-changed', { value: self.value });
-      });
 
       var valueProvider = this.$.input;
       var dropdownContainer = this.$.dropdownContainer;
       var inputIcon = this.$.inputIcon;
 
-      contentContainer.addEventListener('dp.error', function(event) {
-        self.value = valueProvider.value;
-        self.validate();
-        self.fire('value-changed', { value: self.value });
+      var datePicker = this.$.datePicker;
+      var timePicker = this.$.timePicker;
+
+      datePicker.addEventListener('start-date-changed', function(event) {
+        self._updateValue(datePicker, timePicker);
       });
 
+      timePicker.addEventListener('value-changed', function(event) {
+        self._updateValue(datePicker, timePicker);
+      });
+
+      self._dropdownToggle = false;
+
+      function toggleDropdown() {
+        self.toggleClass('hidden', self._dropdownToggle, dropdownContainer);
+        self._dropdownToggle = !self._dropdownToggle;
+      }
+
       inputIcon.addEventListener('click', function(event) {
-        self.toggleClass('hidden', false, dropdownContainer);
+        toggleDropdown();
         valueProvider.focus();
       });
 
       valueProvider.addEventListener('click', function(event) {
-        self.toggleClass('hidden', false, dropdownContainer);
+        toggleDropdown();
       });
 
       valueProvider.addEventListener('blur', function(event) {
@@ -254,6 +229,10 @@
           return;
         } else if (target !== dropdownContainer && !dropdownContainer.contains(target)) {
           self.toggleClass('hidden', true, dropdownContainer);
+          self._dropdownToggle = false;
+        } else if (target === dropdownContainer) {
+          self.toggleClass('hidden', true, dropdownContainer);
+          self._dropdownToggle = false;
         }
       });
 
@@ -265,21 +244,29 @@
       this.$.input.focus();
     },
     xtypeChanged: function(newValue, oldValue) {
+      var self = this;
+      var datePicker = this.$.datePicker;
+      var timePicker = this.$.timePicker;
+
       if (newValue === "datetime") {
         this._internalFormat = this._localizedFormat("datetime");
         this._icon = 'now:calendar';
+        self.toggleClass('hidden', false, datePicker);
+        self.toggleClass('hidden', false, timePicker);
       } else if (newValue === 'date') {
         this._internalFormat = this._localizedFormat("date");
         this._icon = 'now:calendar';
+        self.toggleClass('hidden', false, datePicker);
+        self.toggleClass('hidden', true, timePicker);
       } else if (newValue === 'time') {
         this._internalFormat = this._localizedFormat("time");
         this._icon = 'now:clock';
+        self.toggleClass('hidden', true, datePicker);
+        self.toggleClass('hidden', false, timePicker);
       }
-      if (this._dtInstance) {
-        this._dtInstance.format(this._internalFormat);
-        var date = this._dtInstance.date();
-        this._updateValue(date);
-      }
+      self.value = "";
+      this.$.input.value = self.value;
+      self.fire('value-changed', { value: self.value });
     },
     valueChanged: function(newValue, oldValue) {
       if (this._isInternalValueUpdate) {
@@ -293,18 +280,49 @@
           var formattedValue = moment(newValue).format(this._internalFormat);
           if (formattedValue === "Invalid date") {
             formattedValue = newValue;
+          } else {
+            //moment is valid; put new value into datepicker and time picker
+            var newMoment = moment(formattedValue, this._internalFormat);
+            this._setMomentToDateAndTime(newMoment);
           }
           valueProvider.value = formattedValue;
         }
         this.validate();
       }
     },
-    _updateValue: function(newValue) {
-      if (!newValue) {
-        return;
-      }
+    _getMomentFromDateAndTime: function (datePicker, timePicker) {
       var self = this;
-      var momentValue = moment(newValue, self._internalFormat);
+      var dateValue = datePicker.startDate;
+      var dateFormat = self._localizedFormat("date");
+      var timeValue = timePicker.value;
+      var timeFormat = self._localizedFormat("time");
+      if (self.xtype === "datetime") {
+        var completeValue = dateValue + " " + timeValue;
+        var completeFormat = dateFormat + " " + timeFormat;
+      } else if (self.xtype === "date") {
+        completeValue = dateValue;
+        completeFormat = dateFormat;
+      } else if (self.xtype === "time") {
+        completeValue = timeValue;
+        completeFormat = timeFormat;
+      }
+      var momentValue = moment(completeValue, completeFormat, true);
+      return momentValue;
+    },
+    _setMomentToDateAndTime: function (momentValue) {
+      var datePicker = this.$.datePicker;
+      var dateFormat = this._localizedFormat("date");
+      var timePicker = this.$.timePicker;
+      var timeFormat = this._localizedFormat("time");
+      var dateValue = momentValue.format(dateFormat);
+      var timeValue = momentValue.format(timeFormat);
+      datePicker.startDate = dateValue;
+      timePicker.value = timeValue;
+    },
+    _updateValue: function(datePicker, timePicker) {
+      var self = this;
+      var momentValue = this._getMomentFromDateAndTime(datePicker, timePicker);
+
       if (this.xtype === "datetime") {
         this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
         self.value = momentValue.toISOString();
@@ -314,6 +332,10 @@
         self.value = momentValue.utc().format(self._internalFormat);
         this._isInternalValueUpdate = false;
       }
+
+      var valueProvider = this.$.input;
+      valueProvider.value = self.value;
+      self.fire('value-changed', { value: self.value });
     },
     formatChanged: function(newValue, oldValue) {
       var xtype = this.xtype;
