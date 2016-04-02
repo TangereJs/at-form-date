@@ -23,16 +23,45 @@
       }
 
       .dropdown-container {
+        position: absolute;
+        left: 2px;
+        z-index: 300;
         @apply(--layout-horizontal);
+        @apply(--at-picker-background);
+        @apply(--shadow-elevation-2dp);
       }
       .dropdown-container.hidden {
         display: none;
+      }
+      .at-carbon-picker-container {
+        @apply(--layout-horizontal);
+      }
+      .at-carbon-picker {
+        display: flex;
+        align-self: center;
+      }
+      #datePicker.hidden {
+        display: none;
+      }
+      #timePicker.hidden {
+        display: none;
+      }
+      .position-relative {
+        position: relative;
+      }
+
+      /* *ij* 02.04.2016 this is a MAJOR hack / workaround untill better solution is found
+        for `reasons` at-core-resize-sensor doesn't detect shrinking if #hint doesn't have height
+        go figure ...
+      */
+      #hint {
+        height: 1px;
       }
     </style>
     <div id="atContainer" class="at-container">
       <at-core-resize-sensor id="resizeSensor"></at-core-resize-sensor>
       <div class="clear-float"></div>
-      <div>
+      <div class="position-relative">
         <iron-label id="label" for="input">{{label}}</iron-label>
 
         <div id="contentContainer" class="at-content-container input-group">
@@ -46,10 +75,16 @@
         </div>
 
         <div id="hint" class="hint"></div>
-      </div>
-      <div id="dropdownContainer" class="dropdown-container hidden">
-        <at-carbon-date-picker id="datePicker"></at-carbon-date-picker>
-        <at-carbon-time-picker id="timePicker"></at-carbon-time-picker>
+        <div class="position-relative">
+          <div id="dropdownContainer" class="dropdown-container hidden">
+            <div class="at-carbon-picker-container">
+              <at-carbon-date-picker class="at-carbon-picker" id="datePicker"></at-carbon-date-picker>
+            </div>
+            <div class="at-carbon-picker-container">
+              <at-carbon-time-picker class="at-carbon-picker" id="timePicker"></at-carbon-time-picker>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </template>
@@ -165,21 +200,36 @@
     },
     attached: function() {
       var resizeSensor = this.$.resizeSensor;
-      var initialWidth = resizeSensor.queryWidth();
       var self = this;
+      var datePicker = this.$.datePicker.parentElement;
+      var timePicker = this.$.timePicker.parentElement;
+      var dropdownContainer = this.$.dropdownContainer;
+
       resizeSensor.addEventListener('resize-sensed', function(event) {
         var updatedWidth = event.detail.value.width;
-        var dropdownMenu = self.$$('.datetimepicker-widget.dropdown-menu');
-        if (dropdownMenu !== null && dropdownMenu !== undefined) {
-          dropdownMenu.style.width = '19em';
-          var boundingRect = dropdownMenu.getBoundingClientRect();
-          var ddWidth = boundingRect.width;
-          if (ddWidth > updatedWidth) {
-            dropdownMenu.style.width = updatedWidth + 'px';
-          }
-        }
+        resizeHandler(updatedWidth);
       });
+
+       function resizeHandler (updatedWidth) {
+
+        var datePickerRect = datePicker.getBoundingClientRect();
+        var timePickerRect = datePicker.getBoundingClientRect();
+        var dateWidth = datePickerRect.width;
+        var timeWidth = timePickerRect.width;
+
+        if (updatedWidth > dateWidth + timeWidth) {
+          // switch to horizontal layout
+          dropdownContainer.style['flex-direction'] = '';
+        } else {
+          // switch to vertical layout
+          dropdownContainer.style['flex-direction'] = 'column';
+        }
+      }
+      this._resizeHandler = resizeHandler;
+
       resizeSensor.reset();
+      var initialWidth = resizeSensor.queryWidth();
+      resizeHandler(initialWidth);
     },
     ready: function() {
       this._validationFunctions.push(this._validateValueAgainstFormat.bind(this));
@@ -202,10 +252,13 @@
       });
 
       self._dropdownToggle = false;
-
+      var resizeSensor = self.$.resizeSensor;
       function toggleDropdown() {
         self.toggleClass('hidden', self._dropdownToggle, dropdownContainer);
         self._dropdownToggle = !self._dropdownToggle;
+
+        var initialWidth = resizeSensor.queryWidth();
+        self._resizeHandler(initialWidth);
       }
 
       inputIcon.addEventListener('click', function(event) {
