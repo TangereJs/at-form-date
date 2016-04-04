@@ -282,9 +282,11 @@
           return;
         } else if (target !== dropdownContainer && !dropdownContainer.contains(target)) {
           self.toggleClass('hidden', true, dropdownContainer);
+          self._blurValueProvider();
           self._dropdownToggle = false;
         } else if (target === dropdownContainer) {
           self.toggleClass('hidden', true, dropdownContainer);
+          self._blurValueProvider();
           self._dropdownToggle = false;
         }
       });
@@ -292,6 +294,12 @@
       this._isReady = true;
       this.disabledChanged();
       this.valueChanged(this.value);
+    },
+    _blurValueProvider: function () {
+      var valueProvider = this.$.input;
+      var blurEvent = document.createEvent('HTMLEvents');
+      blurEvent.initEvent('blur', false, false);
+      valueProvider.dispatchEvent(blurEvent);
     },
     focus: function() {
       this.$.input.focus();
@@ -325,11 +333,11 @@
       if (this._isInternalValueUpdate) {
         return;
       }
+      var valueProvider = this.$.input;
       if (this._isReady) {
         if (newValue === '') {
-          // this._dtInstance.clear();
+          valueProvider.value = newValue;
         } else {
-          var valueProvider = this.$.input;
           var formattedValue = moment(newValue).format(this._internalFormat);
           if (formattedValue === "Invalid date") {
             formattedValue = newValue;
@@ -386,6 +394,7 @@
         this._isInternalValueUpdate = false;
       }
 
+      self.validate();
       var valueProvider = this.$.input;
       valueProvider.value = self.value;
       self.fire('value-changed', { value: self.value });
