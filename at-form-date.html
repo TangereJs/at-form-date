@@ -265,16 +265,22 @@
 
       inputIcon.addEventListener('click', function(event) {
         toggleDropdown();
+        Polymer.dom(valueProvider).setAttribute('at-focused', true);
         valueProvider.focus();
       });
 
       valueProvider.addEventListener('click', function(event) {
+        Polymer.dom(valueProvider).setAttribute('at-focused', true);
         toggleDropdown();
       });
 
       valueProvider.addEventListener('blur', function(event) {
         self._isInternalValueUpdate = true;
-        self.validate();
+        if (valueProvider.hasAttribute('at-focused')) {
+          self.validate();
+          Polymer.dom(valueProvider).removeAttribute('at-focused');
+        }
+
         self._isInternalValueUpdate = false;
       });
 
