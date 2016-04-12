@@ -8,6 +8,7 @@
 <link rel="import" href="../iron-label/iron-label.html">
 <link rel="import" href="../at-carbon-date-picker/at-carbon-date-picker.html">
 <link rel="import" href="../at-carbon-time-picker/at-carbon-time-picker.html">
+<link rel="import" href="../at-core-dropdown/at-core-dropdown.html">
 
 <dom-module id="at-form-date">
   <template>
@@ -22,32 +23,21 @@
         @apply(--at-form-host);
       }
 
-      .dropdown-container {
-        position: absolute;
-        left: 2px;
-        z-index: 300;
-        @apply(--layout-horizontal);
-        @apply(--at-picker-background);
-        @apply(--shadow-elevation-2dp);
-      }
-      .dropdown-container.hidden {
-        display: none;
-      }
       .at-carbon-picker-container {
         @apply(--layout-horizontal);
       }
+
       .at-carbon-picker {
         display: flex;
         align-self: center;
       }
+
       #datePicker.hidden {
         display: none;
       }
+
       #timePicker.hidden {
         display: none;
-      }
-      .position-relative {
-        position: relative;
       }
 
       /* *ij* 02.04.2016 this is a MAJOR hack / workaround untill better solution is found
@@ -75,8 +65,8 @@
         </div>
         <div id="thisIsAHackToMakeResizeSensorDetectShrinking"></div>
         <div id="hint" class="hint"></div>
-        <div class="position-relative">
-          <div id="dropdownContainer" class="dropdown-container hidden">
+        <at-core-dropdown id="dropdownContainer">
+          <div id="pickerContainer" class="horizontal layout">
             <div class="at-carbon-picker-container">
               <at-carbon-date-picker class="at-carbon-picker" id="datePicker"></at-carbon-date-picker>
             </div>
@@ -84,7 +74,7 @@
               <at-carbon-time-picker class="at-carbon-picker" id="timePicker"></at-carbon-time-picker>
             </div>
           </div>
-        </div>
+        </at-core-dropdown>
       </div>
     </div>
   </template>
@@ -206,6 +196,7 @@
       var datePicker = this.$.datePicker.parentElement;
       var timePicker = this.$.timePicker.parentElement;
       var dropdownContainer = this.$.dropdownContainer;
+      var pickerContainer = this.$.pickerContainer;
 
       resizeSensor.addEventListener('resize-sensed', function(event) {
         var updatedWidth = event.detail.value.width;
@@ -221,10 +212,12 @@
 
         if (updatedWidth > dateWidth + timeWidth) {
           // switch to horizontal layout
-          dropdownContainer.style['flex-direction'] = '';
+          self.toggleClass('horizontal', true, pickerContainer);
+          self.toggleClass('vertical', false, pickerContainer);
         } else {
           // switch to vertical layout
-          dropdownContainer.style['flex-direction'] = 'column';
+          self.toggleClass('horizontal', false, pickerContainer);
+          self.toggleClass('vertical', true, pickerContainer);
         }
       }
       this._resizeHandler = resizeHandler;
