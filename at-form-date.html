@@ -54,7 +54,7 @@
         for `reasons` at-core-resize-sensor doesn't detect shrinking if #hint doesn't have height
         go figure ...
       */
-      #hint {
+      #thisIsAHackToMakeResizeSensorDetectShrinking {
         height: 1px;
       }
     </style>
@@ -73,7 +73,7 @@
             <at-carbon-icon id="inputIcon" icon="[[_icon]]"></at-carbon-icon>
           </var>
         </div>
-
+        <div id="thisIsAHackToMakeResizeSensorDetectShrinking"></div>
         <div id="hint" class="hint"></div>
         <div class="position-relative">
           <div id="dropdownContainer" class="dropdown-container hidden">
