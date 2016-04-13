@@ -1,6 +1,6 @@
 <link rel="import" href="../tangere/tangere.html">
 <link rel="import" href="../at-theme/at-theme.html">
-<link rel="import" href="../at-carbon-icon/at-carbon-icon.html">
+<link rel="import" href="../at-carbon-icon-button/at-carbon-icon-button.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
 <link rel="import" href="../at-i18n/at-i18n-behavior.html">
 <link rel="import" href="../at-core-resize-sensor/at-core-resize-sensor.html">
@@ -41,7 +41,8 @@
       }
 
       /* *ij* 02.04.2016 this is a MAJOR hack / workaround untill better solution is found
-        for `reasons` at-core-resize-sensor doesn't detect shrinking if #hint doesn't have height
+        for `reasons` at-core-resize-sensor doesn't detect shrinking
+        if #thisIsAHackToMakeResizeSensorDetectShrinking doesn't have height
         go figure ...
       */
       #thisIsAHackToMakeResizeSensorDetectShrinking {
@@ -59,13 +60,11 @@
           <!-- var is used here instead of span to avoid a bug in IE11 -->
           <!-- in IE11 span (and div) element gets focus; which should not happen. -->
           <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
-          <var class="input-group-addon">
-            <at-carbon-icon id="inputIcon" icon="[[_icon]]"></at-carbon-icon>
-          </var>
+          <at-carbon-icon-button id="inputIcon" class="input-group-addon" icon="[[_icon]]"></at-carbon-icon-button>
         </div>
         <div id="thisIsAHackToMakeResizeSensorDetectShrinking"></div>
         <div id="hint" class="hint"></div>
-        <at-core-dropdown id="dropdownContainer">
+        <at-core-dropdown id="dropdownContainer" position="bottomRight">
           <div id="pickerContainer" class="horizontal layout">
             <div class="at-carbon-picker-container">
               <at-carbon-date-picker class="at-carbon-picker" id="datePicker"></at-carbon-date-picker>
@@ -248,23 +247,22 @@
 
       self._dropdownToggle = false;
       var resizeSensor = self.$.resizeSensor;
-      function toggleDropdown() {
-        self.toggleClass('hidden', self._dropdownToggle, dropdownContainer);
-        self._dropdownToggle = !self._dropdownToggle;
+      function toggleDropdown(event) {
+        dropdownContainer.toggle(event.target, event);
 
         var initialWidth = resizeSensor.queryWidth();
         self._resizeHandler(initialWidth);
       }
 
-      inputIcon.addEventListener('click', function(event) {
-        toggleDropdown();
+      inputIcon.addEventListener('mousedown', function(event) {
+        toggleDropdown(event);
         Polymer.dom(valueProvider).setAttribute('at-focused', true);
         valueProvider.focus();
       });
 
       valueProvider.addEventListener('click', function(event) {
         Polymer.dom(valueProvider).setAttribute('at-focused', true);
-        toggleDropdown();
+        toggleDropdown(event);
       });
 
       valueProvider.addEventListener('blur', function(event) {
@@ -279,16 +277,16 @@
 
       document.addEventListener('click', function(event) {
         var target = event.target;
-        if (target === valueProvider || target === inputIcon) {
+        var valueProvider = self.$.input;
+        var inputIcon = self.$.inputIcon;
+        if (target === valueProvider || target === inputIcon || inputIcon.contains(target)) {
           return;
         } else if (target !== dropdownContainer && !dropdownContainer.contains(target)) {
-          self.toggleClass('hidden', true, dropdownContainer);
+          dropdownContainer.hide();
           self._blurValueProvider();
-          self._dropdownToggle = false;
         } else if (target === dropdownContainer) {
-          self.toggleClass('hidden', true, dropdownContainer);
+          dropdownContainer.hide();
           self._blurValueProvider();
-          self._dropdownToggle = false;
         }
       });
 
@@ -356,6 +354,9 @@
       var self = this;
       var dateValue = datePicker.startDate;
       var dateFormat = self._localizedFormat("date");
+      if (dateValue === "") {
+        dateValue = moment().format(dateFormat);
+      }
       var timeValue = timePicker.value;
       var timeFormat = self._localizedFormat("time");
       if (self.xtype === "datetime") {
