@@ -56,7 +56,7 @@
         <iron-label id="label" for="input">{{label}}</iron-label>
 
         <div id="contentContainer" class="at-content-container input-group">
-          <input id="input" readonly class="at-content has-placeholder">
+          <input id="input" readonly class="at-content has-placeholder" on-tap="_inputOnTap">
           <!-- var is used here instead of span to avoid a bug in IE11 -->
           <!-- in IE11 span (and div) element gets focus; which should not happen. -->
           <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
@@ -219,8 +219,10 @@
           self.toggleClass('vertical', true, pickerContainer);
         }
 
-        dropdownContainer.hide();
-        dropdownContainer.show();
+        if (dropdownContainer.isOpen()){
+          dropdownContainer.hide();
+          dropdownContainer.show();
+        }
       }
       this._resizeHandler = resizeHandler;
 
@@ -257,15 +259,10 @@
         self._resizeHandler(initialWidth);
       }
 
-      inputIcon.addEventListener('mousedown', function(event) {
+      inputIcon.addEventListener('tap', function(event) {
         toggleDropdown(event);
         Polymer.dom(valueProvider).setAttribute('at-focused', true);
         valueProvider.focus();
-      });
-
-      valueProvider.addEventListener('click', function(event) {
-        Polymer.dom(valueProvider).setAttribute('at-focused', true);
-        toggleDropdown(event);
       });
 
       valueProvider.addEventListener('blur', function(event) {
@@ -278,30 +275,19 @@
         self._isInternalValueUpdate = false;
       });
 
-      document.addEventListener('click', function(event) {
-        var target = event.target;
-        var valueProvider = self.$.input;
-        var inputIcon = self.$.inputIcon;
-        if (target === valueProvider || target === inputIcon || inputIcon.contains(target)) {
-          return;
-        } else if (target !== dropdownContainer && !dropdownContainer.contains(target)) {
-          dropdownContainer.hide();
-          self._blurValueProvider();
-        } else if (target === dropdownContainer) {
-          dropdownContainer.hide();
-          self._blurValueProvider();
-        }
-      });
-
       this._isReady = true;
       this.disabledChanged();
       this.valueChanged(this.value);
     },
-    _blurValueProvider: function () {
+    _inputOnTap: function (event) {
       var valueProvider = this.$.input;
-      var blurEvent = document.createEvent('HTMLEvents');
-      blurEvent.initEvent('blur', false, false);
-      valueProvider.dispatchEvent(blurEvent);
+      var dropdownContainer = this.$.dropdownContainer;
+      Polymer.dom(valueProvider).setAttribute('at-focused', true);
+      dropdownContainer.toggle(event.target, event);
+
+      var resizeSensor = this.$.resizeSensor;
+      var initialWidth = resizeSensor.queryWidth();
+      this._resizeHandler(initialWidth);
     },
     focus: function() {
       this.$.input.focus();
