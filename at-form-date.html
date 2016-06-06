@@ -276,8 +276,6 @@
       });
 
       this._isReady = true;
-      this.disabledChanged();
-      this.valueChanged(this.value);
     },
     _inputOnTap: function (event) {
       var valueProvider = this.$.input;
@@ -447,16 +445,17 @@
       return result;
     },
     disabledChanged: function(newValue, oldValue) {
+      var atContainer = this.$.atContainer;
+      this.toggleClass('disabled', newValue, atContainer);
+      var valueProvider = this.$.input;
+      this.toggleAttribute('disabled', newValue, valueProvider);
+      if (newValue) {
+        // this._dtInstance.disable();
+      } else {
+        // this._dtInstance.enable();
+      }
+
       if (this._isReady) {
-        var atContainer = this.$.atContainer;
-        this.toggleClass('disabled', newValue, atContainer);
-        var valueProvider = this.$.input;
-        this.toggleAttribute('disabled', newValue, valueProvider);
-        if (newValue) {
-          // this._dtInstance.disable();
-        } else {
-          // this._dtInstance.enable();
-        }
         this.validate();
       }
     },

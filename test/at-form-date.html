@@ -1,0 +1,247 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../at-form-date.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="required">
+    <template>
+      <at-form-date required></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="disabled">
+    <template>
+      <at-form-date disabled></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="hidden">
+    <template>
+      <at-form-date hide></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="requiredAndDisabled">
+    <template>
+      <at-form-date required disabled></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="requiredAndHidden">
+    <template>
+      <at-form-date required hide></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="errorMessageValidFalse">
+    <template>
+      <at-form-date error-message="demo error message"></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="datetimeFormatTest">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="dateFormatTest">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="timeFormatTest">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('basic', function() {
+
+      test('setting value sets the input value', function() {
+        var input = fixture('basic');
+        input.value = 'demo value';
+        assert.equal(input._getFocusableElement().value, input.value, 'inputElement.value equals input.value');
+      });
+
+      test('required sets validation message', function() {
+        var input = fixture('required');
+        assert.equal(input.required, true, 'required property is true');
+        assert.equal(input._errorMessage, '', 'error message is initially empty');
+        MockInteractions.focus(input);
+        MockInteractions.blur(input);
+        assert.equal(input._errorMessage, '', 'This field is required.');
+      });
+
+      test('disabled sets css classes', function() {
+        var input = fixture('disabled');
+        assert.equal(input.disabled, true, 'disabled property is true');
+        var inputElement = input._getFocusableElement();
+        assert.equal(inputElement.hasAttribute('disabled'), true, 'input element disabled attribute set');
+        assert.equal(input.$.atContainer.classList.contains('disabled'), true, 'container has disabled class');
+      });
+
+      test('hidden sets css classes', function() {
+        var input = fixture('hidden');
+        assert.equal(input.hide, true, 'hide property is true');
+        assert.equal(input.$.atContainer.classList.contains('hidden'), true, 'container has hidden class');
+      });
+
+      test('required and disabled => valid = true', function() {
+        var input = fixture('requiredAndDisabled');
+        assert.equal(input.required, true, 'required property is true');
+        assert.equal(input.disabled, true, 'disabled property is true');
+        assert.equal(input.valid, true, 'input is valid');
+      });
+
+      test('required and hidden => valid = true', function() {
+        var input = fixture('requiredAndHidden');
+        assert.equal(input.required, true, 'required property is true');
+        assert.equal(input.hide, true, 'hide property is true');
+        assert.equal(input.valid, true, 'input is valid');
+      });
+
+      test('errorMessage => valid = false', function() {
+        var input = fixture('errorMessageValidFalse');
+        assert.equal(input.errorMessage, 'demo error message', 'error message is correctly set');
+        assert.equal(input.valid, true, 'input is valid because error message is set as attribute');
+        input.errorMessage = 'Another version of demo error message';
+        assert.equal(input.errorMessage, 'Another version of demo error message', 'error message is correctly set');
+        assert.equal(input.valid, false, 'input is invalid because error message is set as property');
+      });
+
+      test('datetime Format Test', function() {
+        var input = fixture('datetimeFormatTest');
+
+        assert.equal(input.value, '', 'value is not initially empty');
+        assert.equal(input._errorMessage, '', 'error message is not initially empty');
+        assert.equal(input.valid, true, 'element is not initially valid');
+        assert.equal(input.xtype, "datetime", 'element\'s type is not initially datetime');
+
+        input.value = "This should produce format error";
+        assert.equal(input._errorMessage, 'Value This should produce format error is not valid.', 'Format error message is not set correctly');
+        assert.equal(input.valid, false, 'element is not invalid');
+
+        input.value = "2016-06-06T15:40:45.000Z";
+        assert.equal(input._errorMessage, '', 'Error message is not empty');
+        assert.equal(input.valid, true, 'element is valid');
+      });
+
+      test('date Format Test', function() {
+        var input = fixture('dateFormatTest');
+        input.xtype = "date";
+
+        assert.equal(input.value, '', 'value is not initially empty');
+        assert.equal(input._errorMessage, '', 'error message is not initially empty');
+        assert.equal(input.valid, true, 'element is not initially valid');
+        assert.equal(input.xtype, "date", 'element\'s type is not initially date');
+
+        input.value = "This should produce format error";
+        assert.equal(input._errorMessage, 'Value This should produce format error is not valid.', 'Format error message is not set correctly');
+        assert.equal(input.valid, false, 'element is not invalid');
+
+        input.value = "2016-06-06";
+        assert.equal(input._errorMessage, '', 'Error message is not empty');
+        assert.equal(input.valid, true, 'element is valid');
+      });
+
+      test('time Format Test', function() {
+        var input = fixture('timeFormatTest');
+        input.xtype = "time";
+
+        assert.equal(input.value, '', 'value is not initially empty');
+        assert.equal(input._errorMessage, '', 'error message is not initially empty');
+        assert.equal(input.valid, true, 'element is not initially valid');
+        assert.equal(input.xtype, "time", 'element\'s type is not initially time');
+
+        input.value = "This should produce format error";
+        assert.equal(input._errorMessage, 'Value This should produce format error is not valid.', 'Format error message is not set correctly');
+        assert.equal(input.valid, false, 'element is not invalid');
+
+        input.value = "23:40:15";
+        assert.equal(input._errorMessage, '', 'Error message is not empty');
+        assert.equal(input.valid, true, 'element is valid');
+      });
+
+
+      test('alternative datetime formats Test', function() {
+        var input = fixture('datetimeFormatTest');
+        var inputElement = input._getFocusableElement();
+
+        assert.equal(input.format, '', 'format is not initially empty');
+
+        input.format = "DD-MM-YYYY HH:mm:ss";
+        input.value = "2016-06-15T15:40:45.000Z";
+
+        assert.equal(inputElement.value, "15-06-2016 17:40:45");
+
+        input.format = "DD-MM-YYYY hh:mm:ss A";
+        assert.equal(inputElement.value, "15-06-2016 05:40:45 PM");
+
+      });
+
+      test('alternative date formats Test', function() {
+        var input = fixture('dateFormatTest');
+        input.xtype = "date";
+        var inputElement = input._getFocusableElement();
+
+        assert.equal(input.format, '', 'format is not initially empty');
+
+        input.value = "2016-06-15T15:40:45.000Z";
+        input.format = "DD-MM-YYYY";
+
+        assert.equal(inputElement.value, "15-06-2016");
+
+        input.format = "MM-DD-YYYY";
+        assert.equal(inputElement.value, "06-15-2016");
+      });
+
+      // test('alternative time formats Test', function() {
+      //   var input = fixture('timeFormatTest');
+      //   input.xtype = "time";
+      //
+      //   assert.equal(input.value, '', 'value is not initially empty');
+      //   assert.equal(input._errorMessage, '', 'error message is not initially empty');
+      //   assert.equal(input.valid, true, 'element is not initially valid');
+      //   assert.equal(input.xtype, "time", 'element\'s type is not initially time');
+      //
+      //   input.value = "This should produce format error";
+      //   assert.equal(input._errorMessage, 'Value This should produce format error is not valid.', 'Format error message is not set correctly');
+      //   assert.equal(input.valid, false, 'element is not invalid');
+      //
+      //   input.value = "23:40:15";
+      //   assert.equal(input._errorMessage, '', 'Error message is not empty');
+      //   assert.equal(input.valid, true, 'element is valid');
+      // });
+    });
+  </script>
+
+</body>
+
+</html>
