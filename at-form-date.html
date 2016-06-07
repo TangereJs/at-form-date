@@ -158,7 +158,6 @@
       type: "string",
       xtype: "datetime"
     }],
-    _dtInstance: undefined,
     /**
      * _internalFormat governs how value is formatted
      * the value of _internalFormat is governed by xtype
@@ -424,10 +423,6 @@
         value: format
       });
 
-      if (this._dtInstance) {
-        this._dtInstance.format(format);
-      }
-
       var newFormattedValue;
       var valueProvider = this.$.input;
       if (this._lastFormatUsedForParsing) {
@@ -465,11 +460,6 @@
       this.toggleAttribute('disabled', newValue, valueProvider);
       var inputIcon = this.$.inputIcon;
       this.toggleAttribute('disabled', newValue, inputIcon);
-      if (newValue) {
-        // this._dtInstance.disable();
-      } else {
-        // this._dtInstance.enable();
-      }
 
       if (this._isReady) {
         this.validate();
