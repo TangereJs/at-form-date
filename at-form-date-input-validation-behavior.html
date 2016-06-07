@@ -1,0 +1,62 @@
+<script>
+  /**
+   * AT-142 input validation
+   */
+  Tangere.behaviors.AtFormDateInputValidation = {
+    /**
+     * 07.06.2016 at the moment propDef should come from at-form-date.properties.value
+     * propDef = {
+        type: <type>,
+
+        }
+     */
+    validateInput: function(propertyDefinition, value) {
+      // D1. where is propertyDefinition coming from
+      // since we are validation at-form-date.value it makes sense for propertyDefinition to come from at-form-date.properties.value
+
+      var result = {
+        value: value,
+        isValid: true,
+        isEmpty: true
+      };
+
+      // D2. propertyDefinition.type can be either a function (as at-form-date.properties.value.type is a Constructor function for a simple type eg. String, Number, Boolean, Array, Object)
+      // or it can be converted to a string value 'string', 'number', 'bool/boolean', 'array', 'object'
+
+      // convert value into a correct type
+      try {
+          reslut.value = propertyDefinition.type(value);
+          result.isValid = true;
+      } catch (e) {
+        result.isValid = false;
+        // if conversion fails we return
+        return result;
+      }
+
+      // calculate the value of result.isEmpty
+      var valueType = Object.prototype.toString.call(value);
+      // string can be empty
+      if (valueType === "[object String]") {
+        result.isEmpty = valueType === "";
+      } else if (valueType === "[object Number]") {
+        // number can't be empty
+        result.isEmpty = false;
+      } else if (valueType === "[object Boolean]") {
+        // boolean can't be empty
+        result.isEmpty = false;
+      } else if (valueType === "[object Array]") {
+        // array can be empty if we claim that array.isEmpty = array.length === 0
+        result.isEmpty = value.length === 0;
+      } else if (valueType === "[object Object]") {
+        // object can be empty if we claim that value.ownProperties().length === 0
+        result.isEmpty = Object.getOwnPropertyNames(value).length === 0;
+      }
+
+      // D3. should required, disabled, hidden affect result.isValid ?
+      // if they should, how is this information provided to this function
+      // should we have additional parameters or should this information be part of propertyDefinition
+
+      return result;
+    }
+  }
+</script>
