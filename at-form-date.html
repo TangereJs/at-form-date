@@ -316,26 +316,27 @@
       self.fire('value-changed', { value: self.value });
     },
     valueChanged: function(newValue, oldValue) {
-      if (this._isInternalValueUpdate) {
+      if (!this._isReady || this._isInternalValueUpdate) {
         return;
       }
+
       var valueProvider = this.$.input;
-      if (this._isReady) {
-        if (newValue === '') {
-          valueProvider.value = newValue;
+
+      if (newValue === '') {
+        valueProvider.value = newValue;
+      } else {
+        var formattedValue = moment(newValue).format(this._internalFormat);
+        if (formattedValue === "Invalid date") {
+          formattedValue = newValue;
         } else {
-          var formattedValue = moment(newValue).format(this._internalFormat);
-          if (formattedValue === "Invalid date") {
-            formattedValue = newValue;
-          } else {
-            //moment is valid; put new value into datepicker and time picker
-            var newMoment = moment(formattedValue, this._internalFormat);
-            this._setMomentToDateAndTime(newMoment);
-          }
-          valueProvider.value = formattedValue;
+          //moment is valid; put new value into datepicker and time picker
+          var newMoment = moment(formattedValue, this._internalFormat);
+          this._lastFormatUsedForParsing = this._internalFormat;
+          this._setMomentToDateAndTime(newMoment);
         }
-        this.validate();
+        valueProvider.value = formattedValue;
       }
+      this.validate();
     },
     _getMomentFromDateAndTime: function (datePicker, timePicker) {
       var self = this;
@@ -426,11 +427,24 @@
       if (this._dtInstance) {
         this._dtInstance.format(format);
       }
-      var newFormattedValue = moment(this.value).format(format);
+
+      var newFormattedValue;
+      var valueProvider = this.$.input;
+      if (this._lastFormatUsedForParsing) {
+        newFormattedValue = moment(valueProvider.value, this._lastFormatUsedForParsing).format(format);
+        this._lastFormatUsedForParsing = format;
+      } else {
+        newFormattedValue = moment(this.value).format(format);
+      }
+
       if (newFormattedValue === "Invalid date") {
         newFormattedValue = this.value;
       }
+
       this.$.input.value = newFormattedValue;
+      this._isInternalValueUpdate = true;
+      this.value = newFormattedValue;
+      this._isInternalValueUpdate = false;
     },
     /**
      * checks if source contains any of the chars
@@ -449,6 +463,8 @@
       this.toggleClass('disabled', newValue, atContainer);
       var valueProvider = this.$.input;
       this.toggleAttribute('disabled', newValue, valueProvider);
+      var inputIcon = this.$.inputIcon;
+      this.toggleAttribute('disabled', newValue, inputIcon);
       if (newValue) {
         // this._dtInstance.disable();
       } else {

@@ -189,21 +189,19 @@
         assert.equal(input.valid, true, 'element is valid');
       });
 
-
       test('alternative datetime formats Test', function() {
         var input = fixture('datetimeFormatTest');
         var inputElement = input._getFocusableElement();
 
         assert.equal(input.format, '', 'format is not initially empty');
 
-        input.format = "DD-MM-YYYY HH:mm:ss";
         input.value = "2016-06-15T15:40:45.000Z";
 
-        assert.equal(inputElement.value, "15-06-2016 17:40:45");
+        input.format = "DD-MM-YYYY HH:mm:ss";
+        assert.equal(inputElement.value, "15-06-2016 17:40:00");
 
         input.format = "DD-MM-YYYY hh:mm:ss A";
-        assert.equal(inputElement.value, "15-06-2016 05:40:45 PM");
-
+        assert.equal(inputElement.value, "15-06-2016 05:40:00 PM");
       });
 
       test('alternative date formats Test', function() {
@@ -222,23 +220,24 @@
         assert.equal(inputElement.value, "06-15-2016");
       });
 
-      // test('alternative time formats Test', function() {
-      //   var input = fixture('timeFormatTest');
-      //   input.xtype = "time";
-      //
-      //   assert.equal(input.value, '', 'value is not initially empty');
-      //   assert.equal(input._errorMessage, '', 'error message is not initially empty');
-      //   assert.equal(input.valid, true, 'element is not initially valid');
-      //   assert.equal(input.xtype, "time", 'element\'s type is not initially time');
-      //
-      //   input.value = "This should produce format error";
-      //   assert.equal(input._errorMessage, 'Value This should produce format error is not valid.', 'Format error message is not set correctly');
-      //   assert.equal(input.valid, false, 'element is not invalid');
-      //
-      //   input.value = "23:40:15";
-      //   assert.equal(input._errorMessage, '', 'Error message is not empty');
-      //   assert.equal(input.valid, true, 'element is valid');
-      // });
+      test('alternative time formats Test', function() {
+        var input = fixture('timeFormatTest');
+        input.xtype = "time";
+        var inputElement = input._getFocusableElement();
+
+        assert.equal(input.format, '', 'format is not initially empty');
+
+        input.value = "2016-06-15T15:40:45.000Z";
+
+        input.format = "HH : mm : ss";
+        assert.equal(inputElement.value, "17 : 40 : 45");
+
+        input.format = "hh - mm A";
+        assert.equal(inputElement.value, "05 - 40 PM");
+
+        input.format = "hh:mm:ss A";
+        assert.equal(inputElement.value, "05:40:00 PM");
+      });
     });
   </script>
 
