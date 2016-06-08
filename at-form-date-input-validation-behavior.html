@@ -3,33 +3,52 @@
    * AT-142 input validation
    */
   Tangere.behaviors.AtFormDateInputValidation = {
-    /**
-     * 07.06.2016 at the moment propDef should come from at-form-date.properties.value
-     * propDef = {
-        type: <type>,
 
-        }
-     */
     validateInput: function(propertyDefinition, value) {
-      // D1. where is propertyDefinition coming from
-      // since we are validation at-form-date.value it makes sense for propertyDefinition to come from at-form-date.properties.value
 
+      function isObject(obj) {
+        return Object.prototype.toString.call(obj) === "[object Object]";
+      }
+
+      function isFunction(obj) {
+        return Object.prototype.toString.call(obj) === "[object Function]";
+      }
+
+      function isString(obj) {
+        return Object.prototype.toString.call(obj) === "[object String]";
+      }
+
+      // by default we want to return original value, as invalid and undefined isEmpty
       var result = {
         value: value,
-        isValid: true,
-        isEmpty: true
+        isValid: false,
+        isEmpty: undefined
       };
 
-      // D2. propertyDefinition.type can be either a function (as at-form-date.properties.value.type is a Constructor function for a simple type eg. String, Number, Boolean, Array, Object)
-      // or it can be converted to a string value 'string', 'number', 'bool/boolean', 'array', 'object'
+      // property definition must be an object and must have type property
+      if (!isObject(propertyDefinition) || !propertyDefinition.hasOwnProperty('type')) {
+        return result;
+      }
 
-      // convert value into a correct type
-      try {
-          reslut.value = propertyDefinition.type(value);
+      var type = propertyDefinition.type;
+      var xtype = propertyDefinition.xtype;
+      // type property can either be a function or a string
+      if (isFunction(type)) {
+        // convert value into a correct type
+        try {
+          result.value = type(value);
           result.isValid = true;
-      } catch (e) {
-        result.isValid = false;
-        // if conversion fails we return
+        } catch (e) {
+          result.isValid = false;
+          // if conversion fails we return
+          return result;
+        }
+      } else if (isString(type) && type === 'string' && isString(xtype) && ['date', 'time', 'datetime'].indexOf(xtype) !== -1) {
+        // this behavior is confined to at-form-date so, we are expecting (type, xtype) = [(string, date), (string, time), (string, datetime)]
+        // we are not doing any format validation since that information is not part of propertyDefinition
+        result.isValid = true;
+      } else {
+        // we have invalid type
         return result;
       }
 
@@ -51,10 +70,6 @@
         // object can be empty if we claim that value.ownProperties().length === 0
         result.isEmpty = Object.getOwnPropertyNames(value).length === 0;
       }
-
-      // D3. should required, disabled, hidden affect result.isValid ?
-      // if they should, how is this information provided to this function
-      // should we have additional parameters or should this information be part of propertyDefinition
 
       return result;
     }
