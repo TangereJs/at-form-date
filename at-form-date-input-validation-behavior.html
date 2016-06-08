@@ -46,7 +46,17 @@
       } else if (isString(type) && type === 'string' && isString(xtype) && ['date', 'time', 'datetime'].indexOf(xtype) !== -1) {
         // this behavior is confined to at-form-date so, we are expecting (type, xtype) = [(string, date), (string, time), (string, datetime)]
         // we are not doing any format validation since that information is not part of propertyDefinition
-        result.isValid = true;
+
+        // we know that type of value should be string so we convert what ever value is to string using String constructor function
+        try {
+          result.value = String(value);
+          result.isValid = true;
+        } catch (e) {
+          result.isValid = false;
+          // if conversion fails we return
+          return result;
+        }
+        
       } else {
         // we have invalid type
         return result;
@@ -56,7 +66,7 @@
       var valueType = Object.prototype.toString.call(value);
       // string can be empty
       if (valueType === "[object String]") {
-        result.isEmpty = valueType === "";
+        result.isEmpty = value === "";
       } else if (valueType === "[object Number]") {
         // number can't be empty
         result.isEmpty = false;
