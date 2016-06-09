@@ -310,6 +310,8 @@
       }
 
       suite('type/xtype tests', function () {
+        // we test invalid propertyDefinition.type values
+        // with value = undefined and value = null
         test('invalid type/xtype pairs test', function () {
 
           var invalidTypes = [ undefined, null, "", "array", "boolean", "number", "daterange", "object", "section" ];
@@ -322,6 +324,8 @@
 
         });
 
+        // we test invalid propertyDefinition.xtype values with a valid type value
+        // with value = undefined and value = null
         test('type string, invalid xtypes test', function () {
 
           var invalidXtypes = [ undefined, null, "", "array", "boolean", "number", "daterange", "object", "section", "toggle", "json", "code", "enum", "image", "file", "lookup", "marked", "password", "radio", "state", "textarea" ];
@@ -333,38 +337,43 @@
           GenericPropDefTypeStringInvalidXtypeValidationFunction(invalidXtypes, value);
         });
 
-        test('type string, xtype date / time / datetime', function () {
+        function GenericTypeStringValidXtypesValueAsParamTestFunction(value, expected, expectedIsEmpty) {
           var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
-          var value = undefined;
           var propDef = {
             type: 'string',
             xtype: 'date'
           };
           var result = inputValidation.validateInput(propDef, value);
-          assert.equal(result.value, 'undefined', 'Value is not ' + String(value));
+          assert.equal(result.value, expected, 'Value is not ' + String(value));
           assert.equal(result.isValid, true, 'Value is not valid');
-          assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+          assert.equal(result.isEmpty, expectedIsEmpty, 'isEmpty is not undefined');
 
-          var value = undefined;
           var propDef = {
             type: 'string',
             xtype: 'time'
           };
           var result = inputValidation.validateInput(propDef, value);
-          assert.equal(result.value, 'undefined', 'Value is not ' + String(value));
+          assert.equal(result.value, expected, 'Value is not ' + String(value));
           assert.equal(result.isValid, true, 'Value is not valid');
-          assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+          assert.equal(result.isEmpty, expectedIsEmpty, 'isEmpty is not undefined');
 
-          var value = undefined;
           var propDef = {
             type: 'string',
             xtype: 'datetime'
           };
           var result = inputValidation.validateInput(propDef, value);
-          assert.equal(result.value, 'undefined', 'Value is not ' + String(value));
+          assert.equal(result.value, expected, 'Value is not ' + String(value));
           assert.equal(result.isValid, true, 'Value is not valid');
-          assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+          assert.equal(result.isEmpty, expectedIsEmpty, 'isEmpty is not undefined');
+        }
 
+        // we test valid propertyDefinition.type and valid propertyDefinition.xtype
+        // with value = [ undefined, null, '' and lorem ipsum]
+        test('type string, xtype date / time / datetime', function () {
+          GenericTypeStringValidXtypesValueAsParamTestFunction(undefined, 'undefined', undefined);
+          GenericTypeStringValidXtypesValueAsParamTestFunction(null, 'null', undefined);
+          GenericTypeStringValidXtypesValueAsParamTestFunction('', '', true);
+          GenericTypeStringValidXtypesValueAsParamTestFunction('lorem ipsum', 'lorem ipsum', false);
         });
 
       });
