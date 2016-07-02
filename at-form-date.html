@@ -9,6 +9,7 @@
 <link rel="import" href="../at-carbon-date-picker/at-carbon-date-picker.html">
 <link rel="import" href="../at-carbon-time-picker/at-carbon-time-picker.html">
 <link rel="import" href="../at-core-dropdown/at-core-dropdown.html">
+<link rel="import" href="at-form-date-input-validation-behavior.html">
 
 <dom-module id="at-form-date">
   <template>
@@ -83,7 +84,7 @@
   'use strict';
   Polymer({
     is: 'at-form-date',
-    behaviors: [ Tangere.behaviors.formValidation, Tangere.behaviors.i18n ],
+    behaviors: [ Tangere.behaviors.formValidation, Tangere.behaviors.i18n, Tangere.behaviors.AtFormDateInputValidation ],
     properties: {
       label: {
         type: String,
@@ -161,7 +162,6 @@
       xtype: "datetime",
       events: [ "value-changed" ]
     }],
-    _dtInstance: undefined,
     /**
      * _internalFormat governs how value is formatted
      * the value of _internalFormat is governed by xtype
@@ -323,6 +323,23 @@
         return;
       }
 
+      // D1. should input validation happen here or in at-form-behaviors-validation?
+      // as it stands right now, input validation should be here
+      // maybe, when we finish and validate the prototype input validation can be moved to at-form-behaviors-validation
+      var validationResult = this.validateInput(this.properties.value, newValue);
+      var hint = this.$.hint;
+      if (!validationResult.isValid) {
+        // element should become invalid
+        this._setValid(false);
+        Polymer.dom(hint).innerHTML = "Value " + newValue + " is not a valid input for at-form-date";
+        this._updateUIValidState(false);
+        return ;
+      } else {
+        this._setValid(true);
+        Polymer.dom(hint).innerHTML = "";
+        this._updateUIValidState(true);
+      }
+
       var valueProvider = this.$.input;
 
       if (newValue === '') {
@@ -427,10 +444,6 @@
         value: format
       });
 
-      if (this._dtInstance) {
-        this._dtInstance.format(format);
-      }
-
       var newFormattedValue;
       var valueProvider = this.$.input;
       if (this._lastFormatUsedForParsing) {
@@ -468,11 +481,6 @@
       this.toggleAttribute('disabled', newValue, valueProvider);
       var inputIcon = this.$.inputIcon;
       this.toggleAttribute('disabled', newValue, inputIcon);
-      if (newValue) {
-        // this._dtInstance.disable();
-      } else {
-        // this._dtInstance.enable();
-      }
 
       if (this._isReady) {
         this.validate();
@@ -488,6 +496,8 @@
       this.toggleClass('error', !isValid, label);
       var contentContainer = this.$.contentContainer;
       this.toggleClass('error', !isValid, contentContainer);
+      var hint = this.$.hint;
+      this.toggleClass('error', !isValid, hint);
     },
     _validateValueAgainstFormat: function(value) {
       var valid = true;

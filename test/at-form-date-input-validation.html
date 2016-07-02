@@ -1,0 +1,387 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+  <link rel="import" href="../../Tangere/tangere.html">
+  <link rel="import" href="../at-form-date-input-validation-behavior.html">
+
+</head>
+
+<body>
+
+  <script>
+    function isArray(obj) {
+      return Object.prototype.toString.call(obj) === "[object Array]";
+    }
+
+    function isObject(obj) {
+      return Object.prototype.toString.call(obj) === "[object Object]";
+    }
+
+    suite('input validation', function() {
+
+      test('input validation -> guard against invalid parameters', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var propDef;
+        var value;
+        var result;
+
+        // propDef is undefined, value is undefined
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef is null, value is undefined
+        propDef = null;
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef is non empty string, value is undefined
+        propDef = "lorem ipsum";
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef is a number, value is undefined
+        propDef = 424242;
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef is boolean, value is undefined
+        propDef = false;
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef is array, value is undefined
+        propDef = [];
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef is object but empty, value is undefined
+        propDef = {};
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is undefined, value is undefined
+        propDef = {
+          type: undefined
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is null, value is undefined
+        propDef = {
+          type: null
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is non empty string, value is undefined
+        propDef = {
+          type: "lorem ipsum"
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is number, value is undefined
+        propDef = {
+          type: 424242
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is boolean, value is undefined
+        propDef = {
+          type: false
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is object, value is undefined
+        propDef = {
+          type: {}
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is array, value is undefined
+        propDef = {
+          type: []
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, undefined, 'Value is not undefined');
+        assert.equal(result.isValid, false, 'Value is not invalid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+      });
+
+      test('input validation -> tests where type is function', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var propDef;
+        var value;
+        var result;
+
+        // propDef.type is String constructor function, value is undefined
+        propDef = {
+          type: String
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, "undefined", 'Value is not undefined');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is Number constructor function, value is undefined
+        propDef = {
+          type: Number
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(window.isNaN(result.value), true, 'Value is not NaN');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is Boolean constructor function, value is undefined
+        propDef = {
+          type: Boolean
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, false, 'Value is not false');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is Array constructor function, value is undefined
+        propDef = {
+          type: Array
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(isArray(result.value), true, 'Value is not array');
+        assert.equal(result.value.length, 1, 'Value length is not 1');
+        assert.equal(result.value[0], undefined, 'Value[0] is not undefined');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is Object constructor function, value is undefined
+        propDef = {
+          type: Object
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(isObject(result.value), true, 'Value is not object');
+        assert.equal(Object.getOwnPropertyNames(result.value).length, 0, 'Value should not have any own properties');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+
+        value = null;
+        // propDef.type is String constructor function, value is null
+        propDef = {
+          type: String
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, "null", 'Value is not null');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is Number constructor function, value is null
+        propDef = {
+          type: Number
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, 0, 'Value is not 0');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is Boolean constructor function, value is null
+        propDef = {
+          type: Boolean
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, false, 'Value is not false');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is Array constructor function, value is null
+        propDef = {
+          type: Array
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(isArray(result.value), true, 'Value is not array');
+        assert.equal(result.value.length, 1, 'Value length is not 1');
+        assert.equal(result.value[0], null, 'Value[0] is not null');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        // propDef.type is Object constructor function, value is null
+        propDef = {
+          type: Object
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(isObject(result.value), true, 'Value is not object');
+        assert.equal(Object.getOwnPropertyNames(result.value).length, 0, 'Value should not have any own properties');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+
+        value = "";
+        // propDef.type is String constructor function, value is null
+        propDef = {
+          type: String
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, "", 'Value is not empty');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, true, 'isEmpty is not true');
+
+        value = "lorem ipsum";
+        // propDef.type is String constructor function, value is null
+        propDef = {
+          type: String
+        };
+        result = inputValidation.validateInput(propDef, value);
+        assert.equal(result.value, "lorem ipsum", 'Value is not lorem ipsum');
+        assert.equal(result.isValid, true, 'Value is not valid');
+        assert.equal(result.isEmpty, false, 'isEmpty is not false');
+
+      });
+
+      function GenericInvalidPropDefTypeValidationFunction(invalidTypes, value) {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+
+        for (var i = 0; i < invalidTypes.length; i++) {
+          var type = invalidTypes[i];
+          var propDef = {
+            type: type
+          };
+          var result = inputValidation.validateInput(propDef, value);
+          console.log('GenericInvalidPropDefTypeValidationFunction -> Processing type: ' + type);
+          assert.equal(result.value, undefined, 'Value is not undefined');
+          assert.equal(result.isValid, false, 'Value is not invalid');
+          assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+        }
+      }
+
+      function GenericPropDefTypeStringInvalidXtypeValidationFunction(invalidXtypes, value) {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+
+        for (var i = 0; i < invalidXtypes.length; i++) {
+          var xtype = invalidXtypes[i];
+          var propDef = {
+            type: 'string',
+            xtype: xtype
+          };
+          var result = inputValidation.validateInput(propDef, value);
+          console.log('GenericPropDefTypeStringInvalidXtypeValidationFunction -> Processing xtype: ' + xtype);
+          assert.equal(result.value, undefined, 'Value is not ' + String(value));
+          assert.equal(result.isValid, false, 'Value is not invalid');
+          assert.equal(result.isEmpty, undefined, 'isEmpty is not undefined');
+        }
+      }
+
+      suite('type/xtype tests', function () {
+        // we test invalid propertyDefinition.type values
+        // with value = undefined and value = null
+        test('invalid type/xtype pairs test', function () {
+
+          var invalidTypes = [ undefined, null, "", "array", "boolean", "number", "daterange", "object", "section" ];
+
+          var value = undefined;
+          GenericInvalidPropDefTypeValidationFunction(invalidTypes, value);
+
+          value = null;
+          GenericInvalidPropDefTypeValidationFunction(invalidTypes, value);
+
+        });
+
+        // we test invalid propertyDefinition.xtype values with a valid type value
+        // with value = undefined and value = null
+        test('type string, invalid xtypes test', function () {
+
+          var invalidXtypes = [ undefined, null, "", "array", "boolean", "number", "daterange", "object", "section", "toggle", "json", "code", "enum", "image", "file", "lookup", "marked", "password", "radio", "state", "textarea" ];
+
+          var value = undefined;
+          GenericPropDefTypeStringInvalidXtypeValidationFunction(invalidXtypes, value);
+
+          value = null;
+          GenericPropDefTypeStringInvalidXtypeValidationFunction(invalidXtypes, value);
+        });
+
+        function GenericTypeStringValidXtypesValueAsParamTestFunction(value, expected, expectedIsEmpty) {
+          var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+          var propDef = {
+            type: 'string',
+            xtype: 'date'
+          };
+          var result = inputValidation.validateInput(propDef, value);
+          assert.equal(result.value, expected, 'Value is not ' + String(value));
+          assert.equal(result.isValid, true, 'Value is not valid');
+          assert.equal(result.isEmpty, expectedIsEmpty, 'isEmpty is not undefined');
+
+          var propDef = {
+            type: 'string',
+            xtype: 'time'
+          };
+          var result = inputValidation.validateInput(propDef, value);
+          assert.equal(result.value, expected, 'Value is not ' + String(value));
+          assert.equal(result.isValid, true, 'Value is not valid');
+          assert.equal(result.isEmpty, expectedIsEmpty, 'isEmpty is not undefined');
+
+          var propDef = {
+            type: 'string',
+            xtype: 'datetime'
+          };
+          var result = inputValidation.validateInput(propDef, value);
+          assert.equal(result.value, expected, 'Value is not ' + String(value));
+          assert.equal(result.isValid, true, 'Value is not valid');
+          assert.equal(result.isEmpty, expectedIsEmpty, 'isEmpty is not undefined');
+        }
+
+        // we test valid propertyDefinition.type and valid propertyDefinition.xtype
+        // with value = [ undefined, null, '' and lorem ipsum]
+        test('type string, xtype date / time / datetime', function () {
+          GenericTypeStringValidXtypesValueAsParamTestFunction(undefined, 'undefined', undefined);
+          GenericTypeStringValidXtypesValueAsParamTestFunction(null, 'null', undefined);
+          GenericTypeStringValidXtypesValueAsParamTestFunction('', '', true);
+          GenericTypeStringValidXtypesValueAsParamTestFunction('lorem ipsum', 'lorem ipsum', false);
+        });
+
+      });
+
+
+    });
+  </script>
+
+</body>
+
+</html>

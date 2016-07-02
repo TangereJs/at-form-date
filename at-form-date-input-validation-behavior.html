@@ -1,0 +1,87 @@
+<script>
+  /**
+   * AT-142 input validation
+   */
+  Tangere.behaviors.AtFormDateInputValidation = {
+
+    validateInput: function(propertyDefinition, value) {
+
+      function isObject(obj) {
+        return Object.prototype.toString.call(obj) === "[object Object]";
+      }
+
+      function isFunction(obj) {
+        return Object.prototype.toString.call(obj) === "[object Function]";
+      }
+
+      function isString(obj) {
+        return Object.prototype.toString.call(obj) === "[object String]";
+      }
+
+      // by default we want to return original value, as invalid and undefined isEmpty
+      var result = {
+        value: value,
+        isValid: false,
+        isEmpty: undefined
+      };
+
+      // property definition must be an object and must have type property
+      if (!isObject(propertyDefinition) || !propertyDefinition.hasOwnProperty('type')) {
+        return result;
+      }
+
+      var type = propertyDefinition.type;
+      var xtype = propertyDefinition.xtype;
+      // type property can either be a function or a string
+      if (isFunction(type)) {
+        // convert value into a correct type
+        try {
+          result.value = type(value);
+          result.isValid = true;
+        } catch (e) {
+          result.isValid = false;
+          // if conversion fails we return
+          return result;
+        }
+      } else if (isString(type) && type === 'string' && isString(xtype) && ['date', 'time', 'datetime'].indexOf(xtype) !== -1) {
+        // this behavior is confined to at-form-date so, we are expecting (type, xtype) = [(string, date), (string, time), (string, datetime)]
+        // we are not doing any format validation since that information is not part of propertyDefinition
+
+        // we know that type of value should be string so we convert what ever value is to string using String constructor function
+        try {
+          result.value = String(value);
+          result.isValid = true;
+        } catch (e) {
+          result.isValid = false;
+          // if conversion fails we return
+          return result;
+        }
+        
+      } else {
+        // we have invalid type
+        return result;
+      }
+
+      // calculate the value of result.isEmpty
+      var valueType = Object.prototype.toString.call(value);
+      // string can be empty
+      if (valueType === "[object String]") {
+        result.isEmpty = value === "";
+      } else if (valueType === "[object Number]") {
+        // number can't be empty
+        result.isEmpty = false;
+      } else if (valueType === "[object Boolean]") {
+        // boolean can't be empty
+        result.isEmpty = false;
+      } else if (valueType === "[object Array]") {
+        // array can be empty if we claim that array.isEmpty = array.length === 0
+        result.isEmpty = value.length === 0;
+      } else if (valueType === "[object Object]") {
+        // object can be empty if we claim that value.ownProperties().length === 0
+        result.isEmpty = Object.getOwnPropertyNames(value).length === 0;
+      }
+
+      return result;
+    }
+  }
+</script>
