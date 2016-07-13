@@ -393,20 +393,23 @@
     _updateValue: function(datePicker, timePicker) {
       var self = this;
       var momentValue = this._getMomentFromDateAndTime(datePicker, timePicker);
+      var displayString;
 
       if (this.xtype === "datetime") {
         this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
         self.value = momentValue.toISOString();
+        displayString = momentValue.format(self._internalFormat);
         this._isInternalValueUpdate = false;
       } else {
         this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
         self.value = momentValue.utc().format(self._internalFormat);
+        displayString = self.value;
         this._isInternalValueUpdate = false;
       }
 
       self.validate();
       var valueProvider = this.$.input;
-      valueProvider.value = self.value;
+      valueProvider.value = displayString;
       self.fire('value-changed', { value: self.value });
     },
     formatChanged: function(newValue, oldValue) {
