@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../at-form-date.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="attrNullValue">
+    <template>
+      <at-form-date value=null></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="attrNullStringValue">
+    <template>
+      <at-form-date value="null"></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="attrNullValueAndRequired">
+    <template>
+      <at-form-date required value=null></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="attrNullStringValueAndRequired">
+    <template>
+      <at-form-date required value="null"></at-form-date>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('null value tests', function() {
+
+      test('attribute value set to null', function(done) {
+        var input = fixture('attrNullValue');
+        assert.equal(input.value, "null", 'value not set correctly');
+        assert.equal(input.valid, true, 'value not set correctly');
+
+        var eventCount = 0;
+        input.addEventListener('value-changed', function(event) {
+          assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.valid, true, 'value not set correctly');
+          eventCount += 1;
+        });
+
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+
+        flush(function() {
+          assert.equal(eventCount, 1);
+          done();
+        });
+      });
+
+      test('attribute value set to "null"', function(done) {
+        var input = fixture('attrNullStringValue');
+        assert.equal(input.value, "null", 'value not set correctly');
+        assert.equal(input.valid, true, 'value not set correctly');
+
+        var eventCount = 0;
+        input.addEventListener('value-changed', function(event) {
+          assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.valid, true, 'value not set correctly');
+          eventCount += 1;
+        });
+
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+
+        flush(function() {
+          assert.equal(eventCount, 1);
+          done();
+        });
+      });
+
+      test('attribute value set to null and required', function(done) {
+        var input = fixture('attrNullValueAndRequired');
+        assert.equal(input.value, "null", 'value not set correctly');
+        assert.equal(input.required, true, 'required is not set correctly');
+        assert.equal(input.valid, true, 'element is not invalid');
+
+        var eventCount = 0;
+        input.addEventListener('value-changed', function(event) {
+          assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.required, true, 'required is not set correctly');
+          assert.equal(input.valid, true, 'element is not invalid');
+          eventCount += 1;
+        });
+
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+
+        flush(function() {
+          assert.equal(eventCount, 1);
+          done();
+        });
+      });
+
+      test('attribute value set to "null" and required', function(done) {
+        var input = fixture('attrNullStringValueAndRequired');
+        assert.equal(input.value, "null", 'value not set correctly');
+        assert.equal(input.required, true, 'required is not set correctly');
+        assert.equal(input.valid, true, 'value not set correctly');
+
+        var eventCount = 0;
+        input.addEventListener('value-changed', function(event) {
+          assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.required, true, 'required is not set correctly');
+          assert.equal(input.valid, true, 'value not set correctly');
+          eventCount += 1;
+        });
+
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+
+        flush(function() {
+          assert.equal(eventCount, 1);
+          done();
+        });
+      });
+
+      /********************************************************************************/
+      /* Property value tests
+      /********************************************************************************/
+
+      test('property value set to null', function(done) {
+        var input = document.createElement('at-form-date');
+        input.value = null;
+
+        assert.equal(input.value, null, 'value not set correctly');
+        assert.equal(input.valid, true, 'element is not valid');
+
+        var eventCount = 0;
+        input.addEventListener('value-changed', function(event) {
+          assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.valid, true, 'value not set correctly');
+          eventCount += 1;
+        });
+
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+
+        flush(function() {
+          assert.equal(eventCount, 1);
+          done();
+        });
+      });
+
+      test('property value set to "null"', function(done) {
+        var input = document.createElement('at-form-date');
+        input.value = "null";
+
+        assert.equal(input.value, "null", 'value not set correctly');
+        assert.equal(input.valid, true, 'element is not valid');
+
+        var eventCount = 0;
+        input.addEventListener('value-changed', function(event) {
+          assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.valid, true, 'element is not valid');
+          eventCount += 1;
+        });
+
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+
+        flush(function() {
+          assert.equal(eventCount, 1);
+          done();
+        });
+      });
+
+      test('property value set to null and required', function(done) {
+        var input = document.createElement('at-form-date');
+        input.required = true;
+        input.value = null;
+
+        assert.equal(input.value, null, 'value not set correctly');
+        assert.equal(input.valid, false, 'element is valid');
+
+        var eventCount = 0;
+        input.addEventListener('value-changed', function(event) {
+          assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.valid, true, 'value not set correctly');
+          eventCount += 1;
+        });
+
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+
+        flush(function() {
+          assert.equal(eventCount, 1);
+          done();
+        });
+      });
+
+      test('property value set to "null" and required', function(done) {
+        var input = document.createElement('at-form-date');
+        input.required = true;
+        input.value = "null";
+
+        assert.equal(input.value, "null", 'value not set correctly');
+        assert.equal(input.valid, true, 'element is invalid');
+
+        var eventCount = 0;
+        input.addEventListener('value-changed', function(event) {
+          assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.value, 'demo value', 'event detail value not set correctly');
+          assert.equal(input.valid, true, 'element is not valid');
+          eventCount += 1;
+        });
+
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+        input.value = 'demo value';
+        Polymer.dom(input).setAttribute('value', 'demo value');
+
+        flush(function() {
+          assert.equal(eventCount, 1);
+          done();
+        });
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>

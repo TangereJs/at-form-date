@@ -1,7 +1,7 @@
 <link rel="import" href="../tangere/tangere.html">
 <link rel="import" href="../at-theme/at-theme.html">
 <link rel="import" href="../at-carbon-icon-button/at-carbon-icon-button.html">
-<link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
+<link rel="import" href="../at-form-behaviors/at-form-behaviors.html">
 <link rel="import" href="../at-i18n/at-i18n-behavior.html">
 <link rel="import" href="../at-core-resize-sensor/at-core-resize-sensor.html">
 <link rel="import" href="at-form-date-style.html">
@@ -109,7 +109,7 @@
         observer: 'xtypeChanged',
         xtype: 'enum',
         title: 'Type',
-        xvaluelist: 'date,time,datetime'
+        available: 'date,time,datetime'
       },
       disabled: {
         type: Boolean,
@@ -163,14 +163,25 @@
       events: [ "value-changed" ]
     }],
     /**
-     * _internalFormat governs how value is formatted
-     * the value of _internalFormat is governed by xtype
-     * xtype="datetime" -> _internalFormat = 'YY-MM-DD hh:mm:ss'
-     * xtype="date"     -> _internalFormat = 'YY-MM-DD'
-     * xtype="time"     -> _internalFormat = 'hh:mm:ss'
+     * _displayFormat governs how value is formatted
+     * the value of _displayFormat is governed by xtype
+     * xtype="datetime" -> _displayFormat = 'YY-MM-DD hh:mm:ss'
+     * xtype="date"     -> _displayFormat = 'YY-MM-DD'
+     * xtype="time"     -> _displayFormat = 'hh:mm:ss'
      */
-    _internalFormat: 'YY-MM-DD hh:mm:ss',
+    _displayFormat: 'YY-MM-DD hh:mm:ss',
     _icon: 'now:calendar',
+    /**
+     * this._valueFormats is used to format at-form-date.value based on xtype
+     * user will always see at-form-date.value formatted using one of these formats
+     * also when setting value, user must supply value in one of these formats based on xtype
+     * if value is not in correct format, validation error will occur
+     */
+    _valueFormats: {
+      datetime: "YYYY-MM-DDTHH:mm:ss.sssZ",
+      date: "YYYY-MM-DD",
+      time: "HH:mm:ss"
+    },
     get icon() {
       return this._icon;
     },
@@ -299,24 +310,27 @@
       var timePicker = this.$.timePicker;
 
       if (newValue === "datetime") {
-        this._internalFormat = this._localizedFormat("datetime");
+        this._displayFormat = this._localizedFormat("datetime");
+        this._valueFormat = this._valueFormats.datetime;
         this._icon = 'now:calendar';
         self.toggleClass('hidden', false, datePicker);
         self.toggleClass('hidden', false, timePicker);
       } else if (newValue === 'date') {
-        this._internalFormat = this._localizedFormat("date");
+        this._displayFormat = this._localizedFormat("date");
+        this._valueFormat = this._valueFormats.date;
         this._icon = 'now:calendar';
         self.toggleClass('hidden', false, datePicker);
         self.toggleClass('hidden', true, timePicker);
       } else if (newValue === 'time') {
-        this._internalFormat = this._localizedFormat("time");
+        this._displayFormat = this._localizedFormat("time");
+        this._valueFormat = this._valueFormats.time;
         this._icon = 'now:clock';
         self.toggleClass('hidden', true, datePicker);
         self.toggleClass('hidden', false, timePicker);
       }
       self.value = "";
       this.$.input.value = self.value;
-      self.fire('value-changed', { value: self.value });
+      self._fireValueChangedEvent(self.value);
     },
     valueChanged: function(newValue, oldValue) {
       if (!this._isReady || this._isInternalValueUpdate) {
@@ -342,21 +356,22 @@
 
       var valueProvider = this.$.input;
 
-      if (newValue === '') {
-        valueProvider.value = newValue;
+      if (["", null].indexOf(newValue) !== -1) {
+        // if new value set is empty string or null clear the value displayed to the user
+        // we check against string "null" for edge case where value is set as attribute to null
+        // at-form-date.value remains "" or null
+        valueProvider.value = "";
       } else {
-        var formattedValue = moment(newValue).format(this._internalFormat);
-        if (formattedValue === "Invalid date") {
-          formattedValue = newValue;
-        } else {
-          //moment is valid; put new value into datepicker and time picker
-          var newMoment = moment(formattedValue, this._internalFormat);
-          this._lastFormatUsedForParsing = this._internalFormat;
+        // there is no need to update at-form-date.value because its already up to date
+        var newMoment = moment(newValue, this._valueFormat, true);
+        if (newMoment.isValid()) {
           this._setMomentToDateAndTime(newMoment);
+          var formattedValue = newMoment.format(this._displayFormat);
+          valueProvider.value = formattedValue;
         }
-        valueProvider.value = formattedValue;
       }
       this.validate();
+      this._fireValueChangedEvent(newValue);
     },
     _getMomentFromDateAndTime: function (datePicker, timePicker) {
       var self = this;
@@ -393,24 +408,23 @@
     _updateValue: function(datePicker, timePicker) {
       var self = this;
       var momentValue = this._getMomentFromDateAndTime(datePicker, timePicker);
-      var displayString;
+
+      var displayString = momentValue.format(self._displayFormat);
+      var valueProvider = this.$.input;
+      valueProvider.value = displayString;
 
       if (this.xtype === "datetime") {
         this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
         self.value = momentValue.toISOString();
-        displayString = momentValue.format(self._internalFormat);
         this._isInternalValueUpdate = false;
       } else {
         this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
-        self.value = momentValue.utc().format(self._internalFormat);
-        displayString = self.value;
+        self.value = momentValue.format(self._valueFormat);
         this._isInternalValueUpdate = false;
       }
 
       self.validate();
-      var valueProvider = this.$.input;
-      valueProvider.value = displayString;
-      self.fire('value-changed', { value: self.value });
+      self._fireValueChangedEvent(self.value);
     },
     formatChanged: function(newValue, oldValue) {
       var xtype = this.xtype;
@@ -420,19 +434,19 @@
         // if xtype is datetime and format doens't contain chars for year, month, day, hour, minute and second
         if (!this._containsChars(['Y', 'M', 'D', 'h', 'm', 's'], format)) {
           // set format to the default format for datetime
-          format = this._internalFormat;
+          format = this._displayFormat;
         }
       } else if (xtype === 'date') {
         // if xtype is date and format doens't contain chars for year, month, day or contains chars for hour, minute and second
         if (!this._containsChars(['Y', 'M', 'D'], format) || this._containsChars(['h', 'm', 's'], format)) {
           // set format to the default format for date
-          format = this._internalFormat;
+          format = this._displayFormat;
         }
       } else if (xtype === 'time') {
         // if xtype is time and format doens't contain chars for hour, minute and second or contains chars for year, month and day
         if (this._containsChars(['Y', 'M', 'D'], format) || !this._containsChars(['h', 'm', 's'], format)) {
           // set format to the default format for time
-          format = this._internalFormat;
+          format = this._displayFormat;
         }
       }
 
@@ -441,29 +455,18 @@
       } else if (format.indexOf('hh') === -1 || format.indexOf('h') === -1) {
         format = format.replace("A", "").trim();
       }
-      this._internalFormat = format;
+      this._displayFormat = format;
 
       this.fire('format-changed', {
         value: format
-      });
+      }, { bubbles: false });
 
-      var newFormattedValue;
       var valueProvider = this.$.input;
-      if (this._lastFormatUsedForParsing) {
-        newFormattedValue = moment(valueProvider.value, this._lastFormatUsedForParsing).format(format);
-        this._lastFormatUsedForParsing = format;
-      } else {
-        newFormattedValue = moment(this.value).format(format);
+      var newMoment = moment(this.value, this._valueFormat, true);
+      if (newMoment.isValid()) {
+        var formattedValue = newMoment.format(this._displayFormat);
+        valueProvider.value = formattedValue;
       }
-
-      if (newFormattedValue === "Invalid date") {
-        newFormattedValue = this.value;
-      }
-
-      this.$.input.value = newFormattedValue;
-      this._isInternalValueUpdate = true;
-      this.value = newFormattedValue;
-      this._isInternalValueUpdate = false;
     },
     /**
      * checks if source contains any of the chars
@@ -506,7 +509,7 @@
       var valid = true;
       var utcFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
       if (value !== '') {
-        var internalFormat = this._internalFormat;
+        var internalFormat = this._valueFormat;
         if (this.xtype === "datetime" && this._isInternalValueUpdate) {
           internalFormat = utcFormat;
           valid = moment(value, internalFormat, true).isValid();

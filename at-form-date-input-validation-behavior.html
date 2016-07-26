@@ -25,6 +25,13 @@
         isEmpty: undefined
       };
 
+      // value === null is valid, and empty
+      if (value === null) {
+        result.isValid = true;
+        result.isEmpty = true;
+        return result;
+      }
+
       // property definition must be an object and must have type property
       if (!isObject(propertyDefinition) || !propertyDefinition.hasOwnProperty('type')) {
         return result;
@@ -56,7 +63,7 @@
           // if conversion fails we return
           return result;
         }
-        
+
       } else {
         // we have invalid type
         return result;

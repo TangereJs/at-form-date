@@ -82,12 +82,14 @@
   </test-fixture>
 
   <script>
-    suite('basic', function() {
+    suite('basic tests', function() {
 
       test('setting value sets the input value', function() {
         var input = fixture('basic');
+        var expectedValue = 'demo value';
         input.value = 'demo value';
-        assert.equal(input._getFocusableElement().value, input.value, 'inputElement.value equals input.value');
+        assert.equal(input.value, expectedValue, 'inputElement.value equals input.value');
+        assert.equal(input._getFocusableElement().value, "", 'inputElement.value equals input.value');
       });
 
       test('required sets validation message', function() {
@@ -198,9 +200,11 @@
         input.value = "2016-06-15T15:40:45.000Z";
 
         input.format = "DD-MM-YYYY HH:mm:ss";
+        assert.equal(input.value, "2016-06-15T15:40:00.000Z");
         assert.equal(inputElement.value, "15-06-2016 17:40:00");
 
         input.format = "DD-MM-YYYY hh:mm:ss A";
+        assert.equal(input.value, "2016-06-15T15:40:00.000Z");
         assert.equal(inputElement.value, "15-06-2016 05:40:00 PM");
       });
 
@@ -211,12 +215,14 @@
 
         assert.equal(input.format, '', 'format is not initially empty');
 
-        input.value = "2016-06-15T15:40:45.000Z";
-        input.format = "DD-MM-YYYY";
+        input.value = "2016-06-15";
 
+        input.format = "DD-MM-YYYY";
+        assert.equal(input.value, "2016-06-15");
         assert.equal(inputElement.value, "15-06-2016");
 
         input.format = "MM-DD-YYYY";
+        assert.equal(input.value, "2016-06-15");
         assert.equal(inputElement.value, "06-15-2016");
       });
 
@@ -227,16 +233,16 @@
 
         assert.equal(input.format, '', 'format is not initially empty');
 
-        input.value = "2016-06-15T15:40:45.000Z";
+        input.value = "15:40:45";
 
         input.format = "HH : mm : ss";
-        assert.equal(inputElement.value, "17 : 40 : 45");
+        assert.equal(inputElement.value, "15 : 40 : 45");
 
         input.format = "hh - mm A";
-        assert.equal(inputElement.value, "05 - 40 PM");
+        assert.equal(inputElement.value, "03 - 40 PM");
 
         input.format = "hh:mm:ss A";
-        assert.equal(inputElement.value, "05:40:00 PM");
+        assert.equal(inputElement.value, "03:40:45 PM");
       });
     });
   </script>
