@@ -178,7 +178,7 @@
      * if value is not in correct format, validation error will occur
      */
     _valueFormats: {
-      datetime: "YYYY-MM-DDTHH:mm:ss.sssZ",
+      datetime: "YYYY-MM-DDTHH:mm:ss.SSSZ",
       date: "YYYY-MM-DD",
       time: "HH:mm:ss"
     },
@@ -356,7 +356,7 @@
 
       var valueProvider = this.$.input;
 
-      if (["", null].indexOf(newValue) !== -1) {
+      if (["", "null", null].indexOf(newValue) !== -1) {
         // if new value set is empty string or null clear the value displayed to the user
         // we check against string "null" for edge case where value is set as attribute to null
         // at-form-date.value remains "" or null
