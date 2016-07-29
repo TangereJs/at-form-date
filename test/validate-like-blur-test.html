@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../at-form-date.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="validateLikeBlur">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('validate like blur tests', function() {
+
+      test('validate like blur, set input.value', function() {
+        var input = fixture('validateLikeBlur');
+        var inputElement = input.$.input;
+
+        assert.equal(input.value, "", 'Input value is not correct');
+        assert.equal(inputElement.value, "", 'Input element value is not correct');
+
+        MockInteractions.focus(inputElement);
+        var activeElement = document.activeElement;
+
+        assert.equal(inputElement.is, activeElement.is, 'Input element has lost focus');
+
+        input.value = "lorem ipsum";
+
+        assert.equal(input.value, "lorem ipsum", 'Input value is not correct');
+        assert.equal(inputElement.value, "", 'Input element value is not correct');
+
+        input.validate();
+
+        assert.equal(input.value, "lorem ipsum", 'Input value is not correct');
+        assert.equal(inputElement.value, "", 'Input element value is not correct');
+
+        assert.equal(inputElement.is, activeElement.is, 'Input element has lost focus');
+      });
+
+      test('validate like blur, set inputElement.value', function() {
+        var input = fixture('validateLikeBlur');
+        var inputElement = input.$.input;
+
+        assert.equal(input.value, "", 'Input value is not correct');
+        assert.equal(inputElement.value, "", 'Input element value is not correct');
+
+        MockInteractions.focus(inputElement);
+        var activeElement = document.activeElement;
+
+        assert.equal(inputElement.is, activeElement.is, 'Input element has lost focus');
+
+        inputElement.value = "lorem ipsum";
+
+        assert.equal(input.value, "", 'Input value is not correct');
+        assert.equal(inputElement.value, "lorem ipsum", 'Input element value is not correct');
+
+        input.validate();
+
+        assert.equal(input.value, "", 'Input value is not correct');
+        assert.equal(inputElement.value, "lorem ipsum", 'Input element value is not correct');
+
+        assert.equal(inputElement.is, activeElement.is, 'Input element has lost focus');
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>

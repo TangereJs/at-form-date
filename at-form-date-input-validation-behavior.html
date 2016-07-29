@@ -1,94 +1,176 @@
+<link rel="import" href="../tangere/tangere.html">
+
 <script>
   /**
    * AT-142 input validation
    */
   Tangere.behaviors.AtFormDateInputValidation = {
 
-    validateInput: function(propertyDefinition, value) {
+    _validateData: function(schema, value, localizer) {
 
       function isObject(obj) {
         return Object.prototype.toString.call(obj) === "[object Object]";
-      }
-
-      function isFunction(obj) {
-        return Object.prototype.toString.call(obj) === "[object Function]";
       }
 
       function isString(obj) {
         return Object.prototype.toString.call(obj) === "[object String]";
       }
 
-      // by default we want to return original value, as invalid and undefined isEmpty
-      var result = {
-        value: value,
-        isValid: false,
-        isEmpty: undefined
+      function isFunction(obj) {
+        return Object.prototype.toString.call(obj) === "[object Function]";
+      }
+
+      function isBoolean(obj) {
+        return Object.prototype.toString.call(obj) === "[object Boolean]";
+      }
+
+      function isHTMLElement(obj) {
+        return Object.prototype.toString.call(obj) === "[object HTMLElement]";
+      }
+
+      function isHTMLUnknownElement(obj) {
+        return Object.prototype.toString.call(obj) === "[object HTMLUnknownElement]";
+      }
+
+
+      function format(format) {
+
+        var args_ = Array.prototype.slice.call(arguments, 1);
+
+        // replace {n}
+        var fmt = format.replace(/{(\d+)}/g, function (match, number) {
+          return typeof args_[number] != 'undefined' ? args_[number] : match;
+        });
+
+        // replace [n]
+        fmt = fmt.replace(/\[(\d+)\]/g, function (match, number) {
+          return typeof args_[number] != 'undefined' ? args_[number] : match;
+        });
+
+        return fmt;
+      }
+
+      if (!isFunction(localizer)) {
+        localizer = format;
+      }
+
+      var validationResult = {
+        isValid: true, // isValid is true if constraints checked in validation function are satisfied; false otherwise
+        errorMessage: "" // errorMessage is empty string if isValid is true; errorMessage contains error message text is isValid is false
       };
 
-      // value === null is valid, and empty
-      if (value === null) {
-        result.isValid = true;
-        result.isEmpty = true;
-        return result;
+      // validate input parameters
+      // schema must be object
+      validationResult.isValid = isObject(schema) || ((isHTMLUnknownElement(schema) || isHTMLElement(schema)) && schema.is === "at-form-date");
+      if (!validationResult.isValid) {
+        validationResult.errorMessage = localizer("schema is not an object or at-form-date.");
+        return validationResult;
       }
 
-      // property definition must be an object and must have type property
-      if (!isObject(propertyDefinition) || !propertyDefinition.hasOwnProperty('type')) {
-        return result;
+      //schema must have properties object
+      validationResult.isValid = isObject(schema.properties);
+      if (!validationResult.isValid) {
+        validationResult.errorMessage = localizer("schema.properties is not an object.")
+        return validationResult;
       }
 
-      var type = propertyDefinition.type;
-      var xtype = propertyDefinition.xtype;
-      // type property can either be a function or a string
-      if (isFunction(type)) {
-        // convert value into a correct type
-        try {
-          result.value = type(value);
-          result.isValid = true;
-        } catch (e) {
-          result.isValid = false;
-          // if conversion fails we return
-          return result;
+      //schema.properties must have value property and value property must be an object
+      validationResult.isValid = isObject(schema.properties.value);
+      if (!validationResult.isValid) {
+        validationResult.errorMessage = localizer("schema.properties.value is not an object.")
+        return validationResult;
+      }
+
+      //schema.properties.value must have type property and type property must be a function
+      validationResult.isValid = isFunction(schema.properties.value.type);
+      if (!validationResult.isValid) {
+        validationResult.errorMessage = localizer("schema.properties.value.type is not a function.")
+        return validationResult;
+      }
+
+      // schema must have required property and required must be boolean
+      validationResult.isValid = isBoolean(schema.required);
+      if (!validationResult.isValid) {
+        validationResult.errorMessage = localizer("schema.required is not a boolean value.")
+        return validationResult;
+      }
+
+      // schema must have _valueFormat property and _valueFormat must be a string
+      validationResult.isValid = isString(schema._valueFormat);
+      if (!validationResult.isValid) {
+        validationResult.errorMessage = localizer("schema._valueFormat is not a string value.")
+        return validationResult;
+      }
+
+      validationResult = _validateValueType(schema.properties.value, value, localizer);
+      if (!validationResult.isValid) {
+        return validationResult;
+      }
+
+      validationResult = _validateRequired(schema.required, value, localizer);
+      if (!validationResult.isValid) {
+        return validationResult;
+      }
+
+      validationResult = _validateFormat(schema._valueFormat, value, localizer);
+
+      return validationResult;
+
+      function _validateValueType(valueSchema, valueObj, localizer) {
+        function getTypeString(obj) {
+          return  Object.prototype.toString.call(obj);
         }
-      } else if (isString(type) && type === 'string' && isString(xtype) && ['date', 'time', 'datetime'].indexOf(xtype) !== -1) {
-        // this behavior is confined to at-form-date so, we are expecting (type, xtype) = [(string, date), (string, time), (string, datetime)]
-        // we are not doing any format validation since that information is not part of propertyDefinition
 
-        // we know that type of value should be string so we convert what ever value is to string using String constructor function
-        try {
-          result.value = String(value);
-          result.isValid = true;
-        } catch (e) {
-          result.isValid = false;
-          // if conversion fails we return
-          return result;
+        var validationResult = {
+          isValid: true,
+          errorMessage: ""
+        };
+
+        // calculate type strings for valueObj and object that is returned from valueSchema.type function
+        // valueSchema.type function comes from at-form-text.properties.value.type
+        var schemaTypeString = getTypeString(valueSchema.type());
+        var nullTypeString = getTypeString(null);
+        var valueObjTypeString = getTypeString(valueObj);
+
+        validationResult.isValid = (schemaTypeString === valueObjTypeString) || (nullTypeString === valueObjTypeString);
+        if (!validationResult.isValid) {
+          validationResult.errorMessage = localizer("Type specified in schema doesn't match type of value object for property value. Expected {0} to match {1}", schemaTypeString, valueObjTypeString);
         }
 
-      } else {
-        // we have invalid type
-        return result;
+        return validationResult;
       }
 
-      // calculate the value of result.isEmpty
-      var valueType = Object.prototype.toString.call(value);
-      // string can be empty
-      if (valueType === "[object String]") {
-        result.isEmpty = value === "";
-      } else if (valueType === "[object Number]") {
-        // number can't be empty
-        result.isEmpty = false;
-      } else if (valueType === "[object Boolean]") {
-        // boolean can't be empty
-        result.isEmpty = false;
-      } else if (valueType === "[object Array]") {
-        // array can be empty if we claim that array.isEmpty = array.length === 0
-        result.isEmpty = value.length === 0;
-      } else if (valueType === "[object Object]") {
-        // object can be empty if we claim that value.ownProperties().length === 0
-        result.isEmpty = Object.getOwnPropertyNames(value).length === 0;
+      function _validateRequired(required, value, localizer) {
+        var validationResult = {};
+
+        // if required is true return true if value is not undefined, null or ""
+        validationResult.isValid = !required || ([undefined, null, ""].indexOf(value) === -1);
+        if (!validationResult.isValid) {
+          validationResult.errorMessage = localizer("This field is required.");
+        }
+
+        return validationResult;
       }
 
-      return result;
+      function _validateFormat(format, value, localizer) {
+        var validationResult = {
+          isValid: true,
+          errorMessage: ""
+        };
+
+        if (value === null) {
+          return validationResult;
+        }
+
+        var formatMoment = moment(value, format, true);
+        validationResult.isValid = formatMoment.isValid();
+        if (!validationResult.isValid) {
+          validationResult.errorMessage = localizer("Value {0} is not in correct format of {1}", value, format );
+        }
+
+        return validationResult;
+      }
+
     }
   }
 </script>

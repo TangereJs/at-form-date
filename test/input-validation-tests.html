@@ -1,0 +1,367 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+  <link rel="import" href="../../tangere/tangere.html">
+  <link rel="import" href="../at-form-date-input-validation-behavior.html">
+
+</head>
+
+<body>
+
+  <script>
+
+    suite('at-form-date input validation', function() {
+      function isArray(obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+      }
+
+      function isObject(obj) {
+        return Object.prototype.toString.call(obj) === "[object Object]";
+      }
+
+      function format(format) {
+
+        var args_ = Array.prototype.slice.call(arguments, 1);
+
+        // replace {n}
+        var fmt = format.replace(/{(\d+)}/g, function (match, number) {
+          return typeof args_[number] != 'undefined' ? args_[number] : match;
+        });
+
+        // replace [n]
+        fmt = fmt.replace(/\[(\d+)\]/g, function (match, number) {
+          return typeof args_[number] != 'undefined' ? args_[number] : match;
+        });
+
+        return fmt;
+      }
+
+      test('invalid schemas test, schema is not an object', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var invalidSchemaValues = [ undefined, null, "", "undefined", "null", true, false, "true", "false", 42, "42", 3.14159, "3.14159", [], "[]", function() { return undefined; }];
+
+        var value = "";
+
+        for (var i = 0; i < invalidSchemaValues.length; i++) {
+          var invalidSchema = invalidSchemaValues[i];
+          var validationResult = inputValidation._validateData(invalidSchema, value, format);
+
+          assert.equal(validationResult.isValid, false, 'invalid schema is not detected correctly');
+          assert.equal(validationResult.errorMessage, "schema is not an object or at-form-date.", 'error message not set correctly');
+        }
+      });
+
+      test('invalid schemas test, schema.properties is not an object', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {};
+        var value = "";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.properties is valid');
+        assert.equal(validationResult.errorMessage, "schema.properties is not an object.", 'error message not set correctly');
+
+        var invalidPropertiesValues = [ undefined, null, "", "undefined", "null", true, false, "true", "false", 42, "42", 3.14159, "3.14159", [], "[]", function() { return undefined; }];
+
+        for (var i = 0; i < invalidPropertiesValues.length; i++) {
+          var invalidProperties = invalidPropertiesValues[i];
+          schema.properties = invalidProperties;
+
+          var validationResult = inputValidation._validateData(schema, value, format);
+
+          assert.equal(validationResult.isValid, false, 'schema.properties is valid');
+          assert.equal(validationResult.errorMessage, "schema.properties is not an object.", 'error message not set correctly');
+        }
+      });
+
+      test('invalid schemas test, schema.properties.value is not an object', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {}
+        };
+        var value = "";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.properties.value is valid');
+        assert.equal(validationResult.errorMessage, "schema.properties.value is not an object.", 'error message not set correctly');
+
+        var invalidValues = [ undefined, null, "", "undefined", "null", true, false, "true", "false", 42, "42", 3.14159, "3.14159", [], "[]", function() { return undefined; }];
+
+        for (var i = 0; i < invalidValues.length; i++) {
+          var invalidValue = invalidValues[i];
+          schema.properties.value = invalidValue;
+
+          var validationResult = inputValidation._validateData(schema, value, format);
+
+          assert.equal(validationResult.isValid, false, 'schema.properties.value is valid');
+          assert.equal(validationResult.errorMessage, "schema.properties.value is not an object.", 'error message not set correctly');
+        }
+      });
+
+      test('invalid schemas test, schema.properties.value.type is not a function', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {
+            value: {}
+          }
+        };
+        var value = "";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.properties.value.type is valid');
+        assert.equal(validationResult.errorMessage, "schema.properties.value.type is not a function.", 'error message not set correctly');
+
+        var invalidValues = [ undefined, null, "", "undefined", "null", true, false, "true", "false", 42, "42", 3.14159, "3.14159", [], "[]", {}, "{}"];
+
+        for (var i = 0; i < invalidValues.length; i++) {
+          var invalidValue = invalidValues[i];
+          schema.properties.value.type = invalidValue;
+
+          var validationResult = inputValidation._validateData(schema, value, format);
+
+          assert.equal(validationResult.isValid, false, 'schema.properties.value.type is valid');
+          assert.equal(validationResult.errorMessage, "schema.properties.value.type is not a function.", 'error message not set correctly');
+        }
+      });
+
+      test('invalid schemas test, schema.properties.value.type is valid, required is invalid', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {
+            value: {
+              type: String
+            }
+          }
+        };
+        var value = "";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.required is valid');
+        assert.equal(validationResult.errorMessage, "schema.required is not a boolean value.", 'error message not set correctly');
+
+        var invalidValues = [ undefined, null, "", "undefined", "null", "true", "false", 42, "42", 3.14159, "3.14159", [], "[]", {}, "{}", function () { return undefined; }];
+
+        for (var i = 0; i < invalidValues.length; i++) {
+          var invalidValue = invalidValues[i];
+          schema.required = invalidValue;
+
+          var validationResult = inputValidation._validateData(schema, value, format);
+
+          assert.equal(validationResult.isValid, false, 'schema.required is valid');
+          assert.equal(validationResult.errorMessage, "schema.required is not a boolean value.", 'error message not set correctly');
+        }
+      });
+
+      test('invalid schemas test, schema.properties.value.type is valid, required is valid, _valueFormat is invalid', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {
+            value: {
+              type: String
+            }
+          },
+          required: false
+        };
+        var value = "";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema._valueFormat is valid');
+        assert.equal(validationResult.errorMessage, "schema._valueFormat is not a string value.", 'error message not set correctly');
+
+        var invalidValues = [ undefined, null, 42, 3.14159, true, false, [], {}, function () { return undefined; }];
+
+        for (var i = 0; i < invalidValues.length; i++) {
+          var invalidValue = invalidValues[i];
+          schema._valueFormat = invalidValue;
+
+          var validationResult = inputValidation._validateData(schema, value, format);
+
+          assert.equal(validationResult.isValid, false, 'schema._valueFormat is valid');
+          assert.equal(validationResult.errorMessage, "schema._valueFormat is not a string value.", 'error message not set correctly');
+        }
+      });
+
+      test('valid schemas test, invalid values', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {
+            value: {
+              type: String
+            }
+          },
+          required: false,
+          _valueFormat: ""
+        };
+
+        var stringTypeString = getTypeString("");
+        var undefinedTypeString = getTypeString(undefined);
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.value is valid');
+        assert.equal(validationResult.errorMessage, format("Type specified in schema doesn't match type of value object for property value. Expected {0} to match {1}", stringTypeString, undefinedTypeString), 'error message not set correctly');
+
+        var invalidValues = [ undefined, 42, 3.14159, true, false, [], {}, function () { return undefined; }];
+
+        function getTypeString(obj) {
+          return  Object.prototype.toString.call(obj);
+        }
+
+        for (var i = 0; i < invalidValues.length; i++) {
+          var value = invalidValues[i];
+          var valueTypeString = getTypeString(value);
+          var validationResult = inputValidation._validateData(schema, value, format);
+
+          assert.equal(validationResult.isValid, false, 'schema.value is valid');
+          assert.equal(validationResult.errorMessage, format("Type specified in schema doesn't match type of value object for property value. Expected {0} to match {1}", stringTypeString, valueTypeString), 'error message not set correctly');
+        }
+      });
+
+      test('valid schema, value = null, required = [true, false] test', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {
+            value: {
+              type: String
+            }
+          },
+          required: false,
+          _valueFormat: "YYYY-MM-DDTHH:mm:ss.SSSZ"
+        };
+
+        var value = null;
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, true, 'schema.value is invalid');
+        assert.equal(validationResult.errorMessage, '');
+
+        schema.required = true;
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.value is valid');
+        assert.equal(validationResult.errorMessage, "This field is required.");
+
+        schema.required = false;
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, true, 'schema.value is invalid');
+        assert.equal(validationResult.errorMessage, '');
+
+        value = "";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.value is invalid');
+        assert.equal(validationResult.errorMessage, 'Value  is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+        schema.required = true;
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.value is valid');
+        assert.equal(validationResult.errorMessage, "This field is required.");
+
+        schema.required = false;
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.value is valid');
+        assert.equal(validationResult.errorMessage, 'Value  is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+        schema.required = true;
+        value = "lorem ipsum";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'schema.value is valid');
+        assert.equal(validationResult.errorMessage, 'Value lorem ipsum is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ');
+      });
+
+      test('valid schema, value = "2016-29-07T13:01:30Z", required = false _valueFormat="YYYY-MM-DDTHH:mm:ss.SSSZ" test', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {
+            value: {
+              type: String
+            }
+          },
+          required: false,
+          _valueFormat: "YYYY-MM-DDTHH:mm:ss.SSSZ"
+        };
+
+        var value = "2016-07-29T13:01:30Z";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'value is valid');
+        assert.equal(validationResult.errorMessage, 'Value 2016-07-29T13:01:30Z is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+        var value = "2016-07-29T13:01:30.425Z";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, true, 'value is invalid');
+        assert.equal(validationResult.errorMessage, '');
+      });
+
+      test('valid schema, value = "2016-29-07", required = false _valueFormat="YYYY-MM-DD" test', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {
+            value: {
+              type: String
+            }
+          },
+          required: false,
+          _valueFormat: "YYYY-MM-DD"
+        };
+
+        var value = "2016-29-07";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'value is valid');
+        assert.equal(validationResult.errorMessage, 'Value 2016-29-07 is not in correct format of YYYY-MM-DD');
+
+        var value = "2016-07-29";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, true, 'value is invalid');
+        assert.equal(validationResult.errorMessage, '');
+      });
+
+      test('valid schema, value = "13:01:30", required = false _valueFormat="HH:mm:ss" test', function() {
+        var inputValidation = Tangere.behaviors.AtFormDateInputValidation;
+        var schema = {
+          properties: {
+            value: {
+              type: String
+            }
+          },
+          required: false,
+          _valueFormat: "HH:mm:ss"
+        };
+
+        var value = "30:71:30";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, false, 'value is valid');
+        assert.equal(validationResult.errorMessage, 'Value 30:71:30 is not in correct format of HH:mm:ss');
+
+        var value = "13:01:30";
+
+        var validationResult = inputValidation._validateData(schema, value, format);
+        assert.equal(validationResult.isValid, true, 'value is invalid');
+        assert.equal(validationResult.errorMessage, '');
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>

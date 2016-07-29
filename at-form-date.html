@@ -84,7 +84,7 @@
   'use strict';
   Polymer({
     is: 'at-form-date',
-    behaviors: [ Tangere.behaviors.formValidation, Tangere.behaviors.i18n, Tangere.behaviors.AtFormDateInputValidation ],
+    behaviors: [ Tangere.behaviors.i18n, Tangere.behaviors.formUIGeneric, Tangere.behaviors.AtFormDateInputValidation ],
     properties: {
       label: {
         type: String,
@@ -245,8 +245,6 @@
       resizeHandler(initialWidth);
     },
     ready: function() {
-      this._validationFunctions.push(this._validateValueAgainstFormat.bind(this));
-
       var self = this;
 
       var valueProvider = this.$.input;
@@ -327,31 +325,11 @@
         this._icon = 'now:clock';
         self.toggleClass('hidden', true, datePicker);
         self.toggleClass('hidden', false, timePicker);
-      }
-      self.value = "";
-      this.$.input.value = self.value;
-      self._fireValueChangedEvent(self.value);
+      }      
     },
     valueChanged: function(newValue, oldValue) {
-      if (!this._isReady || this._isInternalValueUpdate) {
+      if (!this._isReady || this._isInternalValueUpdate || this._validationResultHandlingInProgress) {
         return;
-      }
-
-      // D1. should input validation happen here or in at-form-behaviors-validation?
-      // as it stands right now, input validation should be here
-      // maybe, when we finish and validate the prototype input validation can be moved to at-form-behaviors-validation
-      var validationResult = this.validateInput(this.properties.value, newValue);
-      var hint = this.$.hint;
-      if (!validationResult.isValid) {
-        // element should become invalid
-        this._setValid(false);
-        Polymer.dom(hint).innerHTML = "Value " + newValue + " is not a valid input for at-form-date";
-        this._updateUIValidState(false);
-        return ;
-      } else {
-        this._setValid(true);
-        Polymer.dom(hint).innerHTML = "";
-        this._updateUIValidState(true);
       }
 
       var valueProvider = this.$.input;
@@ -413,15 +391,13 @@
       var valueProvider = this.$.input;
       valueProvider.value = displayString;
 
+      this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
       if (this.xtype === "datetime") {
-        this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
         self.value = momentValue.toISOString();
-        this._isInternalValueUpdate = false;
       } else {
-        this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
         self.value = momentValue.format(self._valueFormat);
-        this._isInternalValueUpdate = false;
       }
+      this._isInternalValueUpdate = false;
 
       self.validate();
       self._fireValueChangedEvent(self.value);
@@ -497,6 +473,38 @@
         this.validate();
       }
     },
+
+    validate: function () {
+      if (this._validationResultHandlingInProgress) {
+        return;
+      }
+
+      this._validationResultHandlingInProgress = true;
+
+      var inputValue = this.$.input.value;
+      var inputMoment = moment(inputValue, this._displayFormat, true);
+      var valueMoment = moment(this.value, this._valueFormat, true);
+      if (inputMoment.isValid() && valueMoment.isValid() && !inputMoment.isSame(valueMoment)) {
+        if (this.xtype === "datetime") {
+          this.value = inputMoment.toISOString();
+        } else {
+          this.value = inputMoment.format(self._valueFormat);
+        }
+      }
+
+      var validationResult = this._validateBaseData();
+      this._handleValidationResult(validationResult);
+      if (!validationResult.isValid) {
+        this._validationResultHandlingInProgress = false;
+        return ;
+      }
+
+      validationResult = this._validateData(this, this.value, this.T.bind(this));
+      this._handleValidationResult(validationResult);
+
+      this._validationResultHandlingInProgress = false;
+    },
+
     _updateUIValidState: function(isValid) {
       var label = this.$.label;
       this.toggleClass('error', !isValid, label);
@@ -505,26 +513,7 @@
       var hint = this.$.hint;
       this.toggleClass('error', !isValid, hint);
     },
-    _validateValueAgainstFormat: function(value) {
-      var valid = true;
-      var utcFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
-      if (value !== '') {
-        var internalFormat = this._valueFormat;
-        if (this.xtype === "datetime" && this._isInternalValueUpdate) {
-          internalFormat = utcFormat;
-          valid = moment(value, internalFormat, true).isValid();
-        } else {
-          var internalValid = moment(value, internalFormat, true).isValid();
-          var jsonUtcValid = moment(value, utcFormat, true).isValid();
-          valid = internalValid || jsonUtcValid;
-        }
-        if (!valid) {
-          this._errorMessage = "Value {0} is not valid.".replace("{0}", value);
-        }
-      }
 
-      return valid;
-    },
     _getFocusableElement: function () {
       var focusable = this.$.input;
       return focusable;
