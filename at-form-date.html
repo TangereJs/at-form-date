@@ -57,7 +57,7 @@
         <iron-label id="label" for="input">{{label}}</iron-label>
 
         <div id="contentContainer" class="at-content-container input-group">
-          <input id="input" readonly class="at-content has-placeholder" on-tap="_inputOnTap">
+          <input id="input" class="at-content has-placeholder" on-tap="_inputOnTap">
           <!-- var is used here instead of span to avoid a bug in IE11 -->
           <!-- in IE11 span (and div) element gets focus; which should not happen. -->
           <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
@@ -325,10 +325,10 @@
         this._icon = 'now:clock';
         self.toggleClass('hidden', true, datePicker);
         self.toggleClass('hidden', false, timePicker);
-      }      
+      }
     },
     valueChanged: function(newValue, oldValue) {
-      if (!this._isReady || this._isInternalValueUpdate || this._validationResultHandlingInProgress) {
+      if (!this._isReady || this._isInternalValueUpdate) {
         return;
       }
 
@@ -482,6 +482,11 @@
       this._validationResultHandlingInProgress = true;
 
       var inputValue = this.$.input.value;
+
+      if ((this.value === null && inputValue !== "") || (this.value !== null && this.value !== inputValue)) {
+        this.value = inputValue;
+      }
+
       var inputMoment = moment(inputValue, this._displayFormat, true);
       var valueMoment = moment(this.value, this._valueFormat, true);
       if (inputMoment.isValid() && valueMoment.isValid() && !inputMoment.isSame(valueMoment)) {
