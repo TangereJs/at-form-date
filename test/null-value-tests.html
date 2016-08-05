@@ -98,7 +98,7 @@
         });
       });
 
-      test('attribute value set to null and required', function(done) {
+      test('required and attribute value set to null', function(done) {
         var input = fixture('attrNullValueAndRequired');
         assert.equal(input.value, "null", 'value not set correctly');
         assert.equal(input.required, true, 'required is not set correctly');
@@ -188,8 +188,8 @@
         input.value = "null";
 
         assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.valid, false, 'element is not valid');
-        assert.equal(input.$.hint.innerHTML, "Value null is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
+        assert.equal(input.valid, true, 'element is invalid');
+        assert.equal(input.$.hint.innerHTML, "", "error message not set correctly");
 
         var eventCount = 0;
         input.addEventListener('value-changed', function(event) {
@@ -245,8 +245,8 @@
         input.value = "null";
 
         assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.valid, false, 'element is invalid');
-        assert.equal(input.$.hint.innerHTML, "Value null is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
+        assert.equal(input.valid, true, 'element is invalid');
+        assert.equal(input.$.hint.innerHTML, "", "error message not set correctly");
 
         var eventCount = 0;
         input.addEventListener('value-changed', function(event) {

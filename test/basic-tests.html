@@ -89,7 +89,7 @@
         var expectedValue = 'demo value';
         input.value = 'demo value';
         assert.equal(input.value, expectedValue, 'inputElement.value equals input.value');
-        assert.equal(input._getFocusableElement().value, "", 'inputElement.value equals input.value');
+        assert.equal(input._getFocusableElement().value, "demo value", 'inputElement.value equals input.value');
       });
 
       test('required sets validation message', function() {
@@ -132,7 +132,7 @@
       test('errorMessage => valid = false', function() {
         var input = fixture('errorMessageValidFalse');
         assert.equal(input.errorMessage, 'demo error message', 'error message is correctly set');
-        assert.equal(input.valid, true, 'input is valid because error message is set as attribute');
+        assert.equal(input.valid, false, 'input is valid because error message is set as attribute');
         input.errorMessage = 'Another version of demo error message';
         assert.equal(input.errorMessage, 'Another version of demo error message', 'error message is correctly set');
         assert.equal(input.valid, false, 'input is invalid because error message is set as property');
@@ -144,16 +144,17 @@
 
         assert.equal(input.value, '', 'value is not initially empty');
         assert.equal(hint.innerHTML, '', 'error message is not initially empty');
-        assert.equal(input.valid, true, 'element is not initially valid');
+        assert.equal(input.valid, false, 'element is not invalid');
+        assert.equal(hint.innerHTML, "Value  is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", 'error message not set correctly');
         assert.equal(input.xtype, "datetime", 'element\'s type is not initially datetime');
 
         input.value = "This should produce format error";
-        assert.equal(hint.innerHTML, 'Value This should produce format error is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ', 'Format error message is not set correctly');
         assert.equal(input.valid, false, 'element is not invalid');
+        assert.equal(hint.innerHTML, 'Value This should produce format error is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ', 'Format error message is not set correctly');
 
         input.value = "2016-06-06T15:40:45.000Z";
-        assert.equal(hint.innerHTML, '', 'Error message is not empty');
         assert.equal(input.valid, true, 'element is valid');
+        assert.equal(hint.innerHTML, '', 'Error message is not empty');
       });
 
       test('date Format Test', function() {
@@ -162,17 +163,17 @@
         var hint = Polymer.dom(input.$.hint);
 
         assert.equal(input.value, '', 'value is not initially empty');
-        assert.equal(hint.innerHTML, '', 'error message is not initially empty');
-        assert.equal(input.valid, true, 'element is not initially valid');
+        assert.equal(input.valid, false, 'element is not invalid');
+        assert.equal(hint.innerHTML, 'Value  is not in correct format of YYYY-MM-DD', 'error message is not initially empty');
         assert.equal(input.xtype, "date", 'element\'s type is not initially date');
 
         input.value = "This should produce format error";
-        assert.equal(hint.innerHTML, 'Value This should produce format error is not in correct format of YYYY-MM-DD', 'Format error message is not set correctly');
         assert.equal(input.valid, false, 'element is not invalid');
+        assert.equal(hint.innerHTML, 'Value This should produce format error is not in correct format of YYYY-MM-DD', 'Format error message is not set correctly');
 
         input.value = "2016-06-06";
-        assert.equal(hint.innerHTML, '', 'Error message is not empty');
         assert.equal(input.valid, true, 'element is valid');
+        assert.equal(hint.innerHTML, '', 'Error message is not empty');
       });
 
       test('time Format Test', function() {
@@ -181,17 +182,17 @@
         var hint = Polymer.dom(input.$.hint);
 
         assert.equal(input.value, '', 'value is not initially empty');
-        assert.equal(hint.innerHTML, '', 'error message is not initially empty');
-        assert.equal(input.valid, true, 'element is not initially valid');
+        assert.equal(input.valid, false, 'element is not invalid');
+        assert.equal(hint.innerHTML, 'Value  is not in correct format of HH:mm:ss', 'error message is not initially empty');
         assert.equal(input.xtype, "time", 'element\'s type is not initially time');
 
         input.value = "This should produce format error";
-        assert.equal(hint.innerHTML, 'Value This should produce format error is not in correct format of HH:mm:ss', 'Format error message is not set correctly');
         assert.equal(input.valid, false, 'element is not invalid');
+        assert.equal(hint.innerHTML, 'Value This should produce format error is not in correct format of HH:mm:ss', 'Format error message is not set correctly');
 
         input.value = "23:40:15";
-        assert.equal(hint.innerHTML, '', 'Error message is not empty');
         assert.equal(input.valid, true, 'element is valid');
+        assert.equal(hint.innerHTML, '', 'Error message is not empty');
       });
 
       test('alternative datetime formats Test', function() {
@@ -203,12 +204,12 @@
         input.value = "2016-06-15T15:40:45.000Z";
 
         input.format = "DD-MM-YYYY HH:mm:ss";
-        assert.equal(input.value, "2016-06-15T15:40:00.000Z");
-        assert.equal(inputElement.value, "15-06-2016 17:40:00");
+        assert.equal(input.value, "2016-06-15T15:40:45.000Z");
+        assert.equal(inputElement.value, "15-06-2016 17:40:45");
 
         input.format = "DD-MM-YYYY hh:mm:ss A";
-        assert.equal(input.value, "2016-06-15T15:40:00.000Z");
-        assert.equal(inputElement.value, "15-06-2016 05:40:00 PM");
+        assert.equal(input.value, "2016-06-15T15:40:45.000Z");
+        assert.equal(inputElement.value, "15-06-2016 05:40:45 PM");
       });
 
       test('alternative date formats Test', function() {

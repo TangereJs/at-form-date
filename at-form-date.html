@@ -57,7 +57,7 @@
         <iron-label id="label" for="input">{{label}}</iron-label>
 
         <div id="contentContainer" class="at-content-container input-group">
-          <input id="input" class="at-content has-placeholder" on-tap="_inputOnTap">
+          <input id="input" class="at-content has-placeholder">
           <!-- var is used here instead of span to avoid a bug in IE11 -->
           <!-- in IE11 span (and div) element gets focus; which should not happen. -->
           <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
@@ -255,11 +255,11 @@
       var timePicker = this.$.timePicker;
 
       datePicker.addEventListener('start-date-changed', function(event) {
-        self._updateValue(datePicker, timePicker);
+        self._setValueFromDateAndTimePickers(datePicker, timePicker);
       });
 
       timePicker.addEventListener('value-changed', function(event) {
-        self._updateValue(datePicker, timePicker);
+        self._setValueFromDateAndTimePickers(datePicker, timePicker);
       });
 
       self._dropdownToggle = false;
@@ -273,31 +273,21 @@
 
       inputIcon.addEventListener('tap', function(event) {
         toggleDropdown(event);
-        Polymer.dom(valueProvider).setAttribute('at-focused', true);
-        valueProvider.focus();
+      });
+
+      valueProvider.addEventListener('change', function(event) {
+        var target = event.target;
+        var newValue = target.value;
+        self._setValueFromInputField(newValue);
       });
 
       valueProvider.addEventListener('blur', function(event) {
         self._isInternalValueUpdate = true;
-        if (valueProvider.hasAttribute('at-focused')) {
-          self.validate();
-          Polymer.dom(valueProvider).removeAttribute('at-focused');
-        }
-
+        self.validate();
         self._isInternalValueUpdate = false;
       });
 
       this._isReady = true;
-    },
-    _inputOnTap: function (event) {
-      var valueProvider = this.$.input;
-      var dropdownContainer = this.$.dropdownContainer;
-      Polymer.dom(valueProvider).setAttribute('at-focused', true);
-      dropdownContainer.toggle(event.target, event);
-
-      var resizeSensor = this.$.resizeSensor;
-      var initialWidth = resizeSensor.queryWidth();
-      this._resizeHandler(initialWidth);
     },
     focus: function() {
       this.$.input.focus();
@@ -346,11 +336,14 @@
           this._setMomentToDateAndTime(newMoment);
           var formattedValue = newMoment.format(this._displayFormat);
           valueProvider.value = formattedValue;
+        } else {
+          valueProvider.value = newValue;
         }
       }
-      this.validate();
+
       this._fireValueChangedEvent(newValue);
     },
+
     _getMomentFromDateAndTime: function (datePicker, timePicker) {
       var self = this;
       var dateValue = datePicker.startDate;
@@ -373,6 +366,7 @@
       var momentValue = moment(completeValue, completeFormat, true);
       return momentValue;
     },
+
     _setMomentToDateAndTime: function (momentValue) {
       var datePicker = this.$.datePicker;
       var dateFormat = this._localizedFormat("date");
@@ -380,10 +374,17 @@
       var timeFormat = this._localizedFormat("time");
       var dateValue = momentValue.format(dateFormat);
       var timeValue = momentValue.format(timeFormat);
+      this._doNotUpdateValueFromDateAndtimePickers = true;
       datePicker.startDate = dateValue;
       timePicker.value = timeValue;
+      this._doNotUpdateValueFromDateAndtimePickers = false;
     },
-    _updateValue: function(datePicker, timePicker) {
+
+    _setValueFromDateAndTimePickers: function(datePicker, timePicker) {
+      if (this._doNotUpdateValueFromDateAndtimePickers) {
+        return;
+      }
+
       var self = this;
       var momentValue = this._getMomentFromDateAndTime(datePicker, timePicker);
 
@@ -399,9 +400,36 @@
       }
       this._isInternalValueUpdate = false;
 
-      self.validate();
       self._fireValueChangedEvent(self.value);
     },
+
+    _setValueFromInputField: function (newValue) {
+      console.log('change event fired');
+
+      // newValue must be in _displayFormat, strict parsing is not required
+      var inputMoment = moment(newValue, this._displayFormat);
+      if (inputMoment.isValid()) {
+        // set value to date and time pickers
+        this._setMomentToDateAndTime(inputMoment);
+
+        // set this.value
+        this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
+        if (this.xtype === "datetime") {
+          this.value = inputMoment.toISOString();
+        } else {
+          this.value = inputMoment.format(self._valueFormat);
+        }
+        this._isInternalValueUpdate = false;
+      } else {
+        this._isInternalValueUpdate = true;
+        this.value = newValue;
+        this._isInternalValueUpdate = false;
+      }
+
+      this.validate();
+      this._fireValueChangedEvent(this.value);
+    },
+
     formatChanged: function(newValue, oldValue) {
       var xtype = this.xtype;
       var format = newValue;
@@ -475,39 +503,52 @@
     },
 
     validate: function () {
-      if (this._validationResultHandlingInProgress) {
-        return;
+      if (!this._validateCallCount) {
+        this._validateCallCount = 1;
       }
+      console.log('validate called ' + this._validateCallCount + " times");
+      this._validateCallCount += 1;
 
-      this._validationResultHandlingInProgress = true;
 
       var inputValue = this.$.input.value;
-
-      if ((this.value === null && inputValue !== "") || (this.value !== null && this.value !== inputValue)) {
-        this.value = inputValue;
-      }
+      var currentValue = this.value;
 
       var inputMoment = moment(inputValue, this._displayFormat, true);
-      var valueMoment = moment(this.value, this._valueFormat, true);
-      if (inputMoment.isValid() && valueMoment.isValid() && !inputMoment.isSame(valueMoment)) {
+
+      if (inputMoment.isValid()) {
         if (this.xtype === "datetime") {
           this.value = inputMoment.toISOString();
         } else {
-          this.value = inputMoment.format(self._valueFormat);
+          this.value = inputMoment.format(this._valueFormat);
+        }
+      } else {
+        if (inputValue !== currentValue) {
+          if ([null, "null"].indexOf(currentValue) === -1 || inputValue !== "") {
+            this.value = inputValue;
+          }
         }
       }
 
       var validationResult = this._validateBaseData();
       this._handleValidationResult(validationResult);
-      if (!validationResult.isValid) {
-        this._validationResultHandlingInProgress = false;
-        return ;
+      if (validationResult.isFinal) {
+        return validationResult.isValid;
       }
 
       validationResult = this._validateData(this, this.value, this.T.bind(this));
       this._handleValidationResult(validationResult);
 
-      this._validationResultHandlingInProgress = false;
+      if (validationResult.isValid && ([null, "null"].indexOf(currentValue) === -1 || ["", null, "null"].indexOf(inputValue) === -1)) {
+        // validate $.input value against _displayFormat
+        inputMoment = moment(inputValue, this._displayFormat, true);
+        validationResult.isValid = inputMoment.isValid();
+        if (!validationResult.isValid) {
+          validationResult.errorMessage = this.T("Input string {0} is not in the correct format of {1}", inputValue, this._displayFormat);
+        }
+        this._handleValidationResult(validationResult);
+      }
+
+      return validationResult.isValid;
     },
 
     _updateUIValidState: function(isValid) {
