@@ -144,8 +144,8 @@
 
         assert.equal(input.value, '', 'value is not initially empty');
         assert.equal(hint.innerHTML, '', 'error message is not initially empty');
-        assert.equal(input.valid, false, 'element is not invalid');
-        assert.equal(hint.innerHTML, "Value  is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", 'error message not set correctly');
+        assert.equal(input.valid, true, 'element is not valid');
+        assert.equal(hint.innerHTML, "", 'error message not set correctly');
         assert.equal(input.xtype, "datetime", 'element\'s type is not initially datetime');
 
         input.value = "This should produce format error";
@@ -163,8 +163,8 @@
         var hint = Polymer.dom(input.$.hint);
 
         assert.equal(input.value, '', 'value is not initially empty');
-        assert.equal(input.valid, false, 'element is not invalid');
-        assert.equal(hint.innerHTML, 'Value  is not in correct format of YYYY-MM-DD', 'error message is not initially empty');
+        assert.equal(input.valid, true, 'element is not invalid');
+        assert.equal(hint.innerHTML, '', 'error message is not initially empty');
         assert.equal(input.xtype, "date", 'element\'s type is not initially date');
 
         input.value = "This should produce format error";
@@ -182,8 +182,8 @@
         var hint = Polymer.dom(input.$.hint);
 
         assert.equal(input.value, '', 'value is not initially empty');
-        assert.equal(input.valid, false, 'element is not invalid');
-        assert.equal(hint.innerHTML, 'Value  is not in correct format of HH:mm:ss', 'error message is not initially empty');
+        assert.equal(input.valid, true, 'element is not valid');
+        assert.equal(hint.innerHTML, '', 'error message is not initially empty');
         assert.equal(input.xtype, "time", 'element\'s type is not initially time');
 
         input.value = "This should produce format error";
@@ -247,6 +247,15 @@
 
         input.format = "hh:mm:ss A";
         assert.equal(inputElement.value, "03:40:45 PM");
+      });
+
+      test('empty string is initially valid but required && empty value => invalid', function() {
+        var input = document.createElement('at-form-date');
+        input.value = "";
+        assert.equal(input.valid, true, 'empty string is not valid value');
+
+        input.required = true;
+        assert.equal(input.valid, false, 'empty string & required does not make element invalid');
       });
     });
   </script>

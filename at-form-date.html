@@ -404,8 +404,6 @@
     },
 
     _setValueFromInputField: function (newValue) {
-      console.log('change event fired');
-
       // newValue must be in _displayFormat, strict parsing is not required
       var inputMoment = moment(newValue, this._displayFormat);
       if (inputMoment.isValid()) {
@@ -503,13 +501,6 @@
     },
 
     validate: function () {
-      if (!this._validateCallCount) {
-        this._validateCallCount = 1;
-      }
-      console.log('validate called ' + this._validateCallCount + " times");
-      this._validateCallCount += 1;
-
-
       var inputValue = this.$.input.value;
       var currentValue = this.value;
 
@@ -538,7 +529,7 @@
       validationResult = this._validateData(this, this.value, this.T.bind(this));
       this._handleValidationResult(validationResult);
 
-      if (validationResult.isValid && ([null, "null"].indexOf(currentValue) === -1 || ["", null, "null"].indexOf(inputValue) === -1)) {
+      if (validationResult.isValid && ([null, "null", ""].indexOf(currentValue) === -1 || ["", null, "null"].indexOf(inputValue) === -1)) {
         // validate $.input value against _displayFormat
         inputMoment = moment(inputValue, this._displayFormat, true);
         validationResult.isValid = inputMoment.isValid();

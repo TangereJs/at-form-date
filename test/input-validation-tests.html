@@ -261,8 +261,8 @@
         value = "";
 
         var validationResult = inputValidation._validateData(schema, value, format);
-        assert.equal(validationResult.isValid, false, 'schema.value is invalid');
-        assert.equal(validationResult.errorMessage, 'Value  is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ');
+        assert.equal(validationResult.isValid, true, 'schema.value is not valid');
+        assert.equal(validationResult.errorMessage, '');
 
         schema.required = true;
 
@@ -273,8 +273,8 @@
         schema.required = false;
 
         var validationResult = inputValidation._validateData(schema, value, format);
-        assert.equal(validationResult.isValid, false, 'schema.value is valid');
-        assert.equal(validationResult.errorMessage, 'Value  is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ');
+        assert.equal(validationResult.isValid, true, 'schema.value is not valid');
+        assert.equal(validationResult.errorMessage, '');
 
         schema.required = true;
         value = "lorem ipsum";

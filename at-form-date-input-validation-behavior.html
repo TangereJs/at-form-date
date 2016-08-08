@@ -158,7 +158,7 @@
           errorMessage: ""
         };
 
-        if (value === null || value === "null") {
+        if ([null, "null", ""].indexOf(value) !== -1) {
           return validationResult;
         }
 
