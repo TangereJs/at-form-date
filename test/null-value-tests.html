@@ -51,13 +51,13 @@
       test('attribute value set to null', function(done) {
         var input = fixture('attrNullValue');
         assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.valid, true, 'value not set correctly');
+        assert.equal(true, input.validate(true), 'element is invalid');
 
         var eventCount = 0;
         input.addEventListener('value-changed', function(event) {
           assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.value, 'demo value', 'event detail value not set correctly');
-          assert.equal(input.valid, false, 'value is valid');
+          assert.equal(false, input.validate(true), 'value is valid');
           assert.equal(input.$.hint.innerHTML, "Value demo value is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
           eventCount += 1;
         });
@@ -82,7 +82,7 @@
         input.addEventListener('value-changed', function(event) {
           assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.value, 'demo value', 'event detail value not set correctly');
-          assert.equal(input.valid, false, 'value not set correctly');
+          assert.equal(false, input.validate(true), 'element is valid');
           assert.equal(input.$.hint.innerHTML, "Value demo value is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
           eventCount += 1;
         });
@@ -109,7 +109,7 @@
           assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.required, true, 'required is not set correctly');
-          assert.equal(input.valid, false, 'element is valid');
+          assert.equal(false, input.validate(true), 'element is valid');
           assert.equal(input.$.hint.innerHTML, "Value demo value is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
           eventCount += 1;
         });
@@ -136,7 +136,7 @@
           assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.required, true, 'required is not set correctly');
-          assert.equal(input.valid, false, 'element is valid');
+          assert.equal(false, input.validate(true), 'element is valid');
           assert.equal(input.$.hint.innerHTML, "Value demo value is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
           eventCount += 1;
         });
@@ -167,7 +167,7 @@
         input.addEventListener('value-changed', function(event) {
           assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.value, 'demo value', 'event detail value not set correctly');
-          assert.equal(input.valid, false, 'element is valid');
+          assert.equal(false, input.validate(true), 'element is valid');
           assert.equal(input.$.hint.innerHTML, "Value demo value is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
           eventCount += 1;
         });
@@ -195,7 +195,7 @@
         input.addEventListener('value-changed', function(event) {
           assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.value, 'demo value', 'event detail value not set correctly');
-          assert.equal(input.valid, false, 'element is valid');
+          assert.equal(false, input.validate(true), 'element is valid');
           assert.equal(input.$.hint.innerHTML, "Value demo value is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
           eventCount += 1;
         });
@@ -223,7 +223,7 @@
         input.addEventListener('value-changed', function(event) {
           assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.value, 'demo value', 'event detail value not set correctly');
-          assert.equal(input.valid, false, 'element is valid');
+          assert.equal(false, input.validate(true), 'element is valid');
           assert.equal(input.$.hint.innerHTML, "Value demo value is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
           eventCount += 1;
         });
@@ -245,14 +245,14 @@
         input.value = "null";
 
         assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.valid, true, 'element is invalid');
+        assert.equal(input.validate(true), true, 'element is invalid');
         assert.equal(input.$.hint.innerHTML, "", "error message not set correctly");
 
         var eventCount = 0;
         input.addEventListener('value-changed', function(event) {
           assert.equal(event.detail.value, 'demo value', 'event detail value not set correctly');
           assert.equal(input.value, 'demo value', 'event detail value not set correctly');
-          assert.equal(input.valid, false, 'element is valid');
+          assert.equal(false, input.validate(true), 'element is valid');
           assert.equal(input.$.hint.innerHTML, "Value demo value is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ", "error message not set correctly");
           eventCount += 1;
         });

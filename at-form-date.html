@@ -99,58 +99,60 @@
       hideLabel: {
         type: Boolean,
         value: false,
-        observer: 'hideLabelChanged',
+        observer: '_hideLabelChanged',
         title: 'Do not show the label'
+      },
+      disabled: {
+        type: Boolean,
+        value: false,
+        observer: '_disabledChanged',
+        title: 'Field value can not be changed'
+      },
+      /**
+      * Hides the element. When hidden nothing is displayed for the element
+      * @property hide
+      * @type Boolean
+      * @default false
+      */
+      hide: {
+        type: Boolean,
+        value: false,
+        observer: '_hideChanged',
+        title: 'Field is invisible'
+      },
+      required: {
+        type: Boolean,
+        value: false,
+        title: 'Input required'
+      },
+      /**
+      * Formating is based [moment.js](http://momentjs.com/). A list of supported tokens in format can be found in the [moment.js documentation](http://momentjs.com/docs/#/displaying/).
+      * @property format
+      */
+      format: {
+        type: String,
+        value: '',
+        observer: '_formatChanged',
+        title: 'Format'
       },
       value: {
         type: String,
         value: '',
-        observer: 'valueChanged',
+        observer: '_valueChanged',
         title: 'Value'
       },
       xtype: {
         type: String,
         value: 'datetime',
-        observer: 'xtypeChanged',
+        observer: '_xtypeChanged',
         xtype: 'enum',
         title: 'Type',
         available: 'date,time,datetime'
-      },
-      disabled: {
-        type: Boolean,
-        value: false,
-        observer: 'disabledChanged',
-        title: 'Field value can not be changed'
-      },
-      required: {
-        type: Boolean,
-        value: false,
-        observer: 'requiredChanged',
-        title: 'Input required'
-      },
-      /**
-       * Hides the element. When hidden nothing is displayed for the element
-       * @property hide
-       * @type Boolean
-       * @default false
-       */
-      hide: {
-        type: Boolean,
-        value: false,
-        observer: 'hideChanged',
-        title: 'Field is invisible'
-      },
-      /**
-       * Formating is based [moment.js](http://momentjs.com/). A list of supported tokens in format can be found in the [moment.js documentation](http://momentjs.com/docs/#/displaying/).
-       * @property format
-       */
-      format: {
-        type: String,
-        value: '',
-        observer: 'formatChanged',
-        title: 'Format'
       }
     },
+    observers: [
+      '_internalValidStateUpdate(disabled, required, hide)'
+    ],
     $meta: [{
       title: "Date",
       type: "string",
@@ -193,62 +195,11 @@
     set icon(newValue) {
       this._icon = newValue;
     },
-    hideChanged: function(newValue, oldValue) {
-      var container = this.$.atContainer;
-      this.toggleClass('hidden', newValue, container);
-      if (this._isReady) {
-        this.validate();
 
-        var resizeSensor = this.$.resizeSensor;
-        this.debounce('initResizeSensor', function() {
-          resizeSensor.reset();
-        }, 150);
-      }
-    },
-    hideLabelChanged: function(newValue, oldValue) {
+    _hideLabelChanged: function(newValue, oldValue) {
       this.toggleClass("hidden", newValue, this.$.label);
     },
-    attached: function() {
-      var resizeSensor = this.$.resizeSensor;
-      var self = this;
-      var datePicker = this.$.datePicker.parentElement;
-      var timePicker = this.$.timePicker.parentElement;
-      var dropdownContainer = this.$.dropdownContainer;
-      var pickerContainer = this.$.pickerContainer;
 
-      resizeSensor.addEventListener('resize-sensed', function(event) {
-        var updatedWidth = event.detail.value.width;
-        resizeHandler(updatedWidth);
-      });
-
-       function resizeHandler (updatedWidth) {
-
-        var datePickerRect = datePicker.getBoundingClientRect();
-        var timePickerRect = datePicker.getBoundingClientRect();
-        var dateWidth = datePickerRect.width;
-        var timeWidth = timePickerRect.width;
-
-        if (updatedWidth > dateWidth + timeWidth) {
-          // switch to horizontal layout
-          self.toggleClass('horizontal', true, pickerContainer);
-          self.toggleClass('vertical', false, pickerContainer);
-        } else {
-          // switch to vertical layout
-          self.toggleClass('horizontal', false, pickerContainer);
-          self.toggleClass('vertical', true, pickerContainer);
-        }
-
-        if (dropdownContainer.isOpen()){
-          dropdownContainer.hide();
-          dropdownContainer.show();
-        }
-      }
-      this._resizeHandler = resizeHandler;
-
-      resizeSensor.reset();
-      var initialWidth = resizeSensor.queryWidth();
-      resizeHandler(initialWidth);
-    },
     ready: function() {
       var self = this;
 
@@ -293,36 +244,194 @@
       });
 
       this._isReady = true;
+      this._internalValidStateUpdate(this.disabled, this.required, this.hide);
     },
-    focus: function() {
-      this.$.input.focus();
-    },
-    xtypeChanged: function(newValue, oldValue) {
-      var self = this;
-      var datePicker = this.$.datePicker;
-      var timePicker = this.$.timePicker;
 
-      if (newValue === "datetime") {
-        this._displayFormat = this._localizedFormat("datetime");
-        this._valueFormat = this._valueFormats.datetime;
-        this._icon = 'now:calendar';
-        self.toggleClass('hidden', false, datePicker);
-        self.toggleClass('hidden', false, timePicker);
-      } else if (newValue === 'date') {
-        this._displayFormat = this._localizedFormat("date");
-        this._valueFormat = this._valueFormats.date;
-        this._icon = 'now:calendar';
-        self.toggleClass('hidden', false, datePicker);
-        self.toggleClass('hidden', true, timePicker);
-      } else if (newValue === 'time') {
-        this._displayFormat = this._localizedFormat("time");
-        this._valueFormat = this._valueFormats.time;
-        this._icon = 'now:clock';
-        self.toggleClass('hidden', true, datePicker);
-        self.toggleClass('hidden', false, timePicker);
+    attached: function() {
+      var resizeSensor = this.$.resizeSensor;
+      var self = this;
+      var datePicker = this.$.datePicker.parentElement;
+      var timePicker = this.$.timePicker.parentElement;
+      var dropdownContainer = this.$.dropdownContainer;
+      var pickerContainer = this.$.pickerContainer;
+
+      resizeSensor.addEventListener('resize-sensed', function(event) {
+        var updatedWidth = event.detail.value.width;
+        resizeHandler(updatedWidth);
+      });
+
+       function resizeHandler (updatedWidth) {
+
+        var datePickerRect = datePicker.getBoundingClientRect();
+        var timePickerRect = datePicker.getBoundingClientRect();
+        var dateWidth = datePickerRect.width;
+        var timeWidth = timePickerRect.width;
+
+        if (updatedWidth > dateWidth + timeWidth) {
+          // switch to horizontal layout
+          self.toggleClass('horizontal', true, pickerContainer);
+          self.toggleClass('vertical', false, pickerContainer);
+        } else {
+          // switch to vertical layout
+          self.toggleClass('horizontal', false, pickerContainer);
+          self.toggleClass('vertical', true, pickerContainer);
+        }
+
+        if (dropdownContainer.isOpen()){
+          dropdownContainer.hide();
+          dropdownContainer.show();
+        }
+      }
+      this._resizeHandler = resizeHandler;
+
+      resizeSensor.reset();
+      var initialWidth = resizeSensor.queryWidth();
+      resizeHandler(initialWidth);
+    },
+
+    _disabledChanged: function(newValue, oldValue) {
+      var atContainer = this.$.atContainer;
+      this.toggleClass('disabled', newValue, atContainer);
+      var valueProvider = this.$.input;
+      this.toggleAttribute('disabled', newValue, valueProvider);
+      var inputIcon = this.$.inputIcon;
+      this.toggleAttribute('disabled', newValue, inputIcon);
+    },
+
+    _hideChanged: function(newValue, oldValue) {
+      var container = this.$.atContainer;
+      this.toggleClass('hidden', newValue, container);
+      if (this._isReady) {
+        var resizeSensor = this.$.resizeSensor;
+        this.debounce('initResizeSensor', function() {
+          resizeSensor.reset();
+        }, 150);
       }
     },
-    valueChanged: function(newValue, oldValue) {
+
+    _internalValidStateUpdate: function (disabled, required, hide) {
+      if (this._isReady) {
+        this.validate(true);
+      }
+    },
+
+    _formatChanged: function(newValue, oldValue) {
+      var xtype = this.xtype;
+      var format = newValue;
+
+      if (xtype === undefined) { xtype = "datetime" }
+
+      // format needs to be validated against xtype
+      if (xtype === 'datetime') {
+        // if xtype is datetime and format doens't contain chars for year, month, day, hour, minute and second
+        if (!this._containsChars(['Y', 'M', 'D', 'h', 'm', 's'], format)) {
+          // set format to the default format for datetime
+          format = this._displayFormat;
+        }
+      } else if (xtype === 'date') {
+        // if xtype is date and format doens't contain chars for year, month, day or contains chars for hour, minute and second
+        if (!this._containsChars(['Y', 'M', 'D'], format) || this._containsChars(['h', 'm', 's'], format)) {
+          // set format to the default format for date
+          format = this._displayFormat;
+        }
+      } else if (xtype === 'time') {
+        // if xtype is time and format doens't contain chars for hour, minute and second or contains chars for year, month and day
+        if (this._containsChars(['Y', 'M', 'D'], format) || !this._containsChars(['h', 'm', 's'], format)) {
+          // set format to the default format for time
+          format = this._displayFormat;
+        }
+      }
+
+      if (format.indexOf('A') === -1 && (format.indexOf('hh')!== -1 || format.indexOf('h') !== -1)) {
+        format = format + " A";
+      } else if (format.indexOf('hh') === -1 || format.indexOf('h') === -1) {
+        format = format.replace("A", "").trim();
+      }
+      this._displayFormat = format;
+
+      this.fire('format-changed', {
+        value: format
+      }, { bubbles: false });
+
+      if (!this._valueFormat) {
+        this._valueFormat = this._valueFormats[xtype];
+      }
+
+      var valueProvider = this.$.input;
+      var newMoment = moment(this.value, this._valueFormat, true);
+      if (newMoment.isValid()) {
+        var formattedValue = newMoment.format(this._displayFormat);
+        valueProvider.value = formattedValue;
+      }
+    },
+
+    /**
+     * checks if source contains any of the chars
+     * @param {Array} chars
+     * @param {String} source
+     */
+    _containsChars: function(chars, source) {
+      var result = false;
+      chars.forEach(function(char, index) {
+        result = result || source.indexOf(char) !== -1;
+      });
+      return result;
+    },
+
+    validate: function (showError) {
+
+      if (showError === undefined) { showError = this.autovalidate; }
+      this._clearUIValidState();
+
+      var inputValue = this.$.input.value;
+      var currentValue = this.value;
+
+      var inputMoment = moment(inputValue, this._displayFormat, true);
+
+      if (inputMoment.isValid()) {
+        if (this.xtype === "datetime") {
+          this.value = inputMoment.toISOString();
+        } else {
+          this.value = inputMoment.format(this._valueFormat);
+        }
+      } else {
+        if (inputValue !== currentValue) {
+          if ([null, "null"].indexOf(currentValue) === -1 || inputValue !== "") {
+            this.value = inputValue;
+          }
+        }
+      }
+
+      var validationResult = this._validateBaseData();
+      if (showError) { this._handleValidationResult(validationResult); }
+      if (validationResult.isFinal) {
+        return validationResult.isValid;
+      }
+
+      validationResult = this._validateData(this, this.value, this.T.bind(this));
+      if (showError) { this._handleValidationResult(validationResult); }
+
+      if (validationResult.isValid && ([null, "null", ""].indexOf(currentValue) === -1 || ["", null, "null"].indexOf(inputValue) === -1)) {
+        // validate $.input value against _displayFormat
+        inputMoment = moment(inputValue, this._displayFormat, true);
+        validationResult.isValid = inputMoment.isValid();
+        if (!validationResult.isValid) {
+          validationResult.errorMessage = this.T("Input string {0} is not in the correct format of {1}", inputValue, this._displayFormat);
+        }
+        if (showError) { this._handleValidationResult(validationResult); }
+      }
+
+      return validationResult.isValid;
+    },
+
+    _updateUIValidState: function(isValid) {
+      var label = this.$.label;
+      this.toggleClass('error', !isValid, label);
+      var contentContainer = this.$.contentContainer;
+      this.toggleClass('error', !isValid, contentContainer);
+    },
+
+    _valueChanged: function(newValue, oldValue) {
       if (!this._isReady || this._isInternalValueUpdate) {
         return;
       }
@@ -397,7 +506,7 @@
       var valueProvider = this.$.input;
       valueProvider.value = displayString;
 
-      this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
+      this._isInternalValueUpdate = true; // this prevents _valueChanged function from updating input field to an incorrect value
       if (this.xtype === "datetime") {
         self.value = momentValue.toISOString();
       } else {
@@ -416,7 +525,7 @@
         this._setMomentToDateAndTime(inputMoment);
 
         // set this.value
-        this._isInternalValueUpdate = true; // this prevents valueChanged function from updating input field to an incorrect value
+        this._isInternalValueUpdate = true; // this prevents _valueChanged function from updating input field to an incorrect value
         if (this.xtype === "datetime") {
           this.value = inputMoment.toISOString();
         } else {
@@ -429,131 +538,38 @@
         this._isInternalValueUpdate = false;
       }
 
-      this.validate();
+      this.validate(true);
       this._fireValueChangedEvent(this.value);
     },
 
-    formatChanged: function(newValue, oldValue) {
-      var xtype = this.xtype;
-      var format = newValue;
-      // format needs to be validated against xtype
-      if (xtype === 'datetime') {
-        // if xtype is datetime and format doens't contain chars for year, month, day, hour, minute and second
-        if (!this._containsChars(['Y', 'M', 'D', 'h', 'm', 's'], format)) {
-          // set format to the default format for datetime
-          format = this._displayFormat;
-        }
-      } else if (xtype === 'date') {
-        // if xtype is date and format doens't contain chars for year, month, day or contains chars for hour, minute and second
-        if (!this._containsChars(['Y', 'M', 'D'], format) || this._containsChars(['h', 'm', 's'], format)) {
-          // set format to the default format for date
-          format = this._displayFormat;
-        }
-      } else if (xtype === 'time') {
-        // if xtype is time and format doens't contain chars for hour, minute and second or contains chars for year, month and day
-        if (this._containsChars(['Y', 'M', 'D'], format) || !this._containsChars(['h', 'm', 's'], format)) {
-          // set format to the default format for time
-          format = this._displayFormat;
-        }
-      }
+    _xtypeChanged: function(newValue, oldValue) {
+      var self = this;
+      var datePicker = this.$.datePicker;
+      var timePicker = this.$.timePicker;
 
-      if (format.indexOf('A') === -1 && (format.indexOf('hh')!== -1 || format.indexOf('h') !== -1)) {
-        format = format + " A";
-      } else if (format.indexOf('hh') === -1 || format.indexOf('h') === -1) {
-        format = format.replace("A", "").trim();
-      }
-      this._displayFormat = format;
-
-      this.fire('format-changed', {
-        value: format
-      }, { bubbles: false });
-
-      var valueProvider = this.$.input;
-      var newMoment = moment(this.value, this._valueFormat, true);
-      if (newMoment.isValid()) {
-        var formattedValue = newMoment.format(this._displayFormat);
-        valueProvider.value = formattedValue;
-      }
-    },
-    /**
-     * checks if source contains any of the chars
-     * @param {Array} chars
-     * @param {String} source
-     */
-    _containsChars: function(chars, source) {
-      var result = false;
-      chars.forEach(function(char, index) {
-        result = result || source.indexOf(char) !== -1;
-      });
-      return result;
-    },
-    disabledChanged: function(newValue, oldValue) {
-      var atContainer = this.$.atContainer;
-      this.toggleClass('disabled', newValue, atContainer);
-      var valueProvider = this.$.input;
-      this.toggleAttribute('disabled', newValue, valueProvider);
-      var inputIcon = this.$.inputIcon;
-      this.toggleAttribute('disabled', newValue, inputIcon);
-
-      if (this._isReady) {
-        this.validate();
-      }
-    },
-    requiredChanged: function(newValue, oldValue) {
-      if (this._isReady) {
-        this.validate();
+      if (newValue === "datetime") {
+        this._displayFormat = this._localizedFormat("datetime");
+        this._valueFormat = this._valueFormats.datetime;
+        this._icon = 'now:calendar';
+        self.toggleClass('hidden', false, datePicker);
+        self.toggleClass('hidden', false, timePicker);
+      } else if (newValue === 'date') {
+        this._displayFormat = this._localizedFormat("date");
+        this._valueFormat = this._valueFormats.date;
+        this._icon = 'now:calendar';
+        self.toggleClass('hidden', false, datePicker);
+        self.toggleClass('hidden', true, timePicker);
+      } else if (newValue === 'time') {
+        this._displayFormat = this._localizedFormat("time");
+        this._valueFormat = this._valueFormats.time;
+        this._icon = 'now:clock';
+        self.toggleClass('hidden', true, datePicker);
+        self.toggleClass('hidden', false, timePicker);
       }
     },
 
-    validate: function () {
-      var inputValue = this.$.input.value;
-      var currentValue = this.value;
-
-      var inputMoment = moment(inputValue, this._displayFormat, true);
-
-      if (inputMoment.isValid()) {
-        if (this.xtype === "datetime") {
-          this.value = inputMoment.toISOString();
-        } else {
-          this.value = inputMoment.format(this._valueFormat);
-        }
-      } else {
-        if (inputValue !== currentValue) {
-          if ([null, "null"].indexOf(currentValue) === -1 || inputValue !== "") {
-            this.value = inputValue;
-          }
-        }
-      }
-
-      var validationResult = this._validateBaseData();
-      this._handleValidationResult(validationResult);
-      if (validationResult.isFinal) {
-        return validationResult.isValid;
-      }
-
-      validationResult = this._validateData(this, this.value, this.T.bind(this));
-      this._handleValidationResult(validationResult);
-
-      if (validationResult.isValid && ([null, "null", ""].indexOf(currentValue) === -1 || ["", null, "null"].indexOf(inputValue) === -1)) {
-        // validate $.input value against _displayFormat
-        inputMoment = moment(inputValue, this._displayFormat, true);
-        validationResult.isValid = inputMoment.isValid();
-        if (!validationResult.isValid) {
-          validationResult.errorMessage = this.T("Input string {0} is not in the correct format of {1}", inputValue, this._displayFormat);
-        }
-        this._handleValidationResult(validationResult);
-      }
-
-      return validationResult.isValid;
-    },
-
-    _updateUIValidState: function(isValid) {
-      var label = this.$.label;
-      this.toggleClass('error', !isValid, label);
-      var contentContainer = this.$.contentContainer;
-      this.toggleClass('error', !isValid, contentContainer);
-      var hint = this.$.hint;
-      this.toggleClass('error', !isValid, hint);
+    focus: function() {
+      this.$.input.focus();
     },
 
     _getFocusableElement: function () {
