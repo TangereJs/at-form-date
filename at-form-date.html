@@ -151,7 +151,7 @@
       }
     },
     observers: [
-      '_internalValidStateUpdate(disabled, required, hide)'
+      '_internalValidStateUpdate(disabled, required)'
     ],
     $meta: [{
       title: "Date",
@@ -244,7 +244,7 @@
       });
 
       this._isReady = true;
-      this._internalValidStateUpdate(this.disabled, this.required, this.hide);
+      this._internalValidStateUpdate(this.disabled, this.required);
     },
 
     attached: function() {
@@ -309,7 +309,7 @@
       }
     },
 
-    _internalValidStateUpdate: function (disabled, required, hide) {
+    _internalValidStateUpdate: function (disabled, required) {
       if (this._isReady) {
         this.validate(true);
       }
