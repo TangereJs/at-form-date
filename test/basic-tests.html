@@ -63,6 +63,18 @@
     </template>
   </test-fixture>
 
+  <test-fixture id="errorMessageAndHiddenValidTrue">
+    <template>
+      <at-form-date error-message="demo error message" hide></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="errorMessageAndDisabledValidTrue">
+    <template>
+      <at-form-date error-message="demo error message" disabled></at-form-date>
+    </template>
+  </test-fixture>
+
   <test-fixture id="datetimeFormatTest">
     <template>
       <at-form-date></at-form-date>
@@ -136,6 +148,26 @@
         input.errorMessage = 'Another version of demo error message';
         assert.equal(input.errorMessage, 'Another version of demo error message', 'error message is correctly set');
         assert.equal(input.validate(true), false, 'input is invalid because error message is set as property');
+      });
+
+      test('errorMessage & hide => valid = true', function() {
+        var input = fixture('errorMessageAndHiddenValidTrue');
+        assert.equal(input.errorMessage, 'demo error message', 'error message is correctly set');
+        assert.equal(true, input.hide, 'element is not hidden');
+        assert.equal(input.validate(true), true, 'input is valid because error message is set as attribute');
+        input.errorMessage = 'Another version of demo error message';
+        assert.equal(input.errorMessage, 'Another version of demo error message', 'error message is correctly set');
+        assert.equal(input.validate(true), true, 'input is invalid because error message is set as property');
+      });
+
+      test('errorMessage & disabled => valid = true', function() {
+        var input = fixture('errorMessageAndDisabledValidTrue');
+        assert.equal(input.errorMessage, 'demo error message', 'error message is correctly set');
+        assert.equal(true, input.disabled, 'element is not disabled');
+        assert.equal(input.validate(true), true, 'input is valid because error message is set as attribute');
+        input.errorMessage = 'Another version of demo error message';
+        assert.equal(input.errorMessage, 'Another version of demo error message', 'error message is correctly set');
+        assert.equal(input.validate(true), true, 'input is invalid because error message is set as property');
       });
 
       test('datetime Format Test', function() {
