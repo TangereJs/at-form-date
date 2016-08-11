@@ -239,7 +239,7 @@
 
       valueProvider.addEventListener('blur', function(event) {
         self._isInternalValueUpdate = true;
-        self.validate();
+        self.validate(true, true);
         self._isInternalValueUpdate = false;
       });
 
@@ -378,7 +378,7 @@
       return result;
     },
 
-    validate: function (showError) {
+    validate: function (showError, isUserInput) {
 
       if (showError === undefined) { showError = this.autovalidate; }
       this._clearUIValidState();
@@ -408,7 +408,7 @@
         return validationResult.isValid;
       }
 
-      validationResult = this._validateData(this, this.value, this.T.bind(this));
+      validationResult = this._validateData(this, this.value, this.T.bind(this), isUserInput);
       if (showError) { this._handleValidationResult(validationResult); }
 
       if (validationResult.isValid && ([null, "null", ""].indexOf(currentValue) === -1 || ["", null, "null"].indexOf(inputValue) === -1)) {
@@ -538,7 +538,7 @@
         this._isInternalValueUpdate = false;
       }
 
-      this.validate(true);
+      this.validate(true, true);
       this._fireValueChangedEvent(this.value);
     },
 

@@ -6,7 +6,7 @@
    */
   Tangere.behaviors.AtFormDateInputValidation = {
 
-    _validateData: function(schema, value, localizer) {
+    _validateData: function(schema, value, localizer, isUserInput) {
 
       function isObject(obj) {
         return Object.prototype.toString.call(obj) === "[object Object]";
@@ -112,6 +112,8 @@
         return validationResult;
       }
 
+      if (isUserInput) { return validationResult; }
+
       validationResult = _validateFormat(schema._valueFormat, value, localizer);
 
       return validationResult;
@@ -141,7 +143,10 @@
       }
 
       function _validateRequired(required, value, localizer) {
-        var validationResult = {};
+        var validationResult = {
+          isValid: true,
+          errorMessage: ""
+        };
 
         // if required is true return true if value is not undefined, null or ""
         validationResult.isValid = !required || ([undefined, null, ""].indexOf(value) === -1);
