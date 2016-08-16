@@ -6,7 +6,7 @@
    */
   Tangere.behaviors.AtFormDateInputValidation = {
 
-    _validateData: function(schema, value, localizer, isUserInput) {
+    _validateData: function(schema, value, localizer) {
 
       function isObject(obj) {
         return Object.prototype.toString.call(obj) === "[object Object]";
@@ -112,8 +112,6 @@
         return validationResult;
       }
 
-      if (isUserInput) { return validationResult; }
-
       validationResult = _validateFormat(schema._valueFormat, value, localizer);
 
       return validationResult;
@@ -176,6 +174,24 @@
         return validationResult;
       }
 
+    },
+
+    _validateInput: function(value, format, localizer) {
+      var validationResult = {
+        isValid: true,
+        errorMessage: ""
+      };
+
+      if (["", null, "null"].indexOf(value) !== -1) {
+        return validationResult;
+      }
+      // validate value against format
+      inputMoment = moment(value, format, true);
+      validationResult.isValid = inputMoment.isValid();
+      if (!validationResult.isValid) {
+        validationResult.errorMessage = localizer("Value {0} is not in correct format of {1}", value, format);
+      }
+      return validationResult;
     }
   }
 </script>

@@ -239,7 +239,7 @@
 
       valueProvider.addEventListener('blur', function(event) {
         self._isInternalValueUpdate = true;
-        self.validate(true, true);
+        self.validate(true);
         self._isInternalValueUpdate = false;
       });
 
@@ -378,7 +378,7 @@
       return result;
     },
 
-    validate: function (showError, isUserInput) {
+    validate: function (showError) {
 
       if (showError === undefined) { showError = this.autovalidate; }
       this._clearUIValidState();
@@ -402,24 +402,22 @@
         }
       }
 
+      var validationResult;
+      if (this._localValue !== inputValue) {
+        this._localValue = inputValue;
+        validationResult = this._validateInput(inputValue, this._displayFormat, this.T.bind(this));
+        if (showError) { this._handleValidationResult(validationResult); }
+        if (!validationResult.isValid) { return validationResult.isValid; }
+      }
+
       var validationResult = this._validateBaseData();
       if (showError) { this._handleValidationResult(validationResult); }
       if (validationResult.isFinal) {
         return validationResult.isValid;
       }
 
-      validationResult = this._validateData(this, this.value, this.T.bind(this), isUserInput);
+      validationResult = this._validateData(this, this.value, this.T.bind(this));
       if (showError) { this._handleValidationResult(validationResult); }
-
-      if (validationResult.isValid && ([null, "null", ""].indexOf(currentValue) === -1 || ["", null, "null"].indexOf(inputValue) === -1)) {
-        // validate $.input value against _displayFormat
-        inputMoment = moment(inputValue, this._displayFormat, true);
-        validationResult.isValid = inputMoment.isValid();
-        if (!validationResult.isValid) {
-          validationResult.errorMessage = this.T("Input string {0} is not in the correct format of {1}", inputValue, this._displayFormat);
-        }
-        if (showError) { this._handleValidationResult(validationResult); }
-      }
 
       return validationResult.isValid;
     },
@@ -443,6 +441,7 @@
         // we check against string "null" for edge case where value is set as attribute to null
         // at-form-date.value remains "" or null
         valueProvider.value = "";
+        this._localValue = "";
       } else {
         // there is no need to update at-form-date.value because its already up to date
         var newMoment = moment(newValue, this._valueFormat, true);
@@ -450,8 +449,10 @@
           this._setMomentToDateAndTime(newMoment);
           var formattedValue = newMoment.format(this._displayFormat);
           valueProvider.value = formattedValue;
+          this._localValue = formattedValue;
         } else {
           valueProvider.value = newValue;
+          this._localValue = newValue;
         }
       }
 
@@ -505,6 +506,7 @@
       var displayString = momentValue.format(self._displayFormat);
       var valueProvider = this.$.input;
       valueProvider.value = displayString;
+      this._localValue = displayString;
 
       this._isInternalValueUpdate = true; // this prevents _valueChanged function from updating input field to an incorrect value
       if (this.xtype === "datetime") {
@@ -538,7 +540,7 @@
         this._isInternalValueUpdate = false;
       }
 
-      this.validate(true, true);
+      this.validate(true);
       this._fireValueChangedEvent(this.value);
     },
 
