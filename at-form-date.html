@@ -239,7 +239,7 @@
 
       valueProvider.addEventListener('blur', function(event) {
         self._isInternalValueUpdate = true;
-        self.validate(true);
+        self.validate();
         self._isInternalValueUpdate = false;
       });
 
@@ -311,7 +311,7 @@
 
     _internalValidStateUpdate: function (disabled, required) {
       if (this._isReady) {
-        this.validate(true);
+        this.validate();
       }
     },
 
@@ -539,7 +539,7 @@
         this._isInternalValueUpdate = false;
       }
 
-      this.validate(true);
+      this.validate();
       this._fireValueChangedEvent(this.value);
     },
 
