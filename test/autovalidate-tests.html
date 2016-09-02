@@ -53,7 +53,7 @@
           assert.equal(false, isValid, "element is valid");
 
           var hint = Polymer.dom(element.$.hint);
-          assert.equal(element.T('This field is required.'), hint.textContent, 'Error message not set correctly');
+          assert.equal("", hint.textContent, 'Error message not set correctly');
 
           var isValid = element.validate(true);
           assert.equal(false, isValid, "element is valid");
@@ -129,7 +129,7 @@
           assert.equal(false, isValid, "element is valid");
 
           var hint = Polymer.dom(element.$.hint);
-          assert.equal(element.T('This field is required.'), hint.textContent, 'Error message not set correctly');
+          assert.equal("", hint.textContent, 'Error message not set correctly');
 
           var isValid = element.validate(true);
           assert.equal(false, isValid, "element is valid");
