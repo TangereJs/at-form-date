@@ -151,7 +151,7 @@
       }
     },
     observers: [
-      '_internalValidStateUpdate(disabled, required)'
+      '_internalValidStateUpdate(required)'
     ],
     $meta: [{
       title: "Date",
@@ -247,7 +247,7 @@
       });
 
       this._isReady = true;
-      this._internalValidStateUpdate(this.disabled, this.required);
+      this._internalValidStateUpdate(this.required);
     },
 
     attached: function() {
@@ -312,7 +312,7 @@
       }
     },
 
-    _internalValidStateUpdate: function (disabled, required) {
+    _internalValidStateUpdate: function (required) {
       if (this._isReady) {
         this.validate();
       }
@@ -414,7 +414,7 @@
 
       var validationResult = this._validateBaseData();
       if (showError) { this._handleValidationResult(validationResult); }
-      if (validationResult.isFinal) {
+      if (!validationResult.isValid) {
         return validationResult.isValid;
       }
 

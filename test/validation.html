@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../at-form-date.html">
+
+</head>
+<body>
+
+  <test-fixture id="propertyTest">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <script>
+
+  /**
+    at-form-date validation updated for MPS-81
+
+    disabled and hide do not affect valid state the element
+
+    Test case(s)
+      * at-form-date is initially valid.
+      * hidding and/or disabling the form-array doesn't change valid state
+
+      * make form-array invalid
+      * hidding and/or disabling the form-array doesn't change valid state
+   */
+
+    suite('validate function tests', function() {
+
+      function assertElementIsValid(element) {
+        var isValid = element.valid;
+        assert.equal(isValid, true, 'element is invalid');
+        isValid = element.validate();
+        assert.equal(isValid, true, 'element is invalid');
+      }
+
+      function assertElementIsInvalid(element) {
+        var isValid = element.valid;
+        assert.equal(isValid, false, 'element is valid');
+        isValid = element.validate();
+        assert.equal(isValid, false, 'element is valid');
+      }
+
+      test('disabled and hidden effect on valid state', function() {
+        var element = fixture('propertyTest');
+
+        // element is initially valid
+        assertElementIsValid(element);
+
+        // disable the element
+        element.disabled = true;
+        assert.equal(element.disabled, true, 'element is enabled');
+
+        // element remains valid
+        assertElementIsValid(element);
+
+        // enable the element
+        element.disabled = false;
+        assert.equal(element.disabled, false, 'element is disabled');
+
+        // element remains valid
+        assertElementIsValid(element);
+
+        // hide the element
+        element.hide = true;
+        assert.equal(element.hide, true, 'element is visible');
+
+        // element remains valid
+        assertElementIsValid(element);
+
+        // disable the element; element is not both disabled and hidden
+        element.disabled = true;
+        assert.equal(element.disabled, true, 'element is enabled');
+
+        // element remains valid
+        assertElementIsValid(element);
+
+        // enable and show the element
+        element.disabled = false;
+        assert.equal(element.disabled, false, 'element is disabled');
+        element.hide = false;
+        assert.equal(element.hide, false, 'element is hidden');
+
+        // element remains valid
+        assertElementIsValid(element);
+
+        // make element invalid
+        element.value = null;
+        element.required = true;
+        assertElementIsInvalid(element);
+
+        // disable the element
+        element.disabled = true;
+        assert.equal(element.disabled, true, 'element is enabled');
+
+        // element remains invalid
+        assertElementIsInvalid(element);
+
+        // enable the element
+        element.disabled = false;
+        assert.equal(element.disabled, false, 'element is disabled');
+
+        // element remains invalid
+        assertElementIsInvalid(element);
+
+        // hide the element
+        element.hide = true;
+        assert.equal(element.hide, true, 'element is visible');
+
+        // element remains invalid
+        assertElementIsInvalid(element);
+
+        // disable the element; element is not both disabled and hidden
+        element.disabled = true;
+        assert.equal(element.disabled, true, 'element is enabled');
+
+        // element remains invalid
+        assertElementIsInvalid(element);
+
+        // enable and show the element
+        element.disabled = false;
+        assert.equal(element.disabled, false, 'element is disabled');
+        element.hide = false;
+        assert.equal(element.hide, false, 'element is hidden');
+
+        // element remains invalid
+        assertElementIsInvalid(element);
+
+        element.required = false;
+
+        // element becomes valid
+        assertElementIsValid(element);
+      });
+
+    });
+  </script>
+
+</body>
+</html>
