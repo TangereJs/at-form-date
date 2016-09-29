@@ -26,7 +26,7 @@
 
   <test-fixture id="autovalidate">
     <template>
-      <at-form-date autovalidate></at-form-date>
+      <at-form-date auto-validate></at-form-date>
     </template>
   </test-fixture>
 
@@ -158,7 +158,7 @@
 
         test('autovalidate, do not show errors', function () {
           var element = fixture('propertyTests');
-          element.autovalidate = true;
+          element.autoValidate = true;
           element.required = true;
           element.value = "";
 
@@ -177,7 +177,7 @@
 
         test('autovalidate, do show errors', function () {
           var element = fixture('propertyTests');
-          element.autovalidate = true;
+          element.autoValidate = true;
           element.required = true;
           element.value = "";
 
