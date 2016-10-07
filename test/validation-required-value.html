@@ -1,0 +1,1006 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../at-form-date.html">
+
+</head>
+<body>
+
+  <!-- required=false, value="", autoValidate=false-->
+  <test-fixture id="valueEmptyRequiredFalseAutoValidateFalse">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <!-- required=false, value=null, autoValidate=false -->
+  <test-fixture id="valueNullRequiredFalseAutoValidateFalse">
+    <template>
+      <at-form-date value=null></at-form-date>
+    </template>
+  </test-fixture>
+
+  <!-- required=true, value="", autoValidate=false -->
+  <test-fixture id="valueEmptyRequiredTrueAutoValidateFalse">
+    <template>
+      <at-form-date required></at-form-date>
+    </template>
+  </test-fixture>
+
+  <!-- required=true, value=null, autoValidate=false -->
+  <test-fixture id="valueNullRequiredTrueAutoValidateFalse">
+    <template>
+      <at-form-date required value=null></at-form-date>
+    </template>
+  </test-fixture>
+
+  <!-- required=false, value="", autoValidate=true -->
+  <test-fixture id="valueEmptyRequiredFalseAutoValidateTrue" auto-validate>
+    <template>
+      <at-form-date auto-validate></at-form-date>
+    </template>
+  </test-fixture>
+
+  <!-- required=false, value=null, autoValidate=true -->
+  <test-fixture id="valueNullRequiredFalseAutoValidateTrue">
+    <template>
+      <at-form-date value=null auto-validate></at-form-date>
+    </template>
+  </test-fixture>
+
+  <!-- required=true, value="", autoValidate=true -->
+  <test-fixture id="valueEmptyRequiredTrueAutoValidateTrue">
+    <template>
+      <at-form-date required auto-validate></at-form-date>
+    </template>
+  </test-fixture>
+
+  <!-- required=true, value=null, autoValidate=true -->
+  <test-fixture id="valueNullRequiredTrueAutoValidateTrue">
+    <template>
+      <at-form-date required value=null auto-validate></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="propertyTest">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <script>
+
+  /*
+    There are three ways to make at-form-date invalid
+    1. .value = [ "", null ], .required = true
+      * autoValidate false doesn't show errors in UI, autoValidate true does
+
+    2. .maxChars > 0, .value.length > .maxChars
+      * autoValidate false doesn't show errors in UI, autoValidate true does
+
+    3. .errorMessage !== ""
+      * errors are always shown in UI, autoValidate doesn't affect this
+
+    This test suite deals with 1.
+
+   */
+
+    suite('validate function tests', function() {
+
+      function assertElementIsValid(element) {
+        var isValid = element.valid;
+        assert.equal(isValid, true, 'element is invalid');
+        isValid = element.validate();
+        assert.equal(isValid, true, 'element is invalid');
+      }
+
+      function assertElementIsInvalid(element) {
+        var isValid = element.valid;
+        assert.equal(isValid, false, 'element is valid');
+        isValid = element.validate();
+        assert.equal(isValid, false, 'element is valid');
+      }
+
+      function assertErrorMessage(element, errorMessage) {
+        var hint = element.$.hint;
+        var hintContent = Polymer.dom(hint).textContent;
+        assert.equal(hintContent, errorMessage);
+      }
+
+      suite('tests where properties are set as attributes', function () {
+
+        test('value empty, required false, autovalidate false', function () {
+          var element = fixture('valueEmptyRequiredFalseAutoValidateFalse');
+
+          assert.equal(element.value, "", "value not set correctly");
+          assert.equal(element.required, false, "required not set correctly");
+          assert.equal(element.autoValidate, false, "autoValidate not set correctly");
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null keeps element valid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting required to true should make element invalid
+          element.required = true;
+          assert.equal(element.required, true, "required not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" should make element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" should make element invalid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+        });
+
+        test('value null, required false, autovalidate false', function () {
+          var element = fixture('valueNullRequiredFalseAutoValidateFalse');
+          element.value = null; // we need to set value to null because when its set as attribute to null value becomes "null" string not null
+
+          assert.equal(element.value, null, "value not set correctly");
+          assert.equal(element.required, false, "required not set correctly");
+          assert.equal(element.autoValidate, false, "autoValidate not set correctly");
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // make element invalid
+          element.required = true;
+          assert.equal(element.required, true, "required not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" makes element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+        });
+
+        test('value empty, required true, autovalidate false', function () {
+          var element = fixture('valueEmptyRequiredTrueAutoValidateFalse');
+
+          assert.equal(element.value, "", "value not set correctly");
+          assert.equal(element.required, true, "required not set correctly");
+          assert.equal(element.autoValidate, false, "autoValidate not set correctly");
+
+          // element is initially invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // make element valid by setting value to "2016-07-10T10:00:00.000Z"
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes the element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // make element valid by setting required to false
+          element.required = false;
+          assert.equal(element.required, false, "required not set correctly");
+
+          // element should be valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps the element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+        test('value null, required true, autovalidate false', function () {
+          var element = fixture('valueNullRequiredTrueAutoValidateFalse');
+          element.value = null; // we need to set value to null because when its set as attribute to null value becomes "null" string not null
+
+          assert.equal(element.value, null, "value not set correctly");
+          assert.equal(element.required, true, "required not set correctly");
+          assert.equal(element.autoValidate, false, "autoValidate not set correctly");
+
+          // element is initially invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" makes element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // make element valid by setting required to false
+          element.required = false;
+          assert.equal(element.required, false, "required not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // element should be valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+        test('value empty, required false, autovalidate true', function () {
+          var element = fixture('valueEmptyRequiredFalseAutoValidateTrue');
+
+          assert.equal(element.value, "", "value not set correctly");
+          assert.equal(element.required, false, "required not set correctly");
+          assert.equal(element.autoValidate, true, "autoValidate not set correctly");
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null keeps element valid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting required to true should make element invalid
+          element.required = true;
+          assert.equal(element.required, true, "required not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" should make element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" should make element invalid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+        });
+
+        test('value null, required false, autovalidate true', function () {
+          var element = fixture('valueNullRequiredFalseAutoValidateTrue');
+          element.value = null; // we need to set value to null because when its set as attribute to null value becomes "null" string not null
+
+          assert.equal(element.value, null, "value not set correctly");
+          assert.equal(element.required, false, "required not set correctly");
+          assert.equal(element.autoValidate, true, "autoValidate not set correctly");
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // make element invalid
+          element.required = true;
+          assert.equal(element.required, true, "required not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" makes element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+        });
+
+        test('value empty, required true, autovalidate true', function () {
+          var element = fixture('valueEmptyRequiredTrueAutoValidateTrue');
+
+          assert.equal(element.value, "", "value not set correctly");
+          assert.equal(element.required, true, "required not set correctly");
+          assert.equal(element.autoValidate, true, "autoValidate not set correctly");
+
+          // element is initially invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // make element valid by setting value to "2016-07-10T10:00:00.000Z"
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes the element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // make element valid by setting required to false
+          element.required = false;
+          assert.equal(element.required, false, "required not set correctly");
+
+          // element should be valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps the element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+        test('value null, required true, autovalidate true', function () {
+          var element = fixture('valueNullRequiredTrueAutoValidateTrue');
+          element.value = null; // we need to set value to null because when its set as attribute to null value becomes "null" string not null
+
+          assert.equal(element.value, null, "value not set correctly");
+          assert.equal(element.required, true, "required not set correctly");
+          assert.equal(element.autoValidate, true, "autoValidate not set correctly");
+
+          // element is initially invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" makes element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // make element valid by setting required to false
+          element.required = false;
+          assert.equal(element.required, false, "required not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // element should be valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+      });
+
+      /***************************************************************************************/
+      /***************************************************************************************/
+      /***************************************************************************************/
+      //  Tests where properties are set in code
+      /***************************************************************************************/
+      /***************************************************************************************/
+      /***************************************************************************************/
+
+      suite('tests where properties are set in code', function () {
+
+        test('value empty, required false, autovalidate false', function () {
+          var element = fixture('propertyTest');
+          element.autoValidate = false;
+          element.value = "";
+          element.required = false;
+
+          assert.equal(element.value, "", "value not set correctly");
+          assert.equal(element.required, false, "required not set correctly");
+          assert.equal(element.autoValidate, false, "autoValidate not set correctly");
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null keeps element valid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting required to true should make element invalid
+          element.required = true;
+          assert.equal(element.required, true, "required not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" should make element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" should make element invalid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+        });
+
+        test('value null, required false, autovalidate false', function () {
+          var element = fixture('propertyTest');
+          element.autoValidate = false;
+          element.value = null;
+          element.required = false;
+
+          assert.equal(element.value, null, "value not set correctly");
+          assert.equal(element.required, false, "required not set correctly");
+          assert.equal(element.autoValidate, false, "autoValidate not set correctly");
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // make element invalid
+          element.required = true;
+          assert.equal(element.required, true, "required not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" makes element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+        });
+
+        test('value empty, required true, autovalidate false', function () {
+          var element = fixture('propertyTest');
+          element.autoValidate = false;
+          element.value = "";
+          element.required = true;
+
+          assert.equal(element.value, "", "value not set correctly");
+          assert.equal(element.required, true, "required not set correctly");
+          assert.equal(element.autoValidate, false, "autoValidate not set correctly");
+
+          // element is initially invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // make element valid by setting value to "2016-07-10T10:00:00.000Z"
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes the element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // make element valid by setting required to false
+          element.required = false;
+          assert.equal(element.required, false, "required not set correctly");
+
+          // element should be valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps the element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+        test('value null, required true, autovalidate false', function () {
+          var element = fixture('propertyTest');
+          element.autoValidate = false;
+          element.value = null;
+          element.required = true;
+
+          assert.equal(element.value, null, "value not set correctly");
+          assert.equal(element.required, true, "required not set correctly");
+          assert.equal(element.autoValidate, false, "autoValidate not set correctly");
+
+          // element is initially invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" makes element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, "");
+          assertElementIsInvalid(element);
+
+          // make element valid by setting required to false
+          element.required = false;
+          assert.equal(element.required, false, "required not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // element should be valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+        test('value empty, required false, autovalidate true', function () {
+          var element = fixture('propertyTest');
+          element.autoValidate = true;
+          element.value = "";
+          element.required = false;
+
+          assert.equal(element.value, "", "value not set correctly");
+          assert.equal(element.required, false, "required not set correctly");
+          assert.equal(element.autoValidate, true, "autoValidate not set correctly");
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null keeps element valid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting required to true should make element invalid
+          element.required = true;
+          assert.equal(element.required, true, "required not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" should make element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" should make element invalid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+        });
+
+        test('value null, required false, autovalidate true', function () {
+          var element = fixture('propertyTest');
+          element.autoValidate = true;
+          element.value = null;
+          element.required = false;
+
+          assert.equal(element.value, null, "value not set correctly");
+          assert.equal(element.required, false, "required not set correctly");
+          assert.equal(element.autoValidate, true, "autoValidate not set correctly");
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // make element invalid
+          element.required = true;
+          assert.equal(element.required, true, "required not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" makes element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+        });
+
+        test('value empty, required true, autovalidate true', function () {
+          var element = fixture('propertyTest');
+          element.autoValidate = true;
+          element.value = "";
+          element.required = true;
+
+          assert.equal(element.value, "", "value not set correctly");
+          assert.equal(element.required, true, "required not set correctly");
+          assert.equal(element.autoValidate, true, "autoValidate not set correctly");
+
+          // element is initially invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // make element valid by setting value to "2016-07-10T10:00:00.000Z"
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes the element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // assert that element is invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // make element valid by setting required to false
+          element.required = false;
+          assert.equal(element.required, false, "required not set correctly");
+
+          // element should be valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps the element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+        test('value null, required true, autovalidate true', function () {
+          var element = fixture('propertyTest');
+          element.autoValidate = true;
+          element.value = null;
+          element.required = true;
+
+          assert.equal(element.value, null, "value not set correctly");
+          assert.equal(element.required, true, "required not set correctly");
+          assert.equal(element.autoValidate, true, "autoValidate not set correctly");
+
+          // element is initially invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" makes element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to null makes element invalid
+          element.value = null;
+          assert.equal(element.value, null, "value not set correctly");
+
+          // element should be invalid
+          assertErrorMessage(element, element.T("This field is required."));
+          assertElementIsInvalid(element);
+
+          // make element valid by setting required to false
+          element.required = false;
+          assert.equal(element.required, false, "required not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "2016-07-10T10:00:00.000Z" keeps element valid
+          element.value = "2016-07-10T10:00:00.000Z";
+          assert.equal(element.value, "2016-07-10T10:00:00.000Z", "value not set correctly");
+
+          // assert that element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting value to "" keeps element valid
+          element.value = "";
+          assert.equal(element.value, "", "value not set correctly");
+
+          // element should be valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+      });
+
+    });
+  </script>
+
+
+
+</body>
+</html>

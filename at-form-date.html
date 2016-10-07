@@ -404,7 +404,13 @@
         }
       }
 
+      return this._validate(showError);
+    },
+
+    _validate: function (showError) {
+      var inputValue = this.$.input.value;
       var validationResult;
+
       if (this._localValue !== inputValue) {
         this._localValue = inputValue;
         validationResult = this._validateInput(inputValue, this._displayFormat, this.T.bind(this));
@@ -413,7 +419,7 @@
       }
 
       var validationResult = this._validateBaseData();
-      if (showError) { this._handleValidationResult(validationResult); }
+      this._handleValidationResult(validationResult);
       if (!validationResult.isValid) {
         return validationResult.isValid;
       }
@@ -457,6 +463,8 @@
           this._localValue = newValue;
         }
       }
+
+      if (this.autoValidate) { this._validate(true); }
 
       this._fireValueChangedEvent(newValue);
     },

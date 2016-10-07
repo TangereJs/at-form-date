@@ -1,0 +1,337 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../at-form-date.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="errorMessageEmptyautoValidateFalse">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="errorMessageLoremIpsumautoValidateFalse">
+    <template>
+      <at-form-date error-message="lorem ipsum"></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="errorMessageEmptyautoValidateTrue">
+    <template>
+      <at-form-date auto-validate></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="errorMessageLoremIpsumautoValidateTrue">
+    <template>
+      <at-form-date error-message="lorem ipsum" auto-validate></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="propertyTest">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <script>
+    /*
+       There are three ways to make at-form-date invalid
+       1. .value = [ "", null ], .required = true
+         * autoValidate false doesn't show errors in UI, autoValidate true does
+
+       2. .maxChars > 0, .value.length > .maxChars
+         * autoValidate false doesn't show errors in UI, autoValidate true does
+
+       3. .errorMessage !== ""
+         * errors are always shown in UI, autoValidate doesn't affect this
+
+         This suite deals with 3.
+      */
+
+    suite('validate function tests', function() {
+
+      function assertElementIsValid(element) {
+        var isValid = element.valid;
+        assert.equal(isValid, true, 'element is invalid');
+        isValid = element.validate();
+        assert.equal(isValid, true, 'element is invalid');
+      }
+
+      function assertElementIsInvalid(element) {
+        var isValid = element.valid;
+        assert.equal(isValid, false, 'element is valid');
+        isValid = element.validate();
+        assert.equal(isValid, false, 'element is valid');
+      }
+
+      function assertErrorMessage(element, errorMessage) {
+        var hint = element.$.hint;
+        var hintContent = Polymer.dom(hint).textContent;
+        assert.equal(hintContent, errorMessage);
+      }
+
+
+      suite('tests where properties are set as attributes', function() {
+
+        test('error message empty, autoValidate false', function() {
+          var element = fixture('errorMessageEmptyautoValidateFalse');
+          assert.equal(element.errorMessage, "", 'error message not set correctly');
+          assert.equal(element.autoValidate, false, 'autoValidate value not set correctly');
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting error message makes element invalid
+          element.errorMessage = "lorem ipsum";
+          assert.equal(element.errorMessage, "lorem ipsum", 'error message not set correctly');
+
+          // assert element is invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+          // changing autoValidate to true keeps the error message
+          element.autoValidate = true;
+          assert.equal(element.autoValidate, true, 'autoValidate value not set correctly');
+
+          // assert element is invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+        });
+
+        test('error message "lorem ipsum", autoValidate false', function() {
+          var element = fixture('errorMessageLoremIpsumautoValidateFalse');
+          assert.equal(element.errorMessage, "lorem ipsum", 'error message not set correctly');
+          assert.equal(element.autoValidate, false, 'autoValidate value not set correctly');
+
+          // element is initially invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+          // setting error message makes element valid
+          element.errorMessage = "";
+          assert.equal(element.errorMessage, "", 'error message not set correctly');
+
+          // assert element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // changing autoValidate to true doesn't change error message
+          element.autoValidate = true;
+          assert.equal(element.autoValidate, true, 'autoValidate value not set correctly');
+
+          // assert element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+        test('error message empty, autoValidate true', function() {
+          var element = fixture('errorMessageEmptyautoValidateTrue');
+          assert.equal(element.errorMessage, "", 'error message not set correctly');
+          assert.equal(element.autoValidate, true, 'autoValidate value not set correctly');
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting error message makes element invalid
+          element.errorMessage = "lorem ipsum";
+          assert.equal(element.errorMessage, "lorem ipsum", 'error message not set correctly');
+
+          // assert element is invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+          // changing autoValidate to true keeps the error message
+          element.autoValidate = false;
+          assert.equal(element.autoValidate, false, 'autoValidate value not set correctly');
+
+          // assert element is invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+        });
+
+        test('error message "lorem ipsum", autoValidate true', function() {
+          var element = fixture('errorMessageLoremIpsumautoValidateTrue');
+          assert.equal(element.errorMessage, "lorem ipsum", 'error message not set correctly');
+          assert.equal(element.autoValidate, true, 'autoValidate value not set correctly');
+
+          // element is initially invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+          // setting error message makes element valid
+          element.errorMessage = "";
+          assert.equal(element.errorMessage, "", 'error message not set correctly');
+
+          // assert element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // changing autoValidate to true doesn't change error message
+          element.autoValidate = false;
+          assert.equal(element.autoValidate, false, 'autoValidate value not set correctly');
+
+          // assert element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+      });
+
+      /*********************************************************************************************************/
+      /*********************************************************************************************************/
+      /*********************************************************************************************************/
+
+      // Tests where properties are set in code
+
+      /*********************************************************************************************************/
+      /*********************************************************************************************************/
+      /*********************************************************************************************************/
+
+
+      suite('tests where properties are set in code', function() {
+
+        test('error message empty, autoValidate false', function() {
+          var element = fixture('propertyTest');
+          element.autoValidate = false;
+          element.errorMessage = "";
+
+          assert.equal(element.errorMessage, "", 'error message not set correctly');
+          assert.equal(element.autoValidate, false, 'autoValidate value not set correctly');
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting error message makes element invalid
+          element.errorMessage = "lorem ipsum";
+          assert.equal(element.errorMessage, "lorem ipsum", 'error message not set correctly');
+
+          // assert element is invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+          // changing autoValidate to true keeps the error message
+          element.autoValidate = true;
+          assert.equal(element.autoValidate, true, 'autoValidate value not set correctly');
+
+          // assert element is invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+        });
+
+        test('error message "lorem ipsum", autoValidate false', function() {
+          var element = fixture('propertyTest');
+          element.autoValidate = false;
+          element.errorMessage = "lorem ipsum";
+
+          assert.equal(element.errorMessage, "lorem ipsum", 'error message not set correctly');
+          assert.equal(element.autoValidate, false, 'autoValidate value not set correctly');
+
+          // element is initially invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+          // setting error message makes element valid
+          element.errorMessage = "";
+          assert.equal(element.errorMessage, "", 'error message not set correctly');
+
+          // assert element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // changing autoValidate to true doesn't change error message
+          element.autoValidate = true;
+          assert.equal(element.autoValidate, true, 'autoValidate value not set correctly');
+
+          // assert element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+        test('error message empty, autoValidate true', function() {
+          var element = fixture('propertyTest');
+          element.autoValidate = true;
+          element.errorMessage = "";
+
+          assert.equal(element.errorMessage, "", 'error message not set correctly');
+          assert.equal(element.autoValidate, true, 'autoValidate value not set correctly');
+
+          // element is initially valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // setting error message makes element invalid
+          element.errorMessage = "lorem ipsum";
+          assert.equal(element.errorMessage, "lorem ipsum", 'error message not set correctly');
+
+          // assert element is invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+          // changing autoValidate to true keeps the error message
+          element.autoValidate = false;
+          assert.equal(element.autoValidate, false, 'autoValidate value not set correctly');
+
+          // assert element is invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+        });
+
+        test('error message "lorem ipsum", autoValidate true', function() {
+          var element = fixture('propertyTest');
+          element.autoValidate = true;
+          element.errorMessage = "lorem ipsum";
+
+          assert.equal(element.errorMessage, "lorem ipsum", 'error message not set correctly');
+          assert.equal(element.autoValidate, true, 'autoValidate value not set correctly');
+
+          // element is initially invalid
+          assertErrorMessage(element, "lorem ipsum");
+          assertElementIsInvalid(element);
+
+          // setting error message makes element valid
+          element.errorMessage = "";
+          assert.equal(element.errorMessage, "", 'error message not set correctly');
+
+          // assert element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+
+          // changing autoValidate to true doesn't change error message
+          element.autoValidate = false;
+          assert.equal(element.autoValidate, false, 'autoValidate value not set correctly');
+
+          // assert element is valid
+          assertErrorMessage(element, "");
+          assertElementIsValid(element);
+        });
+
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>
