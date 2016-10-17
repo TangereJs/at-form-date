@@ -530,6 +530,8 @@
       }
       this._isInternalValueUpdate = false;
 
+      this.validate();
+
       self._fireValueChangedEvent(self.value);
     },
 
@@ -545,7 +547,7 @@
         if (this.xtype === "datetime") {
           this.value = inputMoment.toISOString();
         } else {
-          this.value = inputMoment.format(self._valueFormat);
+          this.value = inputMoment.format(this._valueFormat);
         }
         this._isInternalValueUpdate = false;
       } else {
