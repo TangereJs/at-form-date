@@ -452,16 +452,11 @@
         this._localValue = "";
       } else {
         // there is no need to update at-form-date.value because its already up to date
-        var newDate = new Date(newValue);
-        var invalidDateRegex = /Invalid Date|NaN/;
-        var isValidByRegex = !invalidDateRegex.test(newDate);
-        var newMoment;
-
-        if (isValidByRegex) {
-          newMoment = moment(newDate);
-        } else {
+        var newMoment = moment(newValue, this._valueFormat, true);
+        if (!newMoment.isValid()) {
           newMoment = moment(newValue, this._valueFormat);
         }
+
         if (newMoment.isValid()) {
           this._setMomentToDateAndTime(newMoment);
           var formattedValue = newMoment.format(this._displayFormat);
