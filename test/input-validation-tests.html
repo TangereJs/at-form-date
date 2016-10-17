@@ -299,14 +299,14 @@
         var value = "2016-07-29T13:01:30Z";
 
         var validationResult = inputValidation._validateData(schema, value, format);
-        assert.equal(validationResult.isValid, false, 'value is valid');
-        assert.equal(validationResult.errorMessage, 'Value 2016-07-29T13:01:30Z is not in correct format of YYYY-MM-DDTHH:mm:ss.SSSZ');
+        assert.equal(validationResult.isValid, true, 'value is invalid');
+        assert.equal(validationResult.errorMessage, '', 'error message not set correctly');
 
         var value = "2016-07-29T13:01:30.425Z";
 
         var validationResult = inputValidation._validateData(schema, value, format);
         assert.equal(validationResult.isValid, true, 'value is invalid');
-        assert.equal(validationResult.errorMessage, '');
+        assert.equal(validationResult.errorMessage, '', 'error message not set correctly');
       });
 
       test('valid schema, value = "2016-29-07", required = false _valueFormat="YYYY-MM-DD" test', function() {

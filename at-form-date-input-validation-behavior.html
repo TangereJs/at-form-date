@@ -165,8 +165,11 @@
           return validationResult;
         }
 
-        var formatMoment = moment(value, format, true);
-        validationResult.isValid = formatMoment.isValid();
+        var invalidDateRegex = /Invalid Date|NaN/;
+        var isValidByRegex = !invalidDateRegex.test(new Date(value));
+
+        var formatMoment = moment(value, format);
+        validationResult.isValid = formatMoment.isValid() || isValidByRegex;
         if (!validationResult.isValid) {
           validationResult.errorMessage = localizer("Value {0} is not in correct format of {1}", value, format );
         }
