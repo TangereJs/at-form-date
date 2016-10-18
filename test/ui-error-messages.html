@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../at-form-date.html">
+
+</head>
+<body>
+
+  <test-fixture id="autoValidateTrue">
+    <template>
+      <at-form-date auto-validate></at-form-date>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="propertyTest">
+    <template>
+      <at-form-date></at-form-date>
+    </template>
+  </test-fixture>
+
+  <script>
+
+  /**
+    at-form-date ui error messages tests
+
+    Check if correct text is displayed in error messages
+
+    Test case(s)
+      * set autovalidate to true
+      * set user input into $.input
+      * simulate event chain [ change -> blur ]
+   */
+
+    suite('validate function tests', function() {
+
+      function assertElementIsValid(element) {
+        var isValid = element.valid;
+        assert.equal(isValid, true, 'element is invalid');
+        isValid = element.validate();
+        assert.equal(isValid, true, 'element is invalid');
+      }
+
+      function assertElementIsInvalid(element) {
+        var isValid = element.valid;
+        assert.equal(isValid, false, 'element is valid');
+        isValid = element.validate();
+        assert.equal(isValid, false, 'element is valid');
+      }
+
+      function assertErrorMessage(element, errorMessage) {
+        var hint = element.$.hint;
+        var hintContent = Polymer.dom(hint).textContent;
+        assert.equal(hintContent, errorMessage, "error message text not set correctly");
+      }
+
+      test('autovalidate set as attribute', function () {
+        var element = fixture('autoValidateTrue');
+        assert.equal(element.autoValidate, true, 'autovalidate value is not set correctly');
+
+        var elementInput = element.$.input;
+
+        elementInput.value = "lorem ipsum";
+
+        TestHelpers.fireEvent('change', {}, elementInput);
+        TestHelpers.fireEvent('blur', {}, elementInput);
+
+        assertErrorMessage(element, element.T("Value {0} is not in correct format of {1}", "lorem ipsum", element._displayFormat));
+        assertElementIsInvalid(element);
+
+        assert.equal(element.value, "lorem ipsum", "element.value not set correctly");
+        assert.equal(elementInput.value, "lorem ipsum", "elementInput value not set correctly");
+      });
+
+      test('autovalidate set in code', function() {
+        var element = fixture('propertyTest');
+        element.autoValidate = true;
+
+        assert.equal(element.autoValidate, true, 'autovalidate value is not set correctly');
+
+        var elementInput = element.$.input;
+
+        elementInput.value = "lorem ipsum";
+
+        TestHelpers.fireEvent('change', {}, elementInput);
+        TestHelpers.fireEvent('blur', {}, elementInput);
+
+        assertErrorMessage(element, element.T("Value {0} is not in correct format of {1}", "lorem ipsum", element._displayFormat));
+        assertElementIsInvalid(element);
+
+        assert.equal(element.value, "lorem ipsum", "element.value not set correctly");
+        assert.equal(elementInput.value, "lorem ipsum", "elementInput value not set correctly");
+      });
+
+    });
+  </script>
+
+</body>
+</html>
