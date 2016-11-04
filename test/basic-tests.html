@@ -237,11 +237,11 @@
 
         input.format = "DD-MM-YYYY HH:mm:ss";
         assert.equal(input.value, "2016-06-15T15:40:45.000Z");
-        assert.equal(inputElement.value, "15-06-2016 17:40:45");
+        assert.equal(inputElement.value, "15-06-2016 15:40:45");
 
         input.format = "DD-MM-YYYY hh:mm:ss A";
         assert.equal(input.value, "2016-06-15T15:40:45.000Z");
-        assert.equal(inputElement.value, "15-06-2016 05:40:45 PM");
+        assert.equal(inputElement.value, "15-06-2016 03:40:45 PM");
       });
 
       test('alternative date formats Test', function() {

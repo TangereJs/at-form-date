@@ -361,10 +361,9 @@
       }
 
       var valueProvider = this.$.input;
-      var newMoment = moment(this.value, this._valueFormat, true);
+      var newMoment = this._parseInputStringWithValueFormat(this.value);
       if (newMoment.isValid()) {
-        var formattedValue = newMoment.format(this._displayFormat);
-        valueProvider.value = formattedValue;
+        valueProvider.value = this._formatMomentToDisplayFormat(newMoment);
       }
     },
 
@@ -388,7 +387,7 @@
       var inputValue = this.$.input.value;
       var currentValue = this.value;
 
-      var inputMoment = moment(inputValue, this._displayFormat, true);
+      var inputMoment = moment.utc(inputValue, this._displayFormat, true);
 
       if (inputMoment.isValid()) {
         if (this.xtype === "datetime") {
@@ -452,14 +451,14 @@
         this._localValue = "";
       } else {
         // there is no need to update at-form-date.value because its already up to date
-        var newMoment = moment(newValue, this._valueFormat, true);
+        var newMoment = moment.utc(newValue, this._valueFormat, true);
         if (!newMoment.isValid()) {
-          newMoment = moment(newValue, this._valueFormat);
+          newMoment = moment.utc(newValue, this._valueFormat);
         }
 
         if (newMoment.isValid()) {
           this._setMomentToDateAndTime(newMoment);
-          var formattedValue = newMoment.format(this._displayFormat);
+          var formattedValue = this._formatMomentToDisplayFormat(newMoment);
           valueProvider.value = formattedValue;
           this._localValue = formattedValue;
         } else {
@@ -478,7 +477,7 @@
       var dateValue = datePicker.startDate;
       var dateFormat = self._localizedFormat("date");
       if (dateValue === "") {
-        dateValue = moment().format(dateFormat);
+        dateValue = moment.utc().format(dateFormat);
       }
       var timeValue = timePicker.value;
       var timeFormat = self._localizedFormat("time");
@@ -492,7 +491,7 @@
         completeValue = timeValue;
         completeFormat = timeFormat;
       }
-      var momentValue = moment(completeValue, completeFormat, true);
+      var momentValue = moment.utc(completeValue, completeFormat, true);
       return momentValue;
     },
 
@@ -517,7 +516,7 @@
       var self = this;
       var momentValue = this._getMomentFromDateAndTime(datePicker, timePicker);
 
-      var displayString = momentValue.format(self._displayFormat);
+      var displayString = this._formatMomentToDisplayFormat(momentValue);
       var valueProvider = this.$.input;
       valueProvider.value = displayString;
       this._localValue = displayString;
@@ -592,6 +591,23 @@
     _getFocusableElement: function () {
       var focusable = this.$.input;
       return focusable;
+    },
+
+    /*
+      Helper functions
+    */
+
+    _parseInputStringWithValueFormat: function (inputString) {
+      return moment.utc(inputString, this._valueFormat, true);
+    },
+
+    /*
+     * Formats given moment object as utc value in _displayFormat
+     * utc() is on purpose so that at-form-date works correctly in all timezones
+     */
+    _formatMomentToDisplayFormat: function (moment) {
+      return moment.utc().format(this._displayFormat);
     }
+
   });
 </script>
