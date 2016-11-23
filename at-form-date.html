@@ -62,11 +62,11 @@
         <iron-label id="label" for="input">{{label}}</iron-label>
 
         <div id="contentContainer" class="at-content-container input-group">
-          <input id="input" class="at-content has-placeholder">
+          <input id="input" class="at-content has-placeholder" at-form-id="at-form-date-input-field">
           <!-- var is used here instead of span to avoid a bug in IE11 -->
           <!-- in IE11 span (and div) element gets focus; which should not happen. -->
           <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
-          <at-carbon-icon-button id="inputIcon" class="input-group-addon" icon="[[_icon]]"></at-carbon-icon-button>
+          <at-carbon-icon-button id="inputIcon" class="input-group-addon" icon="[[_icon]]" at-form-id="at-form-date-calendar-icon"></at-carbon-icon-button>
         </div>
         <at-core-dropdown id="dropdownContainer" position="bottomRight">
           <div id="pickerContainer" class="horizontal layout">
@@ -153,6 +153,7 @@
     observers: [
       '_internalValidStateUpdate(required)'
     ],
+
     $meta: [{
       title: "Date",
       type: "string",
@@ -263,7 +264,7 @@
         resizeHandler(updatedWidth);
       });
 
-       function resizeHandler (updatedWidth) {
+      function resizeHandler (updatedWidth) {
 
         var datePickerRect = datePicker.getBoundingClientRect();
         var timePickerRect = datePicker.getBoundingClientRect();
@@ -290,6 +291,68 @@
       resizeSensor.reset();
       var initialWidth = resizeSensor.queryWidth();
       resizeHandler(initialWidth);
+
+      var userAgentString = navigator.userAgent.toLowerCase();
+      this._lastFocused = false;
+      this._currentlyFocused = false;
+
+      if (userAgentString.indexOf('firefox') > -1 && userAgentString.indexOf('gecko') > -1) {
+        document.addEventListener('focus', this._handleFocusInEvent.bind(this), true);
+        document.addEventListener('blur', this._handleFocusOutEvent.bind(this), true);
+      } else {
+        this.addEventListener('focusin', this._handleFocusInEvent.bind(this));
+        this.addEventListener('focusout', this._handleFocusOutEvent.bind(this));
+      }
+    },
+
+    _handleFocusInEvent: function (event) {
+      // Firefox fix. ignore elements that do not have getAttribute function
+      if (!event.target.getAttribute) { return; }
+      var atFormId = event.target.getAttribute('at-form-id');
+
+      // Firefox fix. ignore elements that do not have at-form-id attribute set
+      if (!atFormId) { return; }
+
+      if (!this._lastFocused) {
+        this._lastFocused = atFormId;
+      }
+      this._currentlyFocused = atFormId;
+
+      // console.debug(this.T("currentlyFocused, lastFocused = {0}, {1}", this._currentlyFocused, this._lastFocused));
+
+      if (["date", "datetime"].indexOf(this.xtype) >-1 ) {
+        if (this._currentlyFocused === "at-form-date-calendar-icon" && this._lastFocused === "at-carbon-date-picker-left-arrow") {
+          this.$.dropdownContainer.hide();
+        }
+      } else if (this.xtype === "time") {
+        if (this._currentlyFocused === "at-form-date-calendar-icon" && this._lastFocused === "at-carbon-time-picker-hours-up") {
+          this.$.dropdownContainer.hide();
+        }
+      }
+    },
+
+    _handleFocusOutEvent: function(event) {
+      // Firefox fix. Ignore elements that do not have getAttribute function
+      if (!event.target.getAttribute) { return; }
+      var atFormId = event.target.getAttribute('at-form-id');
+
+      // Firefox fix. ignore elements that do not have at-form-id attribute set
+      if (!atFormId) { return; }
+
+      this._lastFocused = atFormId;
+
+      if (["time", "datetime"].indexOf(this.xtype) >-1 ) {
+        // var hasAMPM = self._displayFormat.toLowerCase().indexOf("a") > -1;
+        if (/*hasAMPM && */this._currentlyFocused === "at-carbon-time-picker-minutes-down" &&  this._lastFocused === "at-carbon-time-picker-minutes-down") {
+          this.$.dropdownContainer.hide();
+        }/* else if (!hasAMPM &&  this._currentlyFocused === "at-carbon-time-picker-seconds-down" && "at-carbon-time-picker-seconds-down" === this._lastFocused) {
+          dropdownContainer.hide();
+        }*/
+      } else if (this.xtype === "date") {
+        if (this._currentlyFocused === "at-carbon-date-picker-right-arrow" && this._lastFocused === "at-carbon-date-picker-right-arrow") {
+          this.$.dropdownContainer.hide();
+        }
+      }
     },
 
     _disabledChanged: function(newValue, oldValue) {
@@ -582,6 +645,7 @@
         self.toggleClass('hidden', true, datePicker);
         self.toggleClass('hidden', false, timePicker);
       }
+      this._displayFormat = !this.format ? this._displayFormat : this.format;
     },
 
     focus: function() {
