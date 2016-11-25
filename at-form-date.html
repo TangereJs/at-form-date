@@ -62,11 +62,11 @@
         <iron-label id="label" for="input">{{label}}</iron-label>
 
         <div id="contentContainer" class="at-content-container input-group">
-          <input id="input" class="at-content has-placeholder" at-form-id="at-form-date-input-field">
+          <input id="input" class="at-content has-placeholder">
           <!-- var is used here instead of span to avoid a bug in IE11 -->
           <!-- in IE11 span (and div) element gets focus; which should not happen. -->
           <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
-          <at-carbon-icon-button id="inputIcon" class="input-group-addon" icon="[[_icon]]" at-form-id="at-form-date-calendar-icon"></at-carbon-icon-button>
+          <at-carbon-icon-button id="inputIcon" class="input-group-addon" icon="[[_icon]]"></at-carbon-icon-button>
         </div>
         <at-core-dropdown id="dropdownContainer" position="bottomRight">
           <div id="pickerContainer" class="horizontal layout">
@@ -308,9 +308,9 @@
     _handleFocusInEvent: function (event) {
       // Firefox fix. ignore elements that do not have getAttribute function
       if (!event.target.getAttribute) { return; }
-      var atFormId = event.target.getAttribute('at-form-id');
+      var atFormId = event.target.getAttribute('id');
 
-      // Firefox fix. ignore elements that do not have at-form-id attribute set
+      // Firefox fix. ignore elements that do not have id attribute set
       if (!atFormId) { return; }
 
       if (!this._lastFocused) {
@@ -321,11 +321,11 @@
       // console.debug(this.T("currentlyFocused, lastFocused = {0}, {1}", this._currentlyFocused, this._lastFocused));
 
       if (["date", "datetime"].indexOf(this.xtype) >-1 ) {
-        if (this._currentlyFocused === "at-form-date-calendar-icon" && this._lastFocused === "at-carbon-date-picker-left-arrow") {
+        if (this._currentlyFocused === "inputIcon" && this._lastFocused === "at-carbon-date-picker-left-arrow") {
           this.$.dropdownContainer.hide();
         }
       } else if (this.xtype === "time") {
-        if (this._currentlyFocused === "at-form-date-calendar-icon" && this._lastFocused === "at-carbon-time-picker-hours-up") {
+        if (this._currentlyFocused === "inputIcon" && this._lastFocused === "at-carbon-time-picker-hours-up") {
           this.$.dropdownContainer.hide();
         }
       }
@@ -334,9 +334,9 @@
     _handleFocusOutEvent: function(event) {
       // Firefox fix. Ignore elements that do not have getAttribute function
       if (!event.target.getAttribute) { return; }
-      var atFormId = event.target.getAttribute('at-form-id');
+      var atFormId = event.target.getAttribute('id');
 
-      // Firefox fix. ignore elements that do not have at-form-id attribute set
+      // Firefox fix. ignore elements that do not have id attribute set
       if (!atFormId) { return; }
 
       this._lastFocused = atFormId;
