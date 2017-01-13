@@ -2,18 +2,18 @@
   "name": "at-form-date",
   "private": true,
   "dependencies": {
-    "tangere": "TangereJs/tangere#0.8-preview",
-    "at-theme": "TangereJs/at-theme#0.8-preview",
-    "at-i18n": "TangereJs/at-i18n#0.8-preview",
-    "at-form-behaviors": "TangereJs/at-form-behaviors#0.8-preview",
-    "at-core-resize-sensor": "TangereJs/at-core-resize-sensor#0.8-preview",
-    "at-carbon-icon-button": "TangereJs/at-carbon-icon-button#0.8-preview",
-    "at-core-dropdown": "TangereJs/at-core-dropdown#0.8-preview",
-    "at-carbon-date-picker": "TangereJs/at-carbon-date-picker#0.8-preview",
-    "at-carbon-time-picker": "TangereJs/at-carbon-time-picker#0.8-preview",
+    "tangere": "TangereJs/tangere#master",
+    "at-theme": "TangereJs/at-theme#master",
+    "at-i18n": "TangereJs/at-i18n#master",
+    "at-form-behaviors": "TangereJs/at-form-behaviors#master",
+    "at-core-resize-sensor": "TangereJs/at-core-resize-sensor#master",
+    "at-carbon-icon-button": "TangereJs/at-carbon-icon-button#master",
+    "at-core-dropdown": "TangereJs/at-core-dropdown#master",
+    "at-carbon-date-picker": "TangereJs/at-carbon-date-picker#master",
+    "at-carbon-time-picker": "TangereJs/at-carbon-time-picker#master",
     "iron-label": "PolymerElements/iron-label#master",
     "layout": "Polymer/layout#master",
-    "at-doc-viewer": "TangereJs/at-doc-viewer#0.8-preview"
+    "at-doc-viewer": "TangereJs/at-doc-viewer#master"
   },
   "version": "0.0.1.27"
 }
