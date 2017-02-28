@@ -205,6 +205,7 @@
     },
 
     ready: function() {
+      this._localValue = "";
       var self = this;
 
       var valueProvider = this.$.input;
@@ -238,6 +239,7 @@
       valueProvider.addEventListener('change', function(event) {
         var target = event.target;
         var newValue = target.value;
+        self._lastValueFromUserInput = true;
         self._setValueFromInputField(newValue);
       });
 
@@ -332,6 +334,11 @@
     },
 
     _handleFocusOutEvent: function(event) {
+      // we want focusOut event only to work if triggered by keyboard
+      // if its triggered by mouse we want this to be ignored
+      // we detect that its triggered by mouse if relatedTarget is not null
+      if (event.relatedTarget !== null) { return; }
+
       // Firefox fix. Ignore elements that do not have getAttribute function
       if (!event.target.getAttribute) { return; }
       var atFormId = event.target.getAttribute('id');
@@ -470,10 +477,25 @@
     },
 
     _validate: function (showError) {
+      // why we need this._lastValueFromUserInput?
+      // when at-form-date is in at-core-form validate function gets called twice
+      // once because at-core-form calls validate because of value change (with showError = false)
+      // second time because at-form-date has 'blur' handler which calls validate with showError = this.autoValidate
+      // this is a major problem becuase validation error about value not being in a correct _displayFormat never gets displayed
+      // to fix this problem we will remember was value changed due to user input or was set with .value
+
+      var parentElement = this.parentElement;
+      while (parentElement && parentElement.is !== 'at-core-form') {
+        parentElement = parentElement.parentElement;
+      }
+      var hasAtCoreFormAsParent = parentElement !== null;
+
       var inputValue = this.$.input.value;
       var validationResult;
-
-      if (this._localValue !== inputValue) {
+      // we need this check for correct validation message display
+      // when invalid value is set via .value property it should be validated against _valueFormat
+      // if this check is removed invalid value will be validated against _displayFormat which is wrong
+      if (this._localValue !== inputValue || this._lastValueFromUserInput) {
         this._localValue = inputValue;
         validationResult = this._validateInput(inputValue, this._displayFormat, this.T.bind(this));
         if (showError) { this._handleValidationResult(validationResult); }
@@ -503,7 +525,7 @@
       if (!this._isReady || this._isInternalValueUpdate) {
         return;
       }
-
+      this._lastValueFromUserInput = false;
       var valueProvider = this.$.input;
 
       if (["", "null", null].indexOf(newValue) !== -1) {
