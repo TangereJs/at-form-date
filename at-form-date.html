@@ -217,6 +217,37 @@
 
       datePicker.addEventListener('start-date-changed', function(event) {
         self._setValueFromDateAndTimePickers(datePicker, timePicker);
+        dropdownContainer.hide();
+      });
+
+      /*
+        This kind of programming is just terrible but that is what you get when you are a webdeveloper and have to use semi-working or broken tech
+        What is going on here?
+        The request
+          When return button (ENTER, ASCII keyCode of 13) is hit
+            * the current highlighted date in the picker (at-carbon-date-picker) should be selected
+            * and picker (at-core-dropdown! not at-carbon-date-picker because of at-form-date structure) should be closed
+
+        The problem
+          at-carbon-date-picker is not focusable, doesn't have tabindex (adding one doesn't produce any effect)
+          its debatable if focus should be added at all because how do you handle date / time and datetime xtypes
+
+        Current solution, because reasons above
+          * listen to keyup event on at-form-date, becase it has an input element that it focusable
+          * in handler see if user hovered over a day div
+          * this operation uses knowledge of internal structure of datePicker, which is horrible (but done because of reasons)
+          * if element exists call _dateClicked function, which is private (again horrible and because reasons)
+
+        Problem solved.
+      */
+      this.addEventListener('keyup', function(event) {
+        var keyCode = event.keyCode;
+        if (keyCode == 13) {
+          var element = datePicker.$.dayPicker.querySelector('.day:hover');
+          if (element) {
+            datePicker._dateClicked({ target: element });
+          }
+        }
       });
 
       timePicker.addEventListener('value-changed', function(event) {
