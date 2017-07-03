@@ -12,7 +12,7 @@
     "at-carbon-date-picker": "TangereJs/at-carbon-date-picker#master",
     "at-carbon-time-picker": "TangereJs/at-carbon-time-picker#master",
     "iron-label": "PolymerElements/iron-label#master",
-    "layout": "Polymer/layout#master",
+    "layout": "TangereJs/layout#master",
     "at-doc-viewer": "TangereJs/at-doc-viewer#master"
   },
   "version": "0.0.1.27"
