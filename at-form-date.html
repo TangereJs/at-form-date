@@ -72,20 +72,20 @@
           <!-- span element is not focusable by default (tabindex atrribute shoud be specified if focus is desired )-->
           <at-carbon-icon-button id="inputIcon" class="input-group-addon" icon="[[_icon]]"></at-carbon-icon-button>
         </div>
-        <at-core-dropdown id="dropdownContainer" position="bottomRight">
-          <div id="pickerContainer" class="horizontal layout">
-            <div class="at-carbon-picker-container">
-              <at-carbon-date-picker class="at-carbon-picker" id="datePicker"></at-carbon-date-picker>
-            </div>
-            <div class="at-carbon-picker-container">
-              <at-carbon-time-picker class="at-carbon-picker" id="timePicker"></at-carbon-time-picker>
-            </div>
-          </div>
-        </at-core-dropdown>
         <div id="thisIsAHackToMakeResizeSensorDetectShrinking"></div>
         <div id="hint" class="hint"></div>
       </div>
     </div>
+    <at-core-dropdown id="dropdownContainer" position="bottomRight" y-offset="2">
+      <div id="pickerContainer" class="horizontal layout">
+        <div class="at-carbon-picker-container">
+          <at-carbon-date-picker class="at-carbon-picker" id="datePicker"></at-carbon-date-picker>
+        </div>
+        <div class="at-carbon-picker-container">
+          <at-carbon-time-picker class="at-carbon-picker" id="timePicker"></at-carbon-time-picker>
+        </div>
+      </div>
+    </at-core-dropdown>
   </template>
 </dom-module>
 
@@ -221,7 +221,9 @@
 
       datePicker.addEventListener('start-date-changed', function(event) {
         self._setValueFromDateAndTimePickers(datePicker, timePicker);
-        dropdownContainer.hide();
+        if (self.xtype === "date") {
+          dropdownContainer.hide();          
+        }
       });
 
       /*
@@ -256,12 +258,16 @@
 
       timePicker.addEventListener('value-changed', function(event) {
         self._setValueFromDateAndTimePickers(datePicker, timePicker);
+        if (self.xtype === "time") {
+          dropdownContainer.hide();          
+        }
       });
 
       self._dropdownToggle = false;
       var resizeSensor = self.$.resizeSensor;
+      
       function toggleDropdown(event) {
-        dropdownContainer.toggle(event.target, event);
+        dropdownContainer.toggle(event.currentTarget, event);
 
         var initialWidth = resizeSensor.queryWidth();
         self._resizeHandler(initialWidth);
@@ -316,12 +322,7 @@
           // switch to vertical layout
           self.toggleClass('horizontal', false, pickerContainer);
           self.toggleClass('vertical', true, pickerContainer);
-        }
-
-        if (dropdownContainer.isOpen()){
-          dropdownContainer.hide();
-          dropdownContainer.show();
-        }
+        }      
       }
       this._resizeHandler = resizeHandler;
 
