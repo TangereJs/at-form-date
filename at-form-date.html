@@ -16,11 +16,11 @@
     <style include="at-form-common"></style>
     <style include="at-form-date-style"></style>
     <style>
-      :host * {
+       :host * {
         box-sizing: border-box;
       }
 
-      :host {
+       :host {
         @apply(--at-form-host);
       }
 
@@ -93,7 +93,7 @@
   'use strict';
   Polymer({
     is: 'at-form-date',
-    behaviors: [ Tangere.behaviors.i18n, Tangere.behaviors.formUIGeneric, Tangere.behaviors.AtFormDateInputValidation ],
+    behaviors: [Tangere.behaviors.i18n, Tangere.behaviors.formUIGeneric, Tangere.behaviors.AtFormDateInputValidation],
     properties: {
       label: {
         type: String,
@@ -113,11 +113,11 @@
         title: 'Field value can not be changed'
       },
       /**
-      * Hides the element. When hidden nothing is displayed for the element
-      * @property hide
-      * @type Boolean
-      * @default false
-      */
+       * Hides the element. When hidden nothing is displayed for the element
+       * @property hide
+       * @type Boolean
+       * @default false
+       */
       hide: {
         type: Boolean,
         value: false,
@@ -130,9 +130,9 @@
         title: 'Input required'
       },
       /**
-      * Formating is based [moment.js](http://momentjs.com/). A list of supported tokens in format can be found in the [moment.js documentation](http://momentjs.com/docs/#/displaying/).
-      * @property format
-      */
+       * Formating is based [moment.js](http://momentjs.com/). A list of supported tokens in format can be found in the [moment.js documentation](http://momentjs.com/docs/#/displaying/).
+       * @property format
+       */
       format: {
         type: String,
         value: '',
@@ -162,19 +162,19 @@
       title: "Date",
       type: "string",
       xtype: "date",
-      events: [ "value-changed" ],
+      events: ["value-changed"],
       icon: "now:calendar"
     }, {
       title: "Time",
       type: "string",
       xtype: "time",
-      events: [ "value-changed" ],
+      events: ["value-changed"],
       icon: "now:clock"
     }, {
       title: "Date and time",
       type: "string",
       xtype: "datetime",
-      events: [ "value-changed" ],
+      events: ["value-changed"],
       icon: "now:calendar"
     }],
     /**
@@ -222,7 +222,7 @@
       datePicker.addEventListener('start-date-changed', function(event) {
         self._setValueFromDateAndTimePickers(datePicker, timePicker);
         if (self.xtype === "date") {
-          dropdownContainer.hide();          
+          dropdownContainer.hide();
         }
       });
 
@@ -259,18 +259,20 @@
       timePicker.addEventListener('value-changed', function(event) {
         self._setValueFromDateAndTimePickers(datePicker, timePicker);
         if (self.xtype === "time") {
-          dropdownContainer.hide();          
+          dropdownContainer.hide();
         }
       });
 
       self._dropdownToggle = false;
       var resizeSensor = self.$.resizeSensor;
-      
+
       function toggleDropdown(event) {
         dropdownContainer.toggle(event.currentTarget, event);
 
         var initialWidth = resizeSensor.queryWidth();
         self._resizeHandler(initialWidth);
+
+        dropdownContainer.updateContainerAndOutlineSize();
       }
 
       inputIcon.addEventListener('tap', function(event) {
@@ -307,7 +309,7 @@
         resizeHandler(updatedWidth);
       });
 
-      function resizeHandler (updatedWidth) {
+      function resizeHandler(updatedWidth) {
 
         var datePickerRect = datePicker.getBoundingClientRect();
         var timePickerRect = datePicker.getBoundingClientRect();
@@ -322,7 +324,17 @@
           // switch to vertical layout
           self.toggleClass('horizontal', false, pickerContainer);
           self.toggleClass('vertical', true, pickerContainer);
-        }      
+        }
+
+        // @DOC What is going on here?
+        // 1. at-core-dropdown: on attached it moves its internal dropdown-impl to document.body
+        // 2. when resizeHandler (see above) updates layout that causes polymer-mini.MutationObserver.observe.characterData function to reattach dropdowm-impl to core-dropdown
+        // 3. polymer-mini.MutationObserver.observe.characterData function is executed in a debounce way as microtask
+        // 4. we need to reattach dropdown-impl to document.body so we call _returnImplToDocumentBody
+        // 5. we need to do this as async becuase microtask from 3. needs to complete first
+        self.async(function() {
+          dropdownContainer._returnImplToDocumentBody();
+        });
       }
       this._resizeHandler = resizeHandler;
 
@@ -343,7 +355,7 @@
       }
     },
 
-    _handleFocusInEvent: function (event) {
+    _handleFocusInEvent: function(event) {
       // Firefox fix. ignore elements that do not have getAttribute function
       if (!event.target.getAttribute) { return; }
       var atFormId = event.target.getAttribute('id');
@@ -358,7 +370,7 @@
 
       // console.debug(this.T("currentlyFocused, lastFocused = {0}, {1}", this._currentlyFocused, this._lastFocused));
 
-      if (["date", "datetime"].indexOf(this.xtype) >-1 ) {
+      if (["date", "datetime"].indexOf(this.xtype) > -1) {
         if (this._currentlyFocused === "inputIcon" && this._lastFocused === "at-carbon-date-picker-left-arrow") {
           this.$.dropdownContainer.hide();
         }
@@ -384,13 +396,13 @@
 
       this._lastFocused = atFormId;
 
-      if (["time", "datetime"].indexOf(this.xtype) >-1 ) {
+      if (["time", "datetime"].indexOf(this.xtype) > -1) {
         // var hasAMPM = self._displayFormat.toLowerCase().indexOf("a") > -1;
-        if (/*hasAMPM && */this._currentlyFocused === "at-carbon-time-picker-minutes-down" &&  this._lastFocused === "at-carbon-time-picker-minutes-down") {
+        if ( /*hasAMPM && */ this._currentlyFocused === "at-carbon-time-picker-minutes-down" && this._lastFocused === "at-carbon-time-picker-minutes-down") {
           this.$.dropdownContainer.hide();
         }/* else if (!hasAMPM &&  this._currentlyFocused === "at-carbon-time-picker-seconds-down" && "at-carbon-time-picker-seconds-down" === this._lastFocused) {
-          dropdownContainer.hide();
-        }*/
+                  dropdownContainer.hide();
+                }*/
       } else if (this.xtype === "date") {
         if (this._currentlyFocused === "at-carbon-date-picker-right-arrow" && this._lastFocused === "at-carbon-date-picker-right-arrow") {
           this.$.dropdownContainer.hide();
@@ -418,7 +430,7 @@
       }
     },
 
-    _internalValidStateUpdate: function (required) {
+    _internalValidStateUpdate: function(required) {
       if (this._isReady) {
         this.validate();
       }
@@ -451,7 +463,7 @@
         }
       }
 
-      if (format.indexOf('A') === -1 && (format.indexOf('hh')!== -1 || format.indexOf('h') !== -1)) {
+      if (format.indexOf('A') === -1 && (format.indexOf('hh') !== -1 || format.indexOf('h') !== -1)) {
         format = format + " A";
       } else if (format.indexOf('hh') === -1 || format.indexOf('h') === -1) {
         format = format.replace("A", "").trim();
@@ -486,7 +498,7 @@
       return result;
     },
 
-    validate: function (showError) {
+    validate: function(showError) {
 
       if (showError === undefined) { showError = this.autoValidate; }
 
@@ -512,7 +524,7 @@
       return this._validate(showError);
     },
 
-    _validate: function (showError) {
+    _validate: function(showError) {
       // why we need this._lastValueFromUserInput?
       // when at-form-date is in at-core-form validate function gets called twice
       // once because at-core-form calls validate because of value change (with showError = false)
@@ -593,7 +605,7 @@
       this._fireValueChangedEvent(newValue);
     },
 
-    _getMomentFromDateAndTime: function (datePicker, timePicker) {
+    _getMomentFromDateAndTime: function(datePicker, timePicker) {
       var self = this;
       var dateValue = datePicker.startDate;
       var dateFormat = self._localizedFormat("date");
@@ -616,7 +628,7 @@
       return momentValue;
     },
 
-    _setMomentToDateAndTime: function (momentValue) {
+    _setMomentToDateAndTime: function(momentValue) {
       var datePicker = this.$.datePicker;
       var dateFormat = this._localizedFormat("date");
       var timePicker = this.$.timePicker;
@@ -655,7 +667,7 @@
       self._fireValueChangedEvent(self.value);
     },
 
-    _setValueFromInputField: function (newValue) {
+    _setValueFromInputField: function(newValue) {
       // newValue must be in _displayFormat, strict parsing is not required
       var inputMoment = moment(newValue, this._displayFormat);
       if (inputMoment.isValid()) {
@@ -710,7 +722,7 @@
       this.$.input.focus();
     },
 
-    _getFocusableElement: function () {
+    _getFocusableElement: function() {
       var focusable = this.$.input;
       return focusable;
     },
@@ -719,7 +731,7 @@
       Helper functions
     */
 
-    _parseInputStringWithValueFormat: function (inputString) {
+    _parseInputStringWithValueFormat: function(inputString) {
       return moment.utc(inputString, this._valueFormat, true);
     },
 
@@ -727,7 +739,7 @@
      * Formats given moment object as utc value in _displayFormat
      * utc() is on purpose so that at-form-date works correctly in all timezones
      */
-    _formatMomentToDisplayFormat: function (moment) {
+    _formatMomentToDisplayFormat: function(moment) {
       return moment.utc().format(this._displayFormat);
     }
 
