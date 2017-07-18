@@ -273,6 +273,16 @@
         self._resizeHandler(initialWidth);
 
         dropdownContainer.updateContainerAndOutlineSize();
+
+        // @DOC What is going on here?
+        // 1. at-core-dropdown: on attached it moves its internal dropdown-impl to document.body
+        // 2. when resizeHandler (see above) updates layout that causes polymer-mini.MutationObserver.observe.characterData function to reattach dropdowm-impl to core-dropdown
+        // 3. polymer-mini.MutationObserver.observe.characterData function is executed in a debounce way as microtask
+        // 4. we need to reattach dropdown-impl to document.body so we call _returnImplToDocumentBody
+        // 5. we need to do this as async becuase microtask from 3. needs to complete first
+        self.async(function() {
+          dropdownContainer._returnImplToDocumentBody();
+        });
       }
 
       inputIcon.addEventListener('tap', function(event) {
@@ -325,16 +335,6 @@
           self.toggleClass('horizontal', false, pickerContainer);
           self.toggleClass('vertical', true, pickerContainer);
         }
-
-        // @DOC What is going on here?
-        // 1. at-core-dropdown: on attached it moves its internal dropdown-impl to document.body
-        // 2. when resizeHandler (see above) updates layout that causes polymer-mini.MutationObserver.observe.characterData function to reattach dropdowm-impl to core-dropdown
-        // 3. polymer-mini.MutationObserver.observe.characterData function is executed in a debounce way as microtask
-        // 4. we need to reattach dropdown-impl to document.body so we call _returnImplToDocumentBody
-        // 5. we need to do this as async becuase microtask from 3. needs to complete first
-        self.async(function() {
-          dropdownContainer._returnImplToDocumentBody();
-        });
       }
       this._resizeHandler = resizeHandler;
 
