@@ -273,6 +273,22 @@
         self._resizeHandler(initialWidth);
 
         dropdownContainer.updateContainerAndOutlineSize();
+        // in attached handler:
+        // 1) resize sensor is queried for initial width
+        // 2) dropdown layout is updated with initial width
+        // Observation 1. Dropdown is closed, element width of 0, dropdown layout is horizontal
+        
+        // when input icon is tapped
+        // 3) dropdown opened for the fist time
+        // 4) dropdown is opened with content having horizontal layout
+        // Observation 2. Dropdown is open, elements have width, dropdown position is computed with content having horizontal layout
+        
+        // 5) resize sensor is queried for width
+        // 6) dropdown content layout is updated to vertical layout
+        // 7) dropdown container and outline dimensions are updated to match the content dimensions
+        // Result. Dropdown position is incorrect because dropdown was positioned when dropdown content had horizontal layout, but now content has vertical layout
+        // Solution. We update dropdown position again, now with content having dimensions of vertical layout
+        dropdownContainer.updateDropdownPosition(self.$.inputIcon);
 
         // @DOC What is going on here?
         // 1. at-core-dropdown: on attached it moves its internal dropdown-impl to document.body
@@ -322,7 +338,7 @@
       function resizeHandler(updatedWidth) {
 
         var datePickerRect = datePicker.getBoundingClientRect();
-        var timePickerRect = datePicker.getBoundingClientRect();
+        var timePickerRect = timePicker.getBoundingClientRect();
         var dateWidth = datePickerRect.width;
         var timeWidth = timePickerRect.width;
 
