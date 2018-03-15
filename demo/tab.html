@@ -6,10 +6,10 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="at-form-date.html" />
-  <link rel="import" href="../layout/layout.html" />
-  <style media="screen">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../at-form-date.html" />
+  <link rel="import" href="../../at-core-style-classes/at-core-style-classes.html" />
+  <style is="custom-style" include="at-core-style-classes">
     h4 {
       margin: 0;
     }
@@ -29,10 +29,10 @@
 </head>
 
 <body>
-  <div class="vertical layout demo-item">
+  <div class="layout-vertical demo-item">
     <h4>Tab demo for at-form-date</h4>
     <sub>xtype === "datetime"</sub>
-    <div class="horizontal layout">
+    <div class="layout-horizontal">
       <at-form-date xtype="datetime"></at-form-date>
     </div>
   </div>
@@ -40,21 +40,21 @@
     <h4>Tab demo for at-form-date</h4>
     <sub>xtype === "date"</sub>
   </div>
-  <div class="horizontal layout">
+  <div class="layout-horizontal">
     <at-form-date xtype="date"></at-form-date>
   </div>
   <div>
     <h4>Tab demo for at-form-date</h4>
     <sub>xtype === "time", format="HH:mm A"</sub>
   </div>
-  <div class="horizontal layout">
+  <div class="layout-horizontal">
     <at-form-date xtype="time" format="HH:mm A"></at-form-date>
   </div>
   <div>
     <h4>Tab demo for at-form-date</h4>
     <sub>xtype === "time", format="HH:mm:ss"</sub>
   </div>
-  <div class="horizontal layout">
+  <div class="layout-horizontal">
     <at-form-date xtype="time" format="HH:mm:ss"></at-form-date>
   </div>
 </body>

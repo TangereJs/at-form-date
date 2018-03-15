@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>at-form-date</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../at-form-date.html" />
+  <link rel="import" href="../../at-core-style-classes/at-core-style-classes.html" />
+  <style is="custom-style" include="at-core-style-classes"></style>
+</head>
+
+<body>
+  <h2>This is demo for at-form-date</h2>
+  <div class="layout-horizontal">
+    <at-form-date id="atFormDate1" class="layout-flex-6"></at-form-date>
+    <div class="layout-flex-6">
+      <span>Echo value:</span><span id="echoValue1"></span>
+    </div>
+  </div>
+  <div class="layout-horizontal">
+    <at-form-date id="atFormDate2" class="layout-flex-6"></at-form-date>
+    <div class="layout-flex-6">
+      <span>Echo value:</span><span id="echoValue2"></span>
+    </div>
+  </div>
+  <div class="layout-vertical">
+    <div>
+      <h2>Hidden label demo</h2>
+    </div>
+    <div class="layout-horizontal">
+      <at-form-date id="atFormDate3" class="layout-flex-6" label="Demo label" hide-label="true"></at-form-date>
+      <div class="layout-flex-6"></div>
+    </div>
+  </div>
+  <div class="layout-vertical">
+    <div>
+      <h2>Disabled demo</h2>
+    </div>
+    <div class="layout-horizontal">
+      <at-form-date id="atFormDate4" class="layout-flex-6" disabled></at-form-date>
+      <div class="layout-flex-6"></div>
+    </div>
+  </div>
+  <div class="layout-vertical">
+    <div>
+      <h2>Required demo</h2>
+    </div>
+    <div class="layout-horizontal">
+      <at-form-date id="atFormDate5" class="layout-flex-6" required auto-validate></at-form-date>
+      <div class="layout-flex-6"></div>
+    </div>
+  </div>
+  <div class="layout-vertical">
+    <div>
+      <h2>Value demo</h2>
+    </div>
+    <div class="layout-horizontal">
+      <at-form-date id="atFormDate6" class="layout-flex-6" value="2015-06-13T23:21:30.630Z"></at-form-date>
+      <div class="layout-flex-6"></div>
+    </div>
+  </div>
+    <div class="layout-vertical">
+    <div>
+      <h2>Demo date only</h2>
+    </div>
+    <div class="layout-horizontal">
+      <at-form-date id="atFormDate7" class="layout-flex-6" xtype="date" label="Date" value="2015-06-03" format="YY-MM-DD"></at-form-date>
+      <div class="layout-flex-6"></div>
+    </div>
+  </div>
+    <div class="layout-vertical">
+    <div>
+      <h2>Demo time only</h2>
+    </div>
+    <div class="layout-horizontal">
+      <at-form-date id="atFormDate8" class="layout-flex-6" xtype="time" label="Time" value="15:13:40" format="hh:mm:ss"></at-form-date>
+      <div class="layout-flex-6"></div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('WebComponentsReady', function () {
+      var echoValue = document.getElementById('echoValue1');
+      var atFormDate = document.getElementById('atFormDate1');
+      atFormDate.addEventListener('value-changed', function (event) {
+        echoValue.innerHTML = event.detail.value;
+      });
+
+
+      var echoValue2 = document.getElementById('echoValue2');
+      var atFormDate2 = document.getElementById('atFormDate2');
+      atFormDate2.addEventListener('value-changed', function (event) {
+        echoValue2.innerHTML = event.detail.value;
+      });
+
+    });
+  </script>
+</body>
+
+</html>
