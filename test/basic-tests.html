@@ -282,7 +282,7 @@
       });
 
       test('empty string is initially valid but required && empty value => invalid', function() {
-        var input = document.createElement('at-form-date');
+        var input = fixture('basic');
         input.value = "";
         assert.equal(input.valid, true, 'empty string is not valid value');
 

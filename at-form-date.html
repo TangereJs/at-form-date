@@ -518,7 +518,8 @@
 
       if (showError === undefined) { showError = this.autoValidate; }
 
-      var inputValue = this.$.input.value;
+      // when available, use last value user typed
+      var inputValue = this.$ ? this.$.input.value : this.value;
       var currentValue = this.value;
 
       var inputMoment = moment.utc(inputValue, this._displayFormat, true);
@@ -554,7 +555,8 @@
       }
       var hasAtCoreFormAsParent = parentElement !== null;
 
-      var inputValue = this.$.input.value;
+      // when available, use last value user typed
+      var inputValue = this.$ ? this.$.input.value : this.value;
       var validationResult;
       // we need this check for correct validation message display
       // when invalid value is set via .value property it should be validated against _valueFormat
@@ -579,6 +581,9 @@
     },
 
     _updateUIValidState: function(isValid) {
+      // if shadowDom is not available return
+      if (!this.$) return;
+
       var label = this.$.label;
       this.toggleClass('error', !isValid, label);
       var contentContainer = this.$.contentContainer;
