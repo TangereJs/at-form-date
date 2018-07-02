@@ -1,0 +1,364 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>at-form-date tests</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../at-form-date.html">
+
+</head>
+
+<body>
+  <script>
+    var testedElementName = 'at-form-date';
+
+    function polymerVersion() {
+      return parseInt(Polymer.version);
+    }
+
+    function assertUIValidState(elt, isValid, errorMessage) {
+      assert.equal(elt.$.hint.innerHTML, errorMessage);
+      assert.equal(elt.$.label.classList.contains('error'), !isValid);
+      assert.equal(elt.$.contentContainer.classList.contains('error'), !isValid);
+    }
+
+    suite('polymer 2 validation', function() {
+
+      test('elt is valid before attached to the DOM, ui is valid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+
+        // call validate function
+        var isValid = elt.validate();
+
+        assert.equal(isValid, true);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, '');
+
+        document.body.removeChild(elt);
+      });
+
+    });
+
+    suite('at-form-date is made invalid by setting errorMessage', function() {
+
+      test('(autoValidate, showError) = (false, false) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var errorMessage = "Lorem ipsum";
+
+        var elt = document.createElement(testedElementName);
+
+        elt.autoValidate = false;
+        elt.errorMessage = errorMessage;
+
+        // call validate function
+        var isValid = elt.validate(false);
+
+        assert.equal(isValid, false);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (false, true) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var errorMessage = "Lorem ipsum";
+
+        var elt = document.createElement(testedElementName);
+
+        elt.autoValidate = false;
+        elt.errorMessage = errorMessage;
+
+        // call validate function
+        var isValid = elt.validate(true);
+
+        assert.equal(isValid, false);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (true, false) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var errorMessage = "Lorem ipsum";
+
+        var elt = document.createElement(testedElementName);
+
+        elt.autoValidate = true;
+        elt.errorMessage = errorMessage;
+
+        // call validate function
+        var isValid = elt.validate(false);
+
+        assert.equal(isValid, false);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (true, true) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var errorMessage = "Lorem ipsum";
+
+        var elt = document.createElement(testedElementName);
+
+        elt.autoValidate = true;
+        elt.errorMessage = errorMessage;
+
+        // call validate function
+        var isValid = elt.validate(true);
+
+        assert.equal(isValid, false);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+    });
+
+    suite('at-form-date is made invalid by setting required and value', function() {
+
+      test('(autoValidate, showError) = (false, false) elt is invalid before attaching to the DOM, ui is valid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+        var errorMessage = '';
+
+        elt.autoValidate = false;
+        elt.required = true;
+
+        // call validate function
+        var isValid = elt.validate(false);
+
+        assert.equal(isValid, false);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, !isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (false, true) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+        var errorMessage = elt.T("This field is required.");
+
+        elt.autoValidate = false;
+        elt.required = true;
+
+        // call validate function
+        var isValid = elt.validate(true);
+
+        assert.equal(isValid, false);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (true, false) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+        var errorMessage = elt.T("This field is required.");
+
+        elt.autoValidate = true;
+        elt.required = true;
+
+        // call validate function
+        var isValid = elt.validate(false);
+
+        assert.equal(isValid, false);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, !isValid, '');
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (true, true) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+        var errorMessage = elt.T("This field is required.");
+
+        elt.autoValidate = true;
+        elt.required = true;
+
+        // call validate function
+        var isValid = elt.validate(true);
+
+        assert.equal(isValid, false);
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+    });
+
+    suite('at-form-date is made invalid by setting value as invalid date string', function() {
+      test('(autoValidate, showError) = (false, false) elt is invalid before attaching to the DOM, ui is valid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+        var errorMessage = '';
+
+        elt.autoValidate = false;
+        elt.value = "lorem ipsum";
+
+        // call validate function
+        var isValid = elt.validate(false);
+        assert.equal(isValid, false);
+
+        assert.equal(elt.value, "lorem ipsum");
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        assert.equal(elt.value, "lorem ipsum");
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, !isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (false, true) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+        var errorMessage = elt.T("Value {0} is not in correct format of {1}", "lorem ipsum", elt._valueFormats[elt.xtype]);
+
+        elt.autoValidate = false;
+        elt.value = "lorem ipsum";
+
+        // call validate function
+        var isValid = elt.validate(true);
+        assert.equal(isValid, false);
+        
+        assert.equal(elt.value, "lorem ipsum");
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        assert.equal(elt.value, "lorem ipsum");
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (true, false) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+        var errorMessage = elt.T("Value {0} is not in correct format of {1}", "lorem ipsum", elt._valueFormats[elt.xtype]);
+
+        elt.autoValidate = true;
+        elt.value = "lorem ipsum";
+
+        // call validate function
+        var isValid = elt.validate(false);
+        assert.equal(isValid, false);
+
+        assert.equal(elt.value, "lorem ipsum");
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        assert.equal(elt.value, "lorem ipsum");
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, !isValid, '');
+
+        document.body.removeChild(elt);
+      });
+
+      test('(autoValidate, showError) = (true, true) elt is invalid before attaching to the DOM, ui is invalid after attaching to the DOM', function() {
+        if (polymerVersion() != 2) return;
+
+        var elt = document.createElement(testedElementName);
+        var errorMessage = elt.T("Value {0} is not in correct format of {1}", "lorem ipsum", elt._valueFormats[elt.xtype]);
+
+        elt.autoValidate = true;
+        elt.value = "lorem ipsum";
+
+        // call validate function
+        var isValid = elt.validate(true);
+        assert.equal(isValid, false);
+
+        assert.equal(elt.value, "lorem ipsum");
+
+        // attach element to the DOM
+        document.body.appendChild(elt);
+
+        assert.equal(elt.value, "lorem ipsum");
+
+        // assert that UI reflects valid state
+        assertUIValidState(elt, isValid, errorMessage);
+
+        document.body.removeChild(elt);
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>

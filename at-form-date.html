@@ -21,11 +21,11 @@
       }
 
        :host {
-        @apply(--at-form-host);
+        @apply --at-form-host;
       }
 
       .at-carbon-picker-container {
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
       }
 
       .at-content {
@@ -319,7 +319,12 @@
       });
 
       this._isReady = true;
+      // Polymer 2.x
+      // When element attaches its important to call _valueChanged first, because _valueChanged will update $.input element's value
+      this._valueChanged(this.value, undefined);
+      // and then execute validation with $.input value already set
       this._internalValidStateUpdate(this.required);
+      // otherwise, executing validation will cause this.value to become empty, since that is the initial value of $.input
     },
 
     attached: function() {
@@ -447,9 +452,20 @@
     },
 
     _internalValidStateUpdate: function(required) {
-      if (this._isReady) {
-        this.validate();
+      if (!this._isReady) return;
+      
+      if (this._showErrorsWhenAttached) {
+        this._showErrorsWhenAttached = undefined;
+        this.validate(true);
+        return;
+      
+      } else if (this._clearErrorsWhenAttached) {
+        this._clearErrorsWhenAttached = undefined;
+        this.validate(false);
+        return;
       }
+
+      this.validate();
     },
 
     _formatChanged: function(newValue, oldValue) {
@@ -515,25 +531,36 @@
     },
 
     validate: function(showError) {
+      if (!this.$ && this.autoValidate == false && showError == true) {
+        // showError should be true when _internalValidStateUpdate is called from ready after element is attached
+        this._showErrorsWhenAttached = true;
+      
+      } else if (!this.$ && this.autoValidate == true && showError == false) {
+        this._clearErrorsWhenAttached = true;
+      }
 
       if (showError === undefined) { showError = this.autoValidate; }
 
-      // when available, use last value user typed
-      var inputValue = this.$ ? this.$.input.value : this.value;
-      var currentValue = this.value;
+      if (this.$) {
+        // when available, use last value user typed
+        var inputValue = this.$.input.value;
+        var currentValue = this.value;
 
-      var inputMoment = moment.utc(inputValue, this._displayFormat, true);
+        var inputMoment = moment.utc(inputValue, this._displayFormat, true);
 
-      if (inputMoment.isValid()) {
-        if (this.xtype === "datetime") {
-          this.value = inputMoment.toISOString();
+        if (inputMoment.isValid()) {
+          if (this.xtype === "datetime") {
+            this.value = inputMoment.toISOString();
+          
+          } else {
+            this.value = inputMoment.format(this._valueFormat);
+          }
+        
         } else {
-          this.value = inputMoment.format(this._valueFormat);
-        }
-      } else {
-        if (inputValue !== currentValue) {
-          if ([null, "null"].indexOf(currentValue) === -1 || inputValue !== "") {
-            this.value = inputValue;
+          if (inputValue !== currentValue) {
+            if ([null, "null"].indexOf(currentValue) === -1 || inputValue !== "") {
+              this.value = inputValue;
+            }
           }
         }
       }
@@ -555,23 +582,29 @@
       }
       var hasAtCoreFormAsParent = parentElement !== null;
 
-      // when available, use last value user typed
-      var inputValue = this.$ ? this.$.input.value : this.value;
-      var validationResult;
-      // we need this check for correct validation message display
-      // when invalid value is set via .value property it should be validated against _valueFormat
-      // if this check is removed invalid value will be validated against _displayFormat which is wrong
-      if (this._localValue !== inputValue || this._lastValueFromUserInput) {
-        this._localValue = inputValue;
-        validationResult = this._validateInput(inputValue, this._displayFormat, this.T.bind(this));
-        if (showError) { this._handleValidationResult(validationResult); }
-        if (!validationResult.isValid) { return validationResult.isValid; }
+      if (this.$) {
+        // when available, use last value user typed
+        var inputValue = this.$.input.value;
+        var validationResult;
+        // we need this check for correct validation message display
+        // when invalid value is set via .value property it should be validated against _valueFormat
+        // if this check is removed invalid value will be validated against _displayFormat which is wrong
+        if (this._localValue !== inputValue || this._lastValueFromUserInput) {
+          this._localValue = inputValue;
+          validationResult = this._validateInput(inputValue, this._displayFormat, this.T.bind(this));
+          if (showError) { this._handleValidationResult(validationResult); }
+          if (!validationResult.isValid) { return validationResult.isValid; }
+        }
       }
 
       var validationResult = this._validateBaseData();
       this._handleValidationResult(validationResult);
       if (!validationResult.isValid) {
         return validationResult.isValid;
+      }
+
+      if (!this._valueFormat) {
+        this._valueFormat = this._valueFormats[this.xtype];
       }
 
       validationResult = this._validateData(this, this.value, this.T.bind(this));
@@ -594,6 +627,7 @@
       if (!this._isReady || this._isInternalValueUpdate) {
         return;
       }
+
       this._lastValueFromUserInput = false;
       var valueProvider = this.$.input;
 
@@ -609,7 +643,7 @@
         if (!newMoment.isValid()) {
           newMoment = moment.utc(newValue, this._valueFormat);
         }
-
+        
         if (newMoment.isValid()) {
           this._setMomentToDateAndTime(newMoment);
           var formattedValue = this._formatMomentToDisplayFormat(newMoment);
