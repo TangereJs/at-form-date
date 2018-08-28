@@ -1,5 +1,5 @@
 <link rel="import" href="../tangere/tangere.html">
-<link rel="import" href="../at-theme/at-theme.html">
+<link rel="import" href="../at-core-style-classes/at-core-style-classes.html">
 <link rel="import" href="../at-i18n/at-i18n-behavior.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors.html">
 <link rel="import" href="../at-core-resize-sensor/at-core-resize-sensor.html">
@@ -13,9 +13,9 @@
 
 <dom-module id="at-form-date">
   <template>
+    <style include="at-core-style-classes"></style>
     <style include="at-form-common"></style>
-    <style include="at-form-date-style"></style>
-    <style>
+    <style include="at-form-date-style">
        :host * {
         box-sizing: border-box;
       }
@@ -77,7 +77,7 @@
       </div>
     </div>
     <at-core-dropdown id="dropdownContainer" position="bottomRight" y-offset="2">
-      <div id="pickerContainer" class="horizontal layout">
+      <div id="pickerContainer" class="layout-horizontal">
         <div class="at-carbon-picker-container">
           <at-carbon-date-picker class="at-carbon-picker" id="datePicker"></at-carbon-date-picker>
         </div>
