@@ -554,7 +554,7 @@
         var inputValue = this.$.input.value;
         var currentValue = this.value;
 
-        var inputMoment = moment.utc(inputValue, this._displayFormat, true);
+        var inputMoment = moment(inputValue, this._displayFormat, true);
 
         if (inputMoment.isValid()) {
           if (this.xtype === "datetime") {
@@ -651,10 +651,10 @@
         if (!newMoment.isValid()) {
           newMoment = moment.utc(newValue, this._valueFormat);
         }
-        
+
         if (newMoment.isValid()) {
           this._setMomentToDateAndTime(newMoment);
-          var formattedValue = this._formatMomentToDisplayFormat(newMoment);
+          var formattedValue = this._formatMomentToDisplayFormatLocal(newMoment);
           valueProvider.value = formattedValue;
           this._localValue = formattedValue;
         } else {
@@ -687,7 +687,7 @@
         completeValue = timeValue;
         completeFormat = timeFormat;
       }
-      var momentValue = moment.utc(completeValue, completeFormat, true);
+      var momentValue = moment(completeValue, completeFormat, true);
       return momentValue;
     },
 
@@ -712,7 +712,7 @@
       var self = this;
       var momentValue = this._getMomentFromDateAndTime(datePicker, timePicker);
 
-      var displayString = this._formatMomentToDisplayFormat(momentValue);
+      var displayString = momentValue.format(this._displayFormat);
       var valueProvider = this.$.input;
       valueProvider.value = displayString;
       this._localValue = displayString;
@@ -804,6 +804,14 @@
      */
     _formatMomentToDisplayFormat: function(moment) {
       return moment.utc().format(this._displayFormat);
+    },
+
+
+    /*
+     * Formats given moment object as local value in _displayFormat
+     */
+    _formatMomentToDisplayFormatLocal: function(moment) {
+      return moment.local().format(this._displayFormat);
     }
 
   });
